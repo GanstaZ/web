@@ -1,0 +1,15 @@
+<div class="right_section">
+{% if S_REGISTERED_USER and S_MINI_PROFILE %}
+	<div class="block">
+		<h2>{{ lang('WELCOME') }} {{ S_USERNAME }}</h2>
+		<div class="inner-block">
+			<div class="login_avatar">{{ CURRENT_USER_AVATAR }}</div>
+		{% if S_DISPLAY_PM %}
+			{{ lang('PRIVATE_MESSAGES') }}{{ lang('COLON') }} <a href="{U_PRIVATEMSGS}">{{ PRIVATE_MESSAGE_COUNT }}{% if PRIVATE_MESSAGE_COUNT == 1 %}{{ lang('NEW_PM') }}{% else %}{{ lang('NEW_PMS') }}{% endif %}</a>
+		{% endif %}
+		</div>
+	</div>
+{% endif %}
+
+{% BLOCKS side_blocks %}
+</div>

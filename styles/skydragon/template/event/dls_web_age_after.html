@@ -1,0 +1,11 @@
+{% EVENT dls_web_zodiac_before %}
+{% if S_ZODIAC and zodiac_data %}
+	{% for zodiac in zodiac_data %}
+		<dt>{{ zodiac.name }}{{ lang('COLON') }}</dt> <dd>{{ zodiac.extra }}</dd>
+		{% if zodiac.plant %}<dt>{{ lang('PLANT') ~ lang('COLON') }}</dt> <dd>{{ zodiac.plant }}</dd>{% endif %}
+		{% if zodiac.gems %}<dt>{{ lang('STONE') ~ lang('COLON') }}</dt> <dd>{{ zodiac.gems }}</dd>{% endif %}
+		{% if zodiac.ruler %}<dt>{{ lang('RULER') ~ lang('COLON') }}</dt> <dd>{{ zodiac.ruler }}</dd>{% endif %}
+		<dd></dd>
+	{% endfor %}
+{% endif %}
+{% EVENT dls_web_zodiac_after %}

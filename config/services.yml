@@ -1,0 +1,58 @@
+imports:
+    - { resource: tables.yml }
+    - { resource: astro.yml }
+    - { resource: blocks.yml }
+    - { resource: plugins.yml }
+
+services:
+    dls.web.helper:
+        class: dls\web\core\helper
+        arguments:
+            - '@dbal.conn'
+            - '@group_helper'
+
+    dls.web.news:
+        class: dls\web\core\news
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@template'
+            - '@dls.web.helper'
+            - '@user'
+            - '@pagination'
+            - '%core.root_path%'
+
+    dls.web.lunar:
+        class: dls\web\core\lunar
+
+    dls.web.listener:
+        class: dls\web\event\listener
+        arguments:
+            - '@config'
+            - '@controller.helper'
+            - '@language'
+            - '@template'
+            - '@dls.web.plugin.manager'
+        tags:
+            - { name: event.listener }
+
+    dls.web.admin.controller:
+        class: dls\web\controller\admin_controller
+        arguments:
+            - '@config'
+            - '@config_text'
+            - '@dbal.conn'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@dls.web.blocks.data'
+
+    dls.web.news.controller:
+        class: dls\web\controller\news_controller
+        arguments:
+            - '@controller.helper'
+            - '@dls.web.news'
+            - '@dls.web.blocks.manager'

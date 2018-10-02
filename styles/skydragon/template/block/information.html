@@ -1,0 +1,13 @@
+{% if S_INFORMATION %}
+	<div class="block">
+		<h2>{{ lang('INFORMATION') }}</h2>
+		<div class="inner-block">
+			<ul class="no_style">
+				<li class="drow"><strong>{{ lang('PORTAL_VERSION') }}</strong><span class="green">{{ core_stable }}</span></li>
+				<li class="drow"><strong>{{ lang('PHPBB_VERSION') }}</strong><span class="green">{{ phpbb_version }}</span></li>
+				<li class="drow"><strong>{{ lang('PORTAL_STYLE') }}</strong>{{ T_TEMPLATE_NAME }}</li>
+				{% EVENT side_mid_info_after %}
+			</ul>
+		</div>
+	</div>
+{% endif %}

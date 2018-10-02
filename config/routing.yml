@@ -1,0 +1,18 @@
+dls_web_news_base:
+    path: /news/{id}
+    defaults: { _controller: dls.web.news.controller:handle, id: 3, page: 1 }
+    requirements:
+        id: \d+
+
+dls_web_news_page:
+    path: /news/{id}/page/{page}
+    defaults: { _controller: dls.web.news.controller:handle }
+    requirements:
+        id: \d+
+        page: \d+
+
+dls_web_article:
+    path: /article/{aid}
+    defaults: { _controller: dls.web.news.controller:handle2 }
+    requirements:
+        aid: \d+

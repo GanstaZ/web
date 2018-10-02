@@ -1,0 +1,39 @@
+services:
+    dls.web.astro:
+        class: dls\web\core\plugin\astro\manager
+        arguments:
+            - '@dls.web.astro.collection'
+        calls:
+            - [set_name, [astro]]
+        tags:
+            - { name: dls.web.plugin }
+
+    dls.web.astro.collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: dls.web.astro }
+# ----- Zodiac types -----
+    dls.web.zodiac:
+        class: dls\web\core\plugin\astro\logy\zodiac
+        arguments:
+            - '@dbal.conn'
+            - '%dls.web.tables.zodiac%'
+            - '%dls.web.tables.zodiac_data%'
+        calls:
+            - [set_name, [zodiac]]
+            - [set_format, [m-d]]
+        tags:
+            - { name: dls.web.astro }
+
+    dls.web.chinese.zodiac:
+        class: dls\web\core\plugin\astro\logy\chinese
+        arguments:
+            - '@dbal.conn'
+            - '%dls.web.tables.heavenly_stems%'
+        calls:
+            - [set_name, [zodiac]]
+            - [set_format, [Y]]
+        tags:
+            - { name: dls.web.astro }

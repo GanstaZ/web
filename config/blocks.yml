@@ -1,0 +1,38 @@
+services:
+    dls.web.blocks.manager:
+        class: dls\web\core\block\block_manager
+        arguments:
+            - '@dispatcher'
+
+    dls.web.blocks.data:
+        class: dls\web\core\block\data
+        arguments:
+            - '@config'
+            - '@dispatcher'
+
+    dls.web.blocks.loader:
+        class: dls\web\core\block\loader
+        arguments:
+            - '@dls.web.blocks.data'
+
+    dls.web.blocks.extension:
+        class: dls\web\core\twig\extension
+        arguments:
+            - '@dls.web.blocks.loader'
+        tags:
+            - { name: twig.extension }
+
+    dls.web.blocks.all:
+        class: dls\web\event\blocks
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@language'
+            - '@user'
+            - '@template'
+            - '@dls.web.helper'
+            - '@dispatcher'
+            - '%core.root_path%'
+        tags:
+            - { name: event.listener }

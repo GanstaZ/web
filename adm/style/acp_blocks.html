@@ -1,0 +1,48 @@
+{{ include('overall_header.html') }}
+
+<h1>{{ lang('ACP_DLS_BLOCKS') }}</h1>
+
+<form id="acp_board" method="post" action="{{ U_ACTION }}">
+
+{% for type in loops.type %}
+<fieldset>
+<legend>{{ type.category }}</legend>
+
+{% for block in type.block %}
+<dl>
+	<dt><label for="{{ block.name }}">{{ block.l_block }}{{ lang('COLON') }}</label><br />
+	<span class="{% if block.d_block %}error{% else %}success{% endif %}">{{ lang('BLOCKS_POSITION') }}{{ lang('COLON') }}
+{% if block.d_block %}
+		{{ lang('DUPLICATE_POSITION') }} <i class="icon fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
+{% endif %}
+	</span>
+	</dt>
+	<dd><input type="radio" class="radio" name="{{ block.name }}" value="1" {% if block.s_block %}checked="checked" {% endif %}/> {{ lang('YES') }} &nbsp;
+		<input type="radio" class="radio" name="{{ block.name }}" value="0" {% if block.s_block == false %} checked="checked" {% endif %}/> {{ lang('NO') }}
+	</dd>
+	<dd><select name="{{ block.b_name }}" id="{{ block.b_name }}">{{ block.s_block_options }}</select></dd>
+</dl>
+{% endfor %}
+
+</fieldset>
+{% endfor %}
+
+<fieldset>
+<legend>{{ lang('DEFAULT_BLOCKS') }}</legend>
+<dl>
+	<dt><label for="dls_mini_profile">{{ lang('DLS_MINI_PROFILE') }}{{ lang('COLON') }}</label></dt>
+	<dd><input type="radio" class="radio" name="dls_mini_profile" value="1" {% if S_MINI_PROFILE %}checked="checked" {% endif %}/> {{ lang('YES') }} &nbsp;
+		<input type="radio" class="radio" name="dls_mini_profile" value="0" {% if S_MINI_PROFILE == false %}checked="checked" {% endif %}/> {{ lang('NO') }}
+	</dd>
+</dl>
+</fieldset>
+
+<p class="submit-buttons">
+	<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
+	<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
+</p>
+
+	{{ S_FORM_TOKEN }}
+
+</form>
+{{ include('overall_footer.html') }}

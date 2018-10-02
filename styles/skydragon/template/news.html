@@ -1,0 +1,91 @@
+{{ include('overall_header.html') }}
+
+<p class="{{ S_CONTENT_FLOW_END }} responsive-center time{% if S_USER_LOGGED_IN %} rightside{% endif %}">
+	{% if S_USER_LOGGED_IN %}{{ LAST_VISIT_DATE }}{% else %}{CURRENT_TIME}{% endif %}
+</p>
+{% if S_USER_LOGGED_IN %}<p class="responsive-center time">{{ CURRENT_TIME }}</p>{% endif %}
+
+<div class="inner dls_wrap">
+<div class="main_section">
+
+{% if S_TOP_MID_CONTENT %}
+	<div class="block mid-top-content">
+		<h3>{{ lang('LATEST_NEWS') }}<i class="fa fa-angle-right fa-fw" aria-hidden="true"></i><a href="{{ cat_link }}" title="{{ cat_name }}"><strong>{{ cat_name }}</strong></a></h3>
+	</div>
+	{# End Top Content #}
+{% endif %}
+
+	<div class="inner mid-content">
+
+{% for new in news %}
+	<article id="{{ new.id }}" class="post news {% if new.S_ROW_COUNT is odd %}bg2{% else %}bg1{% endif %}">
+		<div class="inner">
+
+		<dl class="postprofile">
+			<dt class="has-profile-rank has-avatar">
+				<div class="avatar-container">{{ new.avatar }}</div>
+				{{ new.author }}
+			</dt>
+			<dd class="profile-rank">{{ new.rank }}</dd>
+		</dl>
+
+		<section class="postbody">
+			<h3><a href="{{ new.link }}"><strong>{{ new.title }}</strong></a></h3>
+
+			<ul class="post-buttons">
+				<li>
+					<span class="button button-icon-only" title="{{ new.views }} {{ lang('VIEWS') }}">
+						<i class="icon fa-eye fa-fw" aria-hidden="true"></i><span class="sr-only">{{ lang('VIEWS') }}</span>
+					</span>
+				</li>
+				<li>
+					<span class="button button-icon-only" title="{{ new.replies }} {{ lang('REPLIES') }}">
+						<i class="icon fa-commenting fa-fw" aria-hidden="true"></i><span class="sr-only">{{ lang('REPLIES') }}</span>
+					</span>
+				</li>
+			</ul>
+
+			<p class="author">
+				<a href="{{ new.link }}" title="{{ lang('POST') }}">
+					<i class="fa fa-file-o fa-fw" aria-hidden="true"></i>
+				</a>
+				{{ lang('POST_BY_AUTHOR') }} {{ new.author }} &raquo; {{ new.date }}
+			</p>
+
+			<article class="content">
+				{{ new.text }}{% if new.is_trimmed %} <a href="{{ new.link }}">{{ lang('READ_FULL') }}</a>{% endif %}
+			</article>
+
+		</section>
+
+		<div class="back2top">
+			<a href="#top" class="top" title="{{ lang('BACK_TO_TOP') }}">
+				<i class="icon fa-chevron-circle-up fa-fw icon-gray" aria-hidden="true"></i>
+				<span class="sr-only">{{ lang('BACK_TO_TOP') }}</span>
+			</a>
+		</div>
+
+		</div>
+	</article>
+{% endfor %}
+{# End News Article #}
+
+{% if pagination %}
+	<div class="dls_pagination">
+		<div class="pagination">{{ total_news }} &bull; {{ PAGE_NUMBER }} &bull;{{ include('pagination.html') }}</div>
+	</div>
+{% endif %}
+
+	</div>
+{# End Middle Content #}
+
+	{% EVENT dls_web_bottom_content %}
+
+</div>
+{# End Main Section #}
+
+{{ include('side_section.html') }}
+{# End Right Section #}
+</div>
+
+{{ include('overall_footer.html') }}

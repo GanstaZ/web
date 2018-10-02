@@ -1,0 +1,123 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "5a059b104503310dd5604952ef0bd4bf",
+    "packages": [
+        {
+            "name": "solaris/php-moon-phase",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/solarissmoke/php-moon-phase.git",
+                "reference": "5389653b35fdcff2e31473fa0027a171a89f4ef6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/solarissmoke/php-moon-phase/zipball/5389653b35fdcff2e31473fa0027a171a89f4ef6",
+                "reference": "5389653b35fdcff2e31473fa0027a171a89f4ef6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Solaris": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Erik Scheepers",
+                    "email": "e.scheepers@linkorb.com",
+                    "role": "Packaging for composer"
+                },
+                {
+                    "name": "Samir Shah",
+                    "email": "samir@rayofsolaris.net"
+                }
+            ],
+            "description": "A PHP class for calculating the phase of the Moon.",
+            "homepage": "http://www.github.com/solarissmoke/php-moon-phase",
+            "keywords": [
+                "moon",
+                "phase",
+                "php"
+            ],
+            "time": "2015-02-07T05:54:42+00:00"
+        }
+    ],
+    "packages-dev": [
+        {
+            "name": "phing/phing",
+            "version": "2.4.14",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phingofficial/phing.git",
+                "reference": "41075d93ca254f1c90c79ec7ce81be2b2629e138"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phingofficial/phing/zipball/41075d93ca254f1c90c79ec7ce81be2b2629e138",
+                "reference": "41075d93ca254f1c90c79ec7ce81be2b2629e138",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.0"
+            },
+            "bin": [
+                "bin/phing"
+            ],
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "classes/phing/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "include-path": [
+                "classes"
+            ],
+            "license": [
+                "LGPL3"
+            ],
+            "authors": [
+                {
+                    "name": "Michiel Rook",
+                    "email": "mrook@php.net",
+                    "role": "Lead"
+                },
+                {
+                    "name": "Phing Community",
+                    "homepage": "http://www.phing.info/trac/wiki/Development/Contributors"
+                }
+            ],
+            "description": "PHing Is Not GNU make; it's a PHP project build system or build tool based on Apache Ant.",
+            "homepage": "http://www.phing.info/",
+            "keywords": [
+                "build",
+                "task",
+                "tool"
+            ],
+            "time": "2012-11-29T21:23:47+00:00"
+        }
+    ],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "solaris/php-moon-phase": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=5.6"
+    },
+    "platform-dev": []
+}

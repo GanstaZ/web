@@ -1,0 +1,37 @@
+{% if S_DISPLAY_ONLINE_LIST %}
+<div class="block mid-bottom-content">
+	<div class="whos_inner">
+		<h2>{{ lang('WHO_IS_ONLINE') }}</h2>
+		<ul class="no_style">
+			<li>{{ TOTAL_USERS_ONLINE }} ({{ L_ONLINE_EXPLAIN }})</li>
+			<li>{{ RECORD_USERS }}</li>
+			{% if U_VIEWONLINE %}
+			<li><br /></li>
+			<li>{{ LOGGED_IN_USER_LIST }}</li>
+			{% if LEGEND %}<li><em>{{ lang('LEGEND') }}{{ lang('COLON') }} {{ LEGEND }}</em></li>{% endif %}
+			{% endif %}
+		</ul>
+	</div>
+
+	{% if S_DISPLAY_BIRTHDAY_LIST %}
+	<div class="whos_inner">
+		<h2>{{ lang('BIRTHDAYS') }}</h2>
+		<p class="whos_p">
+			{% if BIRTHDAY_LIST %}{{ lang('CONGRATULATIONS') }}{{ lang('COLON') }} <strong>{{ BIRTHDAY_LIST }}</strong>{% else %}{{ lang('NO_BIRTHDAYS') }}{% endif %}
+		</p>
+	</div>
+	{% endif %}
+
+	{% if NEWEST_USER %}
+	<div>
+		<h2>{{ lang('STATISTICS') }}</h2>
+		<ul class="no_style">
+			<li>{{ TOTAL_POSTS }} &bull; {{ TOTAL_TOPICS }} &bull; {{ TOTAL_USERS }} &bull; {{ NEWEST_USER }}</li>
+			<li>{{ POSTS_PER_DAY }} &bull; {{ TOPICS_PER_DAY }} &bull; {{ USERS_PER_DAY }}</li>
+		</ul>
+	</div>
+	{% endif %}
+
+ </div>
+{# End Bottom Content #}
+{% endif %}

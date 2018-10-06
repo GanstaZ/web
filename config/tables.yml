@@ -1,4 +1,6 @@
 parameters:
+    dls.web.tables.blocks: '%core.table_prefix%blocks'
+    dls.web.tables.blocks_data: '%core.table_prefix%blocks_data'
     dls.web.tables.zodiac: '%core.table_prefix%zodiac'
     dls.web.tables.zodiac_data: '%core.table_prefix%zodiac_data'
     dls.web.tables.heavenly_stems: '%core.table_prefix%zodiac_heavenly_stems'

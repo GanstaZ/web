@@ -55,6 +55,24 @@ class m_dls_main extends \phpbb\db\migration\migration
 	{
 		return [
 			'add_tables' => [
+				$this->table_prefix . 'blocks' => [
+					'COLUMNS' => [
+						'category_id'	=> ['UINT', null, 'auto_increment'],
+						'category_name' => ['VCHAR', ''],
+					],
+					'PRIMARY_KEY' => ['category_id'],
+				],
+				$this->table_prefix . 'blocks_data' => [
+					'COLUMNS' => [
+						'block_id'	  => ['UINT', null, 'auto_increment'],
+						'block_name'  => ['VCHAR', ''],
+						'vendor'	  => ['VCHAR', ''],
+						'position'	  => ['UINT', 0],
+						'active'	  => ['BOOL', 0],
+						'category_id' => ['UINT', 0],
+					],
+					'PRIMARY_KEY' => ['block_id'],
+				],
 				$this->table_prefix . 'zodiac' => [
 					'COLUMNS' => [
 						'zodiac_id' => ['UINT', null, 'auto_increment'],
@@ -124,6 +142,8 @@ class m_dls_main extends \phpbb\db\migration\migration
 
 			// Drop tables
 			'drop_tables' => [
+				$this->table_prefix . 'blocks',
+				$this->table_prefix . 'blocks_data',
 				$this->table_prefix . 'zodiac',
 				$this->table_prefix . 'zodiac_data',
 				$this->table_prefix . 'zodiac_heavenly_stems',

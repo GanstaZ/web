@@ -10,78 +10,110 @@
 
 namespace dls\web\core\block;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 /**
 * DLS Web blocks manager
 */
 class block_manager
 {
-	/** @var \phpbb\event\dispatcher */
-	protected $dispatcher;
-
-	protected $blocks = ['dls.web_main_block', 'dls.web_special_block',];
+	/** @var array Contains enabled block services */
+	protected $blocks;
 
 	/**
 	* Constructor
 	*
-	 * @param \phpbb\event\dispatcher $dispatcher Dispatcher object
+	* @param \ContainerInterface $container A container
 	*/
-	public function __construct(\phpbb\event\dispatcher $dispatcher)
+	public function __construct(ContainerInterface $container)
 	{
-		$this->dispatcher = $dispatcher;
+		$this->register_blocks($container);
 	}
 
 	/**
-	* Load block
+	* Register all available blocks
 	*
-	* @param string $category Load all blocks in given category.
+	* @param ContainerInterface
+	* @return null
 	*/
-	public function load($category)
+	protected function register_blocks($container)
 	{
-		$category = 'dls.web_' . $category;
-
-		if (!in_array($category, $this->blocks))
+		foreach ($container->get('dls.web.blocks.collection') as $block)
 		{
-			return;
-		}
+			$block->set_config($container->get('config'));
+			$data = $block->get_data();
 
-		$this->loading($category);
-	}
-
-	/**
-	* Load blocks
-	*
-	* @param string $category Load all blocks in given category.
-	*/
-	public function load_all()
-	{
-		foreach ($this->blocks as $block)
-		{
-			if ($this->has_blocks($block))
+			// Validate services
+			if ($container->get('dls.web.blocks.provaider')->is_valid_service($data))
 			{
-				$this->dispatcher->dispatch($block);
+				$this->blocks[$data['cat_name']][$data['block_name']] = $block;
 			}
 		}
 	}
 
 	/**
+	* Load blocks
+	*
+	* @param string|null $cat_name
+	* @return null
+	*/
+	public function load($cat_name = null)
+	{
+		if ($blocks = $this->get_blocks($cat_name))
+		{
+			$this->loading($blocks);
+		}
+	}
+
+	/**
+	* Get blocks
+	*
+	* @param string|null $cat_name
+	* @return array
+	*/
+	public function get_blocks($cat_name = null)
+	{
+		if (null !== $cat_name)
+		{
+			if (!$this->blocks[$cat_name])
+			{
+				return [];
+			}
+
+			return $this->blocks[$cat_name];
+		}
+
+		$load_all = [];
+		foreach (array_keys($this->blocks) as $service_name)
+		{
+			$load_all = array_merge($load_all, $this->blocks[$service_name]);
+		}
+
+		return array_filter($load_all);
+	}
+
+	/**
 	* Loading
 	*
-	* @param string $category Name of the category
+	* @param array $blocks Array of enabled blocks
 	*/
-	protected function loading($category = null)
+	protected function loading($blocks)
 	{
-		return $this->dispatcher->dispatch($category);
+		foreach ($blocks as $block_service)
+		{
+			$block_service->load();
+		}
 	}
 
 	/**
 	* Has blocks
 	*
-	* @param string $category Search in category for blocks.
+	* @param string|null $cat_name
 	*
 	* @return bool
 	*/
-	public function has_blocks($category = null)
+	public function has_blocks($cat_name = null)
 	{
-		return (bool) count($this->dispatcher->hasListeners($category));
+		return (bool) count($this->get_blocks($cat_name));
 	}
 }

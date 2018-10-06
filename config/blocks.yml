@@ -2,31 +2,82 @@ services:
     dls.web.blocks.manager:
         class: dls\web\core\block\block_manager
         arguments:
-            - '@dispatcher'
+            - '@service_container'
 
-    dls.web.blocks.data:
-        class: dls\web\core\block\data
+    dls.web.blocks.collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: dls.web.blocks }
+
+    dls.web.blocks.provaider:
+        class: dls\web\core\block\provaider
         arguments:
             - '@config'
-            - '@dispatcher'
-
-    dls.web.blocks.loader:
-        class: dls\web\core\block\loader
-        arguments:
-            - '@dls.web.blocks.data'
+            - '@dbal.conn'
+            - '%dls.web.tables.blocks%'
+            - '%dls.web.tables.blocks_data%'
+            - '@cache'
 
     dls.web.blocks.extension:
         class: dls\web\core\twig\extension
         arguments:
-            - '@dls.web.blocks.loader'
+            - '@dls.web.blocks.provaider'
         tags:
             - { name: twig.extension }
 
-    dls.web.blocks.all:
-        class: dls\web\event\blocks
+# ----- Blocks -----
+    dls.web.block.information:
+        class: dls\web\core\block\information
+        arguments:
+            - '@template'
+            - '@dispatcher'
+        tags:
+            - { name: dls.web.blocks }
+
+    dls.web.block.the_team:
+        class: dls\web\core\block\the_team
+        arguments:
+            - '@dbal.conn'
+            - '@language'
+            - '@template'
+            - '@dls.web.helper'
+        tags:
+            - { name: dls.web.blocks }
+
+    dls.web.block.top_posters:
+        class: dls\web\core\block\top_posters
+        arguments:
+            - '@dbal.conn'
+            - '@template'
+        tags:
+            - { name: dls.web.blocks }
+
+    dls.web.block.recent_posts:
+        class: dls\web\core\block\recent_posts
+        arguments:
+            - '@dbal.conn'
+            - '@template'
+            - '@dls.web.helper'
+            - '%core.root_path%'
+        tags:
+            - { name: dls.web.blocks }
+
+    dls.web.block.recent_topics:
+        class: dls\web\core\block\recent_topics
+        arguments:
+            - '@dbal.conn'
+            - '@template'
+            - '@dls.web.helper'
+            - '%core.root_path%'
+        tags:
+            - { name: dls.web.blocks }
+
+    dls.web.block.whos_online:
+        class: dls\web\core\block\whos_online
         arguments:
             - '@auth'
-            - '@config'
             - '@dbal.conn'
             - '@language'
             - '@user'
@@ -35,4 +86,4 @@ services:
             - '@dispatcher'
             - '%core.root_path%'
         tags:
-            - { name: event.listener }
+            - { name: dls.web.blocks }

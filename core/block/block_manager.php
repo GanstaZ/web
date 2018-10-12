@@ -55,11 +55,12 @@ class block_manager
 	* Load blocks
 	*
 	* @param string|null $cat_name
+	* @param array|null	 $block_name
 	* @return null
 	*/
-	public function load($cat_name = null)
+	public function load($cat_name = null, $block_name = null)
 	{
-		if ($blocks = $this->get_blocks($cat_name))
+		if ($blocks = $this->get_blocks($cat_name, $block_name))
 		{
 			$this->loading($blocks);
 		}
@@ -69,9 +70,10 @@ class block_manager
 	* Get blocks
 	*
 	* @param string|null $cat_name
+	* @param array|null	 $block_name
 	* @return array
 	*/
-	public function get_blocks($cat_name = null)
+	public function get_blocks($cat_name = null, $block_name = null)
 	{
 		if (null !== $cat_name)
 		{
@@ -83,13 +85,34 @@ class block_manager
 			return $this->blocks[$cat_name];
 		}
 
+		return array_filter($this->get_all_requested_blocks($block_name));
+	}
+
+	/**
+	* Get all requested blocks
+	*
+	* @param null|array $block_name
+	* @return array
+	*/
+	public function get_all_requested_blocks($block_name = null)
+	{
 		$load_all = [];
 		foreach (array_keys($this->blocks) as $service_name)
 		{
 			$load_all = array_merge($load_all, $this->blocks[$service_name]);
 		}
 
-		return array_filter($load_all);
+		if (is_array($block_name))
+		{
+			foreach ($block_name as $block)
+			{
+				$array[] = $load_all[$block];
+			}
+
+			return $array;
+		}
+
+		return $load_all;
 	}
 
 	/**

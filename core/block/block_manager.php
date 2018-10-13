@@ -44,7 +44,8 @@ class block_manager
 			$data = $block->get_data();
 
 			// Validate services
-			if ($container->get('dls.web.blocks.provaider')->is_valid_service($data))
+			//if ($container->get('dls.web.blocks.provaider')->is_valid_service($data))
+			if ($container->get('dls.web.blocks.data_helper')->is_enabled($data['block_name']))
 			{
 				$this->blocks[$data['cat_name']][$data['block_name']] = $block;
 			}

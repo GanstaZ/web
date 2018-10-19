@@ -3,6 +3,8 @@ services:
         class: dls\web\core\block\block_manager
         arguments:
             - '@service_container'
+            - '@dls.web.blocks.block_helper'
+            - '@dls.web.blocks.collection'
 
     dls.web.blocks.collection:
         class: phpbb\di\service_collection
@@ -11,10 +13,9 @@ services:
         tags:
             - { name: service_collection, tag: dls.web.blocks }
 
-    dls.web.blocks.provaider:
-        class: dls\web\core\block\provaider
+    dls.web.blocks.block_helper:
+        class: dls\web\core\block\block_helper
         arguments:
-            - '@config'
             - '@dbal.conn'
             - '%dls.web.tables.blocks%'
             - '%dls.web.tables.blocks_data%'
@@ -23,7 +24,7 @@ services:
     dls.web.blocks.extension:
         class: dls\web\core\twig\extension
         arguments:
-            - '@dls.web.blocks.provaider'
+            - '@dls.web.blocks.block_helper'
         tags:
             - { name: twig.extension }
 
@@ -40,7 +41,6 @@ services:
         class: dls\web\core\block\the_team
         arguments:
             - '@dbal.conn'
-            - '@language'
             - '@template'
             - '@dls.web.helper'
         tags:

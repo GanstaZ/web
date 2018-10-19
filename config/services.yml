@@ -8,7 +8,6 @@ services:
     dls.web.helper:
         class: dls\web\core\helper
         arguments:
-            - '@dbal.conn'
             - '@group_helper'
 
     dls.web.news:
@@ -42,13 +41,14 @@ services:
     dls.web.admin.controller:
         class: dls\web\controller\admin_controller
         arguments:
+            - '@service_container'
             - '@config'
             - '@config_text'
             - '@dbal.conn'
             - '@language'
             - '@request'
             - '@template'
-            - '@dls.web.blocks.data'
+            - '@dls.web.blocks.block_helper'
 
     dls.web.news.controller:
         class: dls\web\controller\news_controller

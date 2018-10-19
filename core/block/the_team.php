@@ -18,29 +18,24 @@ class the_team extends base
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \phpbb\language\language */
-	protected $language;
-
 	/** @var \phpbb\template\template */
 	protected $template;
 
 	/** @var \dls\web\core\helper */
-	protected $core;
+	protected $helper;
 
 	/**
 	* Constructor
 	*
 	* @param \phpbb\db\driver\driver_interface $db		 Db object
-	* @param \phpbb\language\language		   $language Language object
 	* @param \phpbb\template\template		   $template Template object
-	* @param \dls\web\core\helper			   $core	 Helper object
+	* @param \dls\web\core\helper			   $helper	 Helper object
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\template\template $template, \dls\web\core\helper $core)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\template\template $template, \dls\web\core\helper $helper)
 	{
 		$this->db = $db;
-		$this->language = $language;
 		$this->template = $template;
-		$this->core = $core;
+		$this->helper = $helper;
 	}
 
 	/**
@@ -62,6 +57,15 @@ class the_team extends base
 	{
 		$group_id = (int) $this->config['dls_the_team_fid'];
 
+		$sql = 'SELECT group_name, group_type
+				FROM ' . GROUPS_TABLE . '
+				WHERE group_id = ' . $group_id;
+		$result = $this->db->sql_query($sql, 3600);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		$this->template->assign_var('get_team_name', $this->helper->get_name($row['group_name']));
+
 		$sql = 'SELECT ug.*, u.username, u.user_id, u.user_colour, u.username_clean
 				FROM ' . USER_GROUP_TABLE . ' ug, ' . USERS_TABLE . ' u
 				WHERE ug.user_id = u.user_id
@@ -76,7 +80,5 @@ class the_team extends base
 			]);
 		}
 		$this->db->sql_freeresult($result);
-
-		$this->template->assign_var('get_team_name', $this->core->get_team($group_id));
 	}
 }

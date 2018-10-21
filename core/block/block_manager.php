@@ -10,8 +10,6 @@
 
 namespace dls\web\core\block;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
 /**
 * DLS Web blocks manager
 */

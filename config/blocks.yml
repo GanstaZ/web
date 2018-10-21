@@ -2,7 +2,7 @@ services:
     dls.web.blocks.manager:
         class: dls\web\core\block\block_manager
         arguments:
-            - '@service_container'
+            - '@config'
             - '@dls.web.blocks.block_helper'
             - '@dls.web.blocks.collection'
 

@@ -42,6 +42,7 @@ services:
         class: dls\web\controller\admin_controller
         arguments:
             - '@service_container'
+            - '@cache'
             - '@config'
             - '@config_text'
             - '@dbal.conn'

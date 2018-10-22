@@ -21,14 +21,6 @@ abstract class base implements blocks_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_name()
-	{
-		return $this->name;
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
 	public function set_config($config)
 	{
 		$this->config = $config;

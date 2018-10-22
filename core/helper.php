@@ -15,21 +15,16 @@ namespace dls\web\core;
 */
 class helper
 {
-	/** @var \phpbb\db\driver\driver_interface */
-	protected $db;
-
 	/** @var \phpbb\group\helper */
 	protected $group_helper;
 
 	/**
 	* Constructor
 	*
-	* @param \phpbb\db\driver\driver_interface $db			 Db object
-	* @param \phpbb\group\helper			   $group_helper Group helper object
+	* @param \phpbb\group\helper $group_helper Group helper object
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\group\helper $group_helper)
+	public function __construct(\phpbb\group\helper $group_helper)
 	{
-		$this->db = $db;
 		$this->group_helper = $group_helper;
 	}
 
@@ -48,7 +43,7 @@ class helper
 	/**
 	* Truncate title
 	*
-	* @param string $title	Truncate title
+	* @param string $title Truncate title
 	* @param string $length Max length of the string
 	*
 	* @return mixed
@@ -59,26 +54,34 @@ class helper
 	}
 
 	/**
-	* Get group name
+	* Count data
 	*
-	* @param int $group_id id of a group
-	*
-	* @return string group_name
+	* @param array $data Data
+	* @param string $column Column
+	* @param int|string $field Field
+	* @return int
 	*/
-	public function get_team($group_id)
+	public function count($data, $column, $field)
 	{
-		$sql = 'SELECT group_name, group_type
-				FROM ' . GROUPS_TABLE . '
-				WHERE group_id = ' . (int) $group_id;
-		$result = $this->db->sql_query($sql);
-		$row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
+		return count(array_keys(array_column($data, $column), $field));
+	}
 
-		if (!$row)
+	/**
+	* Get position options
+	*
+	* @param int $max Highest number to use in a loop
+	* @param int $current_position Current position of a block
+	* @return string $options
+	*/
+	public function get_options($max, $current_position)
+	{
+		$options = '';
+		foreach ($max as $pos)
 		{
-			return false;
+			$s_selected = ($pos == $current_position) ? ' selected="selected"' : '';
+			$options .= '<option value="' . $pos . '"' . $s_selected . '>' . $pos . '</option>';
 		}
 
-		return $this->get_name($row['group_name']);
+		return $options;
 	}
 }

@@ -27,9 +27,9 @@ class block_manager
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config			  $config Config object
+	* @param \phpbb\config\config $config Config object
 	* @param \dls\web\core\block\block_helper $block_helper Data helper object
-	* @param \phpbb\di\service_collection	  $blocks_data Service container
+	* @param \phpbb\di\service_collection $blocks_data Service container
 	*/
 	public function __construct(\phpbb\config\config $config, \dls\web\core\block\block_helper $block_helper, \phpbb\di\service_collection $blocks_collection)
 	{
@@ -61,31 +61,9 @@ class block_manager
 	}
 
 	/**
-	* Set helper data
-	*
-	* @param string $cat_name
-	* @return null
-	*/
-	protected function set_helper_data($cat_name)
-	{
-		return $this->block_helper->set($cat_name, array_flip(array_keys($this->blocks[$cat_name])));
-	}
-
-	/**
-	* Get block data
-	*
-	* @param string $cat_name
-	* @return array
-	*/
-	protected function get_block($cat_name)
-	{
-		return $this->blocks[$cat_name];
-	}
-
-	/**
 	* Load blocks
 	*
-	* @param null|mixed $cat_name
+	* @param mixed $cat_name
 	* @param null|array $blocks_ary Array of block names
 	* @return null
 	*/
@@ -98,13 +76,38 @@ class block_manager
 	}
 
 	/**
+	* Get block data
+	*
+	* @param string $cat_name
+	* @return array
+	*/
+	protected function get_block($cat_name)
+	{
+		if ($this->blocks[$cat_name])
+		{
+			return $this->blocks[$cat_name];
+		}
+	}
+
+	/**
+	* Set filter data
+	*
+	* @param string $cat_name
+	* @return null
+	*/
+	protected function set_filter_data($cat_name)
+	{
+		return $this->block_helper->set_to_filter($cat_name, array_flip(array_keys($this->get_block($cat_name))));
+	}
+
+	/**
 	* Get blocks
 	*
-	* @param null|mixed $cat_name
+	* @param mixed $cat_name
 	* @param null|array $blocks_ary Array of block names
 	* @return array
 	*/
-	public function get_blocks($cat_name = null, $blocks_ary = null)
+	protected function get_blocks($cat_name = null, $blocks_ary = null)
 	{
 		if (null !== $cat_name)
 		{
@@ -112,8 +115,7 @@ class block_manager
 			{
 				return array_filter($this->get_requested_categories($cat_name));
 			}
-
-			$this->set_helper_data($cat_name);
+			$this->set_filter_data($cat_name);
 
 			return $this->get_block($cat_name);
 		}
@@ -134,7 +136,7 @@ class block_manager
 		{
 			if ($this->get_block($cat_name))
 			{
-				$this->set_helper_data($cat_name);
+				$this->set_filter_data($cat_name);
 				$requested = array_merge($requested, $this->get_block($cat_name));
 			}
 		}
@@ -150,25 +152,27 @@ class block_manager
 	*/
 	protected function get_all_blocks($blocks_ary = null)
 	{
-		$all = $requested = [];
+		$requested = [];
 		foreach (array_keys($this->blocks) as $cat_name)
 		{
-			$all = array_merge($all, $this->get_block($cat_name));
-
-			if (is_array($blocks_ary))
+			if (is_null($blocks_ary))
+			{
+				$requested = array_merge($requested, $this->get_block($cat_name));
+			}
+			else if (is_array($blocks_ary))
 			{
 				$requested = array_merge($requested, $this->get_requested_blocks($cat_name, $blocks_ary));
 			}
 		}
 
-		return ($blocks_ary) ? $requested : $all;
+		return $requested;
 	}
 
 	/**
 	* Get requested blocks
 	*
 	* @param string $cat_name
-	* @param array	$blocks_ary Array of block names
+	* @param array $blocks_ary Array of block names
 	* @return array
 	*/
 	protected function get_requested_blocks($cat_name, array $blocks_ary)
@@ -176,10 +180,10 @@ class block_manager
 		$array = [];
 		foreach ($blocks_ary as $block)
 		{
-			if ($this->blocks[$cat_name][$block])
+			if ($this->get_block($cat_name)[$block])
 			{
-				$this->block_helper->set($cat_name, $block);
-				$array[$block] = $this->blocks[$cat_name][$block];
+				$this->block_helper->set_to_filter($cat_name, $block);
+				$array[$block] = $this->get_block($cat_name)[$block];
 			}
 		}
 
@@ -190,7 +194,7 @@ class block_manager
 	* Loading
 	*
 	* @param array $blocks Array of enabled blocks
-	* @return void
+	* @return null
 	*/
 	protected function loading($blocks)
 	{

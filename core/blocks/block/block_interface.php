@@ -8,24 +8,17 @@
 *
 */
 
-namespace dls\web\core\block;
+namespace dls\web\core\blocks\block;
 
 /**
 * DLS Web interface for blocks
 */
-interface blocks_interface
+interface block_interface
 {
-	/**
-	* Set config
-	*
-	* @return void
-	*/
-	public function set_config($config);
-
 	/**
 	* Load block
 	*
-	* @return mixed
+	* @return null
 	*/
 	public function load();
 

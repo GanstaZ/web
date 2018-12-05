@@ -1,8 +1,10 @@
 services:
     dls.web.blocks.manager:
-        class: dls\web\core\block\block_manager
+        class: dls\web\core\blocks\block_manager
         arguments:
-            - '@config'
+            - '@service_container'
+            - '@dbal.conn'
+            - '@dls.web.helper'
             - '@dls.web.blocks.block_helper'
             - '@dls.web.blocks.collection'
 
@@ -14,12 +16,9 @@ services:
             - { name: service_collection, tag: dls.web.blocks }
 
     dls.web.blocks.block_helper:
-        class: dls\web\core\block\block_helper
+        class: dls\web\core\blocks\block_helper
         arguments:
-            - '@dbal.conn'
-            - '%dls.web.tables.blocks%'
-            - '%dls.web.tables.blocks_data%'
-            - '@cache'
+            - '@dls.web.helper'
 
     dls.web.blocks.extension:
         class: dls\web\core\twig\extension
@@ -30,16 +29,18 @@ services:
 
 # ----- Blocks -----
     dls.web.block.information:
-        class: dls\web\core\block\information
+        class: dls\web\core\blocks\block\information
         arguments:
+            - '@config'
             - '@template'
             - '@dispatcher'
         tags:
             - { name: dls.web.blocks }
 
     dls.web.block.the_team:
-        class: dls\web\core\block\the_team
+        class: dls\web\core\blocks\block\the_team
         arguments:
+            - '@config'
             - '@dbal.conn'
             - '@template'
             - '@dls.web.helper'
@@ -47,16 +48,18 @@ services:
             - { name: dls.web.blocks }
 
     dls.web.block.top_posters:
-        class: dls\web\core\block\top_posters
+        class: dls\web\core\blocks\block\top_posters
         arguments:
+            - '@config'
             - '@dbal.conn'
             - '@template'
         tags:
             - { name: dls.web.blocks }
 
     dls.web.block.recent_posts:
-        class: dls\web\core\block\recent_posts
+        class: dls\web\core\blocks\block\recent_posts
         arguments:
+            - '@config'
             - '@dbal.conn'
             - '@template'
             - '@dls.web.helper'
@@ -65,8 +68,9 @@ services:
             - { name: dls.web.blocks }
 
     dls.web.block.recent_topics:
-        class: dls\web\core\block\recent_topics
+        class: dls\web\core\blocks\block\recent_topics
         arguments:
+            - '@config'
             - '@dbal.conn'
             - '@template'
             - '@dls.web.helper'
@@ -75,9 +79,10 @@ services:
             - { name: dls.web.blocks }
 
     dls.web.block.whos_online:
-        class: dls\web\core\block\whos_online
+        class: dls\web\core\blocks\block\whos_online
         arguments:
             - '@auth'
+            - '@config'
             - '@dbal.conn'
             - '@language'
             - '@user'

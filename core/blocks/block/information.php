@@ -8,13 +8,16 @@
 *
 */
 
-namespace dls\web\core\block;
+namespace dls\web\core\blocks\block;
 
 /**
 * DLS Web Information block
 */
-class information extends base
+class information implements block_interface
 {
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	/** @var \phpbb\template\template */
 	protected $template;
 
@@ -24,11 +27,13 @@ class information extends base
 	/**
 	* Constructor
 	*
+	* @param \phpbb\config\config     $config Config object
 	* @param \phpbb\template\template $template	  Template object
 	* @param \phpbb\event\dispatcher  $dispatcher Dispatcher object
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\event\dispatcher $dispatcher)
+	public function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\event\dispatcher $dispatcher)
 	{
+		$this->config = $config;
 		$this->template = $template;
 		$this->dispatcher = $dispatcher;
 	}

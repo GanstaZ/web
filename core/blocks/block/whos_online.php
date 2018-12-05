@@ -8,15 +8,18 @@
 *
 */
 
-namespace dls\web\core\block;
+namespace dls\web\core\blocks\block;
 
 /**
 * DLS Web Who's Online block
 */
-class whos_online extends base
+class whos_online implements block_interface
 {
 	/** @var \phpbb\auth\auth */
 	protected $auth;
+
+	/** @var \phpbb\config\config */
+	protected $config;
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
@@ -43,6 +46,7 @@ class whos_online extends base
 	* Constructor
 	*
 	* @param \phpbb\auth\auth				   $auth	   Auth object
+	* @param \phpbb\config\config     $config Config object
 	* @param \phpbb\db\driver\driver_interface $db		   Db object
 	* @param \phpbb\language\language		   $language   Language object
 	* @param \phpbb\user					   $user	   User object
@@ -51,9 +55,10 @@ class whos_online extends base
 	* @param \phpbb\event\dispatcher		   $dispatcher Dispatcher object
 	* @param string $root_path Path to the phpbb includes directory.
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\user $user, \phpbb\template\template $template, \dls\web\core\helper $core, \phpbb\event\dispatcher $dispatcher, $root_path)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\user $user, \phpbb\template\template $template, \dls\web\core\helper $core, \phpbb\event\dispatcher $dispatcher, $root_path)
 	{
 		$this->auth = $auth;
+		$this->config = $config;
 		$this->db = $db;
 		$this->language = $language;
 		$this->user = $user;

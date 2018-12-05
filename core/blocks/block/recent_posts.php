@@ -8,13 +8,16 @@
 *
 */
 
-namespace dls\web\core\block;
+namespace dls\web\core\blocks\block;
 
 /**
 * DLS Web Recent Posts block
 */
-class recent_posts extends base
+class recent_posts implements block_interface
 {
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
@@ -30,13 +33,15 @@ class recent_posts extends base
 	/**
 	* Constructor
 	*
+	* @param \phpbb\config\config              $config Config object
 	* @param \phpbb\db\driver\driver_interface $db		 Db object
 	* @param \phpbb\template\template		   $template Template object
 	* @param \dls\web\core\helper			   $core	 Helper object
 	* @param string $root_path Path to the phpbb includes directory.
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\template\template $template, \dls\web\core\helper $core, $root_path)
+	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\template\template $template, \dls\web\core\helper $core, $root_path)
 	{
+		$this->config = $config;
 		$this->db = $db;
 		$this->template = $template;
 		$this->core = $core;

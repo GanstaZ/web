@@ -8,13 +8,16 @@
 *
 */
 
-namespace dls\web\core\block;
+namespace dls\web\core\blocks\block;
 
 /**
 * DLS Web Top Posters block
 */
-class top_posters extends base
+class top_posters implements block_interface
 {
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
@@ -24,11 +27,13 @@ class top_posters extends base
 	/**
 	* Constructor
 	*
+	* @param \phpbb\config\config     $config Config object
 	* @param \phpbb\db\driver\driver_interface $db		 Db object
 	* @param \phpbb\template\template		   $template Template object
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\template\template $template)
+	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\template\template $template)
 	{
+		$this->config = $config;
 		$this->db = $db;
 		$this->template = $template;
 	}

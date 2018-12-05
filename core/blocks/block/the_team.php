@@ -8,13 +8,16 @@
 *
 */
 
-namespace dls\web\core\block;
+namespace dls\web\core\blocks\block;
 
 /**
 * DLS Web The Team block
 */
-class the_team extends base
+class the_team implements block_interface
 {
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
@@ -27,12 +30,14 @@ class the_team extends base
 	/**
 	* Constructor
 	*
+	* @param \phpbb\config\config     $config Config object
 	* @param \phpbb\db\driver\driver_interface $db		 Db object
 	* @param \phpbb\template\template		   $template Template object
 	* @param \dls\web\core\helper			   $helper	 Helper object
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\template\template $template, \dls\web\core\helper $helper)
+	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\template\template $template, \dls\web\core\helper $helper)
 	{
+		$this->config = $config;
 		$this->db = $db;
 		$this->template = $template;
 		$this->helper = $helper;

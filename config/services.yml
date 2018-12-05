@@ -9,6 +9,8 @@ services:
         class: dls\web\core\helper
         arguments:
             - '@group_helper'
+            - '%dls.web.tables.blocks%'
+            - '%dls.web.tables.blocks_data%'
 
     dls.web.news:
         class: dls\web\core\news
@@ -49,7 +51,7 @@ services:
             - '@language'
             - '@request'
             - '@template'
-            - '@dls.web.blocks.block_helper'
+            - '@dls.web.helper'
 
     dls.web.news.controller:
         class: dls\web\controller\news_controller

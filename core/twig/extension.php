@@ -21,9 +21,9 @@ class extension extends \Twig_Extension
 	/**
 	* Constructor
 	*
-	* @param \dls\web\core\block\block_helper $block_helper Block helper object
+	* @param \dls\web\core\blocks\block_helper $block_helper Block helper object
 	*/
-	public function __construct(\dls\web\core\block\block_helper $block_helper)
+	public function __construct(\dls\web\core\blocks\block_helper $block_helper)
 	{
 		$this->block_helper = $block_helper;
 	}

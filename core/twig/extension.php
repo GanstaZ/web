@@ -15,17 +15,17 @@ namespace dls\web\core\twig;
 */
 class extension extends \Twig_Extension
 {
-	/** @var \dls\web\core\block\block_helper */
-	protected $block_helper;
+	/** @var \dls\web\core\blocks\template_data */
+	protected $template_data;
 
 	/**
 	* Constructor
 	*
-	* @param \dls\web\core\blocks\block_helper $block_helper Block helper object
+	* @param \dls\web\core\blocks\template_data $template_data Block helper object
 	*/
-	public function __construct(\dls\web\core\blocks\block_helper $block_helper)
+	public function __construct(\dls\web\core\blocks\template_data $template_data)
 	{
-		$this->block_helper = $block_helper;
+		$this->template_data = $template_data;
 	}
 
 	/**
@@ -46,7 +46,7 @@ class extension extends \Twig_Extension
 	*/
 	public function get_block_loader($cat_name)
 	{
-		return $this->block_helper->get_vars($cat_name);
+		return $this->template_data->get_vars($cat_name);
 	}
 
 	/**
@@ -84,7 +84,7 @@ class extension extends \Twig_Extension
 	*/
 	public function blocks(\Twig_Environment $env, $context, $cat_name)
 	{
-		foreach ($this->block_helper->get_vars($cat_name) as $name => $path)
+		foreach ($this->template_data->get_vars($cat_name) as $name => $path)
 		{
 			$path = $path . '/block';
 

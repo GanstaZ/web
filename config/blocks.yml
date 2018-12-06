@@ -5,7 +5,7 @@ services:
             - '@service_container'
             - '@dbal.conn'
             - '@dls.web.helper'
-            - '@dls.web.blocks.block_helper'
+            - '@dls.web.blocks.template_data'
             - '@dls.web.blocks.collection'
 
     dls.web.blocks.collection:
@@ -15,15 +15,13 @@ services:
         tags:
             - { name: service_collection, tag: dls.web.blocks }
 
-    dls.web.blocks.block_helper:
-        class: dls\web\core\blocks\block_helper
-        arguments:
-            - '@dls.web.helper'
+    dls.web.blocks.template_data:
+        class: dls\web\core\blocks\template_data
 
     dls.web.blocks.extension:
         class: dls\web\core\twig\extension
         arguments:
-            - '@dls.web.blocks.block_helper'
+            - '@dls.web.blocks.template_data'
         tags:
             - { name: twig.extension }
 

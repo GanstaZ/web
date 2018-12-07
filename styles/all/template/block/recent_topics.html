@@ -1,0 +1,10 @@
+<div class="block">
+	<h2>{{ lang('RECENT_TOPICS') }}</h2>
+	<div class="inner-block">
+		<ul class="no_style">
+		{% for recent in recent_topics %}
+			<li><i class="fa fa-file-o fa-fw icon-red" aria-hidden="true"></i><a href="{{ recent.link }}">{{ recent.title }}</a></li>
+		{% endfor %}
+		</ul>
+	</div>
+</div>

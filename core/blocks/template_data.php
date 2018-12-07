@@ -49,20 +49,4 @@ class template_data
 			return $this->data[$category];
 		}
 	}
-
-	/**
-	* Get template data for enabled blocks from a given category
-	*
-	* @param string $category Category name
-	* @return array $blocks_data
-	*/
-	public function get_vars($category)
-	{
-		foreach ($this->get($category) as $block_name => $vendor)
-		{
-			$blocks_data[$block_name] = $vendor;
-		}
-
-		return $blocks_data;
-	}
 }

@@ -46,7 +46,7 @@ class extension extends \Twig_Extension
 	*/
 	public function get_block_loader($cat_name)
 	{
-		return $this->template_data->get_vars($cat_name);
+		return $this->template_data->get($cat_name);
 	}
 
 	/**
@@ -84,7 +84,7 @@ class extension extends \Twig_Extension
 	*/
 	public function blocks(\Twig_Environment $env, $context, $cat_name)
 	{
-		foreach ($this->template_data->get_vars($cat_name) as $name => $path)
+		foreach ($this->template_data->get($cat_name) as $name => $path)
 		{
 			$path = $path . '/block';
 

@@ -43,10 +43,20 @@ services:
     dls.web.admin.controller:
         class: dls\web\controller\admin_controller
         arguments:
+            - '@config'
+            - '@config_text'
+            - '@dbal.conn'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@dls.web.helper'
+
+    dls.web.admin.blocks.controller:
+        class: dls\web\controller\admin_blocks_controller
+        arguments:
             - '@service_container'
             - '@cache'
             - '@config'
-            - '@config_text'
             - '@dbal.conn'
             - '@language'
             - '@request'

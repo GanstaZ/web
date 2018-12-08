@@ -4,9 +4,10 @@ services:
         arguments:
             - '@service_container'
             - '@dbal.conn'
-            - '@dls.web.helper'
-            - '@dls.web.blocks.template_data'
             - '@dls.web.blocks.collection'
+            - '%dls.web.tables.blocks%'
+            - '%dls.web.tables.blocks_data%'
+            - '@dls.web.blocks.template_data'
 
     dls.web.blocks.collection:
         class: phpbb\di\service_collection

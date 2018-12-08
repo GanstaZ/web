@@ -10,6 +10,14 @@
 
 namespace dls\web\controller;
 
+use phpbb\config\config;
+use phpbb\config\db_text;
+use phpbb\db\driver\driver_interface;
+use phpbb\language\language;
+use phpbb\request\request;
+use phpbb\template\template;
+use dls\web\core\helper;
+
 /**
 * DLS Web admin controller
 */
@@ -33,8 +41,8 @@ class admin_controller
 	/** @var \phpbb\template\template */
 	protected $template;
 
-	/** @var \dls\web\core\block\data */
-	protected $data;
+	/** @var \dls\web\core\helper */
+	protected $helper;
 
 	/** @var string Custom form action */
 	protected $u_action;
@@ -42,107 +50,30 @@ class admin_controller
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config			   $config	 Config object
-	* @param \phpbb\config\db_text			   $db_text	 Config text object
-	* @param \phpbb\db\driver\driver_interface $db		 Db object
-	* @param \phpbb\language\language		   $language Language object
-	* @param \phpbb\request\request			   $request	 Request object
-	* @param \phpbb\template\template		   $template Template object
-	* @param \dls\web\core\block\data		   $data	 Blocks data object
+	* @param \phpbb\config\config $config Config object
+	* @param \phpbb\config\db_text $db_text Config text object
+	* @param \phpbb\db\driver\driver_interface $db Db object
+	* @param \phpbb\language\language $language Language object
+	* @param \phpbb\request\request $request Request object
+	* @param \phpbb\template\template $template Template object
+	* @param \dls\web\core\helper $helper Data helper object
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\config\db_text $db_text, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\request\request $request, \phpbb\template\template $template, \dls\web\core\block\data $data)
+	public function __construct(config $config, db_text $db_text, driver_interface $db, language $language, request $request, template $template, helper $helper)
 	{
-		$this->config	= $config;
-		$this->db_text	= $db_text;
+		$this->config = $config;
+		$this->db_text = $db_text;
 		$this->db = $db;
 		$this->language = $language;
-		$this->request	= $request;
+		$this->request = $request;
 		$this->template = $template;
-		$this->data = $data;
-	}
-
-	/**
-	* Display blocks
-	*
-	* @return void
-	* @access public
-	*/
-	public function display_blocks()
-	{
-		// Add form key for form validation checks
-		add_form_key('dls/blocks');
-
-		$this->language->add_lang('acp_blocks', 'dls/web');
-
-		// Is the form submitted
-		if ($this->request->is_set_post('submit'))
-		{
-			if (!check_form_key('dls/blocks'))
-			{
-				trigger_error('FORM_INVALID');
-			}
-
-			// If the form has been submitted, set all data and save it
-			foreach ($this->data->get('acp') as $block_val)
-			{
-				$this->config->set($block_val['name'], $this->request->variable($block_val['name'], (bool) 0));
-				$this->config->set($block_val['name'] . '_b', $this->request->variable($block_val['name'] . '_b', (int) 0));
-			}
-
-			$this->config->set('dls_mini_profile', $this->request->variable('dls_mini_profile', (bool) 0));
-
-			// Show user confirmation of success and provide link back to the previous screen
-			trigger_error($this->language->lang('ACP_DLS_SETTINGS_SAVED') . adm_back_link($this->u_action));
-		}
-
-		// Set output vars for display in the template
-		$this->assign_template_block_data($this->data->get());
-
-		// Set template vars
-		$this->template->assign_vars([
-			'S_MINI_PROFILE' => $this->config['dls_mini_profile'],
-			'U_ACTION' => $this->u_action,
-		]);
-	}
-
-	/**
-	* Assign template block data for blocks
-	*
-	* @param  array $block_data Blocks data is stored here
-	* @return void
-	*/
-	protected function assign_template_block_data(array $block_data)
-	{
-		foreach ($block_data as $category => $data)
-		{
-			$l_category = $this->language->lang(strtoupper($category));
-			$count_blocks = $this->data->count($data, 'cat', $category);
-
-			// Set categories
-			$this->template->assign_block_vars('type', ['category' => $l_category,]);
-
-			// Add data to given categories
-			foreach ($data as $block)
-			{
-				$block_options = $this->data->get_options(range(1, $count_blocks), $block['pos']);
-				$count_position = $this->data->count($data, 'pos', $block['pos']);
-				$this->template->assign_block_vars('type.block', [
-					'name'	  => $block['name'],
-					'b_name'  => $block['name'] . '_b',
-					's_block' => $this->config[$block['name']],
-					'l_block' => $this->language->lang(strtoupper($block['name'])),
-					'd_block' => ($count_position > 1) ? true : false,
-					's_block_options' => $block_options,
-				]);
-			}
-		}
+		$this->helper = $helper;
 	}
 
 	/**
 	* Get options as forum_ids
 	*
-	* @param  int	$fid Current forum_id
-	* @return array
+	* @param int $fid Current forum_id
+	* @return string
 	*/
 	protected function get_ids($fid)
 	{
@@ -156,13 +87,12 @@ class admin_controller
 		{
 			$forum_ids[] = (int) $row['forum_id'];
 		}
-
 		$this->db->sql_freeresult($result);
 
 		// Merge default value 0 with forum_ids
 		$forum_ids = array_merge([0], $forum_ids);
 
-		return $this->data->get_options($forum_ids, (int) $this->config[$fid]);
+		return $this->helper->get_options($forum_ids, (int) $fid);
 	}
 
 	/**
@@ -208,7 +138,7 @@ class admin_controller
 		$this->template->assign_vars([
 			'ZLAB_VERSION'	 => $this->config['dls_core_version'],
 			'ZLAB_NAME'		 => $this->config['dls_core_name'],
-			'DLS_NEWS_ID'	 => $this->get_ids('dls_news_fid'),
+			'DLS_NEWS_ID'	 => $this->get_ids($this->config['dls_news_fid']),
 			'S_PAGINATION'	 => $this->config['dls_show_pagination'],
 			'S_SHOW_NEWS'	 => $this->config['dls_show_news'],
 			'MIN_TITLE_LENGTH'	 => $this->config['dls_title_length'],
@@ -238,7 +168,7 @@ class admin_controller
 	/**
 	* Assign template data
 	*
-	* @param  array $data Points data
+	* @param array $data Points data
 	* @return void
 	*/
 	protected function assign_template_data(array $data)

@@ -10,6 +10,8 @@
 
 namespace dls\web\core;
 
+use phpbb\template\template;
+
 /**
 * DLS Web helper class
 */
@@ -18,14 +20,72 @@ class helper
 	/** @var \phpbb\group\helper */
 	protected $group_helper;
 
+	/** @var \phpbb\template\template */
+	protected $template;
+
 	/**
 	* Constructor
 	*
 	* @param \phpbb\group\helper $group_helper Group helper object
+	* @param \phpbb\template\template $template Template object
 	*/
-	public function __construct(\phpbb\group\helper $group_helper)
+	public function __construct(\phpbb\group\helper $group_helper, template $template)
 	{
 		$this->group_helper = $group_helper;
+		$this->template = $template;
+	}
+
+	/**
+	* Assign key variable pairs from an array to a specified block
+	*
+	* @param string $type Template function [var, vars, block_vars]
+	* @param array $data Template data
+	* @return true
+	*/
+	public function assign($type, ...$data)
+	{
+		$this->template->{"assign_$type"}($data[0], $data[1]);
+	}
+
+	/**
+	* Get vendor name
+	*
+	* @param string $ext_name Name of the extension
+	* @return string
+	*/
+	public function get_vendor($ext_name)
+	{
+		return strstr($ext_name, '_', true);
+	}
+
+	/**
+	* Check if our block name is valid
+	*
+	* @param array $data Stores data that we need to validate
+	* @return bool Depending on whether or not the block is valid
+	*/
+	public function is_valid_name($data)
+	{
+		$vendor = $this->get_vendor($data['vendor']);
+		$validate = utf8_strpos($data['block_name'], $vendor);
+
+		return ($validate !== false) ? true : false;
+	}
+
+	/**
+	* If extension name is dls, remove prefix.
+	*
+	* @param array $data Data array
+	* @return string $data['block_name']
+	*/
+	public function is_dls(array $data)
+	{
+		if ($this->get_vendor($data['vendor']) === 'dls')
+		{
+			$data['block_name'] = str_replace('dls_', '', $data['block_name']);
+		}
+
+		return $data['block_name'];
 	}
 
 	/**

@@ -91,7 +91,6 @@ class listener implements EventSubscriberInterface
 	{
 		$this->template->assign_vars([
 			'U_NEWS' => $this->helper->route('dls_web_news_base'),
-			'S_MINI_PROFILE' => ($this->config['dls_mini_profile']) ? 1 : 0,
 		]);
 	}
 

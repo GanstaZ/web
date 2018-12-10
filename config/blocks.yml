@@ -2,11 +2,11 @@ services:
     dls.web.blocks.manager:
         class: dls\web\core\blocks\block_manager
         arguments:
-            - '@service_container'
             - '@dbal.conn'
             - '@dls.web.blocks.collection'
             - '%dls.web.tables.blocks%'
             - '%dls.web.tables.blocks_data%'
+            - '@dls.web.helper'
             - '@dls.web.blocks.template_data'
 
     dls.web.blocks.collection:
@@ -27,6 +27,11 @@ services:
             - { name: twig.extension }
 
 # ----- Blocks -----
+    dls.web.block.mini_profile:
+        class: dls\web\core\blocks\block\mini_profile
+        tags:
+            - { name: dls.web.blocks }
+
     dls.web.block.information:
         class: dls\web\core\blocks\block\information
         arguments:

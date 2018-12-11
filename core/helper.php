@@ -65,16 +65,19 @@ class helper
 	* @param string $service Name of the service
 	* @param string $ext_name Name of the extension
 	* @param string $insert Insert a string part
-	* @param string $key Default is underscore
-	* @return string
+	* @param mixed $search Default is underscore
+	* @param mixed $replace Default is dot
+	* @return string service name
 	*/
-	public function get_service_name($service, $ext_name, $insert = '.block.', $key = '_')
+	public function get_service_name($service, $ext_name, $insert = '.block.', $search = '_', $replace = '.')
 	{
-		$start = utf8_strpos($service, $key);
-		$end = utf8_substr($service, $start + utf8_strlen($key));
-		$ext_name = str_replace($key, '.', $ext_name);
+		$start = utf8_strpos($service, $search);
+		if (!is_bool($start))
+		{
+			$string = utf8_substr($service, $start + utf8_strlen($search));
 
-		return (!is_bool($start)) ? "{$ext_name}{$insert}{$end}" : null;
+			return str_replace($search, $replace, "{$ext_name}{$insert}{$string}");
+		}
 	}
 
 	/**
@@ -148,17 +151,17 @@ class helper
 	/**
 	* Get position options
 	*
-	* @param int $max Highest number to use in a loop
-	* @param int $current_position Current position of a block
+	* @param array $values Array of values
+	* @param int $active Currently active value
 	* @return string $options
 	*/
-	public function get_options($max, $current_position)
+	public function get_options($values, $active)
 	{
 		$options = '';
-		foreach ($max as $pos)
+		foreach ($values as $value)
 		{
-			$s_selected = ($pos == $current_position) ? ' selected="selected"' : '';
-			$options .= '<option value="' . $pos . '"' . $s_selected . '>' . $pos . '</option>';
+			$s_selected = ($value == $active) ? ' selected="selected"' : '';
+			$options .= '<option value="' . $value . '"' . $s_selected . '>' . $value . '</option>';
 		}
 
 		return $options;

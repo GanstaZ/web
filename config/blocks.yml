@@ -7,7 +7,7 @@ services:
             - '%dls.web.tables.blocks%'
             - '%dls.web.tables.blocks_data%'
             - '@dls.web.helper'
-            - '@dls.web.blocks.template_data'
+            - '@dls.web.blocks.template.data'
 
     dls.web.blocks.collection:
         class: phpbb\di\service_collection
@@ -16,18 +16,18 @@ services:
         tags:
             - { name: service_collection, tag: dls.web.blocks }
 
-    dls.web.blocks.template_data:
+    dls.web.blocks.template.data:
         class: dls\web\core\blocks\template_data
 
     dls.web.blocks.extension:
         class: dls\web\core\twig\extension
         arguments:
-            - '@dls.web.blocks.template_data'
+            - '@dls.web.blocks.template.data'
         tags:
             - { name: twig.extension }
 
 # ----- Blocks -----
-    dls.web.block.mini_profile:
+    dls.web.block.mini.profile:
         class: dls\web\core\blocks\block\mini_profile
         tags:
             - { name: dls.web.blocks }
@@ -41,7 +41,7 @@ services:
         tags:
             - { name: dls.web.blocks }
 
-    dls.web.block.the_team:
+    dls.web.block.the.team:
         class: dls\web\core\blocks\block\the_team
         arguments:
             - '@config'
@@ -51,7 +51,7 @@ services:
         tags:
             - { name: dls.web.blocks }
 
-    dls.web.block.top_posters:
+    dls.web.block.top.posters:
         class: dls\web\core\blocks\block\top_posters
         arguments:
             - '@config'
@@ -60,7 +60,7 @@ services:
         tags:
             - { name: dls.web.blocks }
 
-    dls.web.block.recent_posts:
+    dls.web.block.recent.posts:
         class: dls\web\core\blocks\block\recent_posts
         arguments:
             - '@config'
@@ -71,7 +71,7 @@ services:
         tags:
             - { name: dls.web.blocks }
 
-    dls.web.block.recent_topics:
+    dls.web.block.recent.topics:
         class: dls\web\core\blocks\block\recent_topics
         arguments:
             - '@config'
@@ -82,7 +82,7 @@ services:
         tags:
             - { name: dls.web.blocks }
 
-    dls.web.block.whos_online:
+    dls.web.block.whos.online:
         class: dls\web\core\blocks\block\whos_online
         arguments:
             - '@auth'

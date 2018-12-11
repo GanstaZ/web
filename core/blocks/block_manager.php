@@ -158,7 +158,7 @@ class block_manager
 	* @param string $type [default: category, blocks]
 	* @return array
 	*/
-	protected function get_blocks($cat_name = null, $type)
+	protected function get_blocks($cat_name, $type)
 	{
 		if (null !== $cat_name && $type === 'category')
 		{
@@ -202,7 +202,7 @@ class block_manager
 	* @param string $type [default: category, blocks]
 	* @return array
 	*/
-	protected function get_all_blocks($cat_name = null, $type)
+	protected function get_all_blocks($cat_name, $type)
 	{
 		$requested = [];
 		foreach (array_keys($this->blocks) as $name)

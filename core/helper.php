@@ -55,7 +55,26 @@ class helper
 	*/
 	public function get_vendor($ext_name)
 	{
+		//return utf8_substr($ext_name, 0, utf8_strpos($ext_name, '_'));
 		return strstr($ext_name, '_', true);
+	}
+
+	/**
+	* Get service name
+	*
+	* @param string $service Name of the service
+	* @param string $ext_name Name of the extension
+	* @param string $insert Insert a string part
+	* @param string $key Default is underscore
+	* @return string
+	*/
+	public function get_service_name($service, $ext_name, $insert = '.block.', $key = '_')
+	{
+		$start = utf8_strpos($service, $key);
+		$end = utf8_substr($service, $start + utf8_strlen($key));
+		$ext_name = str_replace($key, '.', $ext_name);
+
+		return (!is_bool($start)) ? "{$ext_name}{$insert}{$end}" : null;
 	}
 
 	/**

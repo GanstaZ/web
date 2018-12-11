@@ -25,7 +25,7 @@ class template_data
 	* @param array	$data Block data
 	* @return void
 	*/
-	public function set_template_data($name, $data)
+	public function set_data($name, $data)
 	{
 		if (!$this->get($name))
 		{

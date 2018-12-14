@@ -10,6 +10,7 @@
 
 namespace dls\web\core;
 
+use phpbb\group\helper as group_helper;
 use phpbb\template\template;
 
 /**
@@ -23,16 +24,22 @@ class helper
 	/** @var \phpbb\template\template */
 	protected $template;
 
+	/** @var array Contains phpBB vars */
+	protected $phpbb_vars;
+
 	/**
 	* Constructor
 	*
 	* @param \phpbb\group\helper $group_helper Group helper object
 	* @param \phpbb\template\template $template Template object
+	* @param string $root_path Path to the phpbb includes directory
+	* @param string $php_ext PHP file extension
 	*/
-	public function __construct(\phpbb\group\helper $group_helper, template $template)
+	public function __construct(group_helper $group_helper, template $template, $root_path, $php_ext)
 	{
 		$this->group_helper = $group_helper;
 		$this->template = $template;
+		$this->phpbb_vars = ['root_path' => $root_path, 'php_ext' => $php_ext];
 	}
 
 	/**
@@ -45,6 +52,16 @@ class helper
 	public function assign($type, ...$data)
 	{
 		$this->template->{"assign_$type"}($data[0], $data[1]);
+	}
+
+	/**
+	* Get $phpbb_root_path or php_ext
+	*
+	* @return string
+	*/
+	public function get(string $var)
+	{
+		return ($this->phpbb_vars[$var]) ? $this->phpbb_vars[$var] : null;
 	}
 
 	/**

@@ -10,17 +10,22 @@
 
 namespace dls\web\migrations\v23;
 
-class m_dls_acp_module extends \phpbb\db\migration\migration
+class m2_acp_module extends \phpbb\db\migration\migration
 {
 	/**
-	* This migration depends on dls's m_dls_main migration
-	* already being installed.
+	* {@inheritdoc}
 	*/
 	static public function depends_on()
 	{
-		return ['\dls\web\migrations\v23\m_dls_main'];
+		return ['\dls\web\migrations\v23\m1_dls_main'];
 	}
 
+	/**
+	* Add the initial data in the database
+	*
+	* @return array Array of table data
+	* @access public
+	*/
 	public function update_data()
 	{
 		return [

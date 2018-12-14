@@ -15,7 +15,6 @@ use phpbb\config\db_text;
 use phpbb\db\driver\driver_interface;
 use phpbb\language\language;
 use phpbb\request\request;
-use phpbb\template\template;
 use dls\web\core\helper;
 
 /**
@@ -38,9 +37,6 @@ class admin_controller
 	/** @var \phpbb\request\request */
 	protected $request;
 
-	/** @var \phpbb\template\template */
-	protected $template;
-
 	/** @var \dls\web\core\helper */
 	protected $helper;
 
@@ -55,17 +51,15 @@ class admin_controller
 	* @param \phpbb\db\driver\driver_interface $db Db object
 	* @param \phpbb\language\language $language Language object
 	* @param \phpbb\request\request $request Request object
-	* @param \phpbb\template\template $template Template object
 	* @param \dls\web\core\helper $helper Data helper object
 	*/
-	public function __construct(config $config, db_text $db_text, driver_interface $db, language $language, request $request, template $template, helper $helper)
+	public function __construct(config $config, db_text $db_text, driver_interface $db, language $language, request $request, helper $helper)
 	{
 		$this->config = $config;
 		$this->db_text = $db_text;
 		$this->db = $db;
 		$this->language = $language;
 		$this->request = $request;
-		$this->template = $template;
 		$this->helper = $helper;
 	}
 
@@ -135,7 +129,7 @@ class admin_controller
 		$this->assign_template_data($points);
 
 		// Set template vars
-		$this->template->assign_vars([
+		$this->helper->assign('vars', [
 			'ZLAB_VERSION'	 => $this->config['dls_core_version'],
 			'ZLAB_NAME'		 => $this->config['dls_core_name'],
 			'DLS_NEWS_ID'	 => $this->get_ids($this->config['dls_news_fid']),
@@ -175,7 +169,7 @@ class admin_controller
 	{
 		foreach ($data as $val)
 		{
-			$this->template->assign_block_vars('points', [
+			$this->helper->assign('block_vars', 'points', [
 				'name'	=> 'pts_' . $val,
 				'value' => $val,
 			]);

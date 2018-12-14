@@ -48,69 +48,6 @@ class helper
 	}
 
 	/**
-	* Get vendor name
-	*
-	* @param string $ext_name Name of the extension
-	* @return string
-	*/
-	public function get_vendor($ext_name)
-	{
-		//return utf8_substr($ext_name, 0, utf8_strpos($ext_name, '_'));
-		return strstr($ext_name, '_', true);
-	}
-
-	/**
-	* Get service name
-	*
-	* @param string $service Name of the service
-	* @param string $ext_name Name of the extension
-	* @param string $insert Insert a string part
-	* @param mixed $search Default is underscore
-	* @param mixed $replace Default is dot
-	* @return string service name
-	*/
-	public function get_service_name($service, $ext_name, $insert = '.block.', $search = '_', $replace = '.')
-	{
-		$start = utf8_strpos($service, $search);
-		if (!is_bool($start))
-		{
-			$string = utf8_substr($service, $start + utf8_strlen($search));
-
-			return str_replace($search, $replace, "{$ext_name}{$insert}{$string}");
-		}
-	}
-
-	/**
-	* Check if our block name is valid
-	*
-	* @param array $data Stores data that we need to validate
-	* @return bool Depending on whether or not the block is valid
-	*/
-	public function is_valid_name($data)
-	{
-		$vendor = $this->get_vendor($data['vendor']);
-		$validate = utf8_strpos($data['block_name'], $vendor);
-
-		return ($validate !== false) ? true : false;
-	}
-
-	/**
-	* If extension name is dls, remove prefix.
-	*
-	* @param array $data Data array
-	* @return string $data['block_name']
-	*/
-	public function is_dls(array $data)
-	{
-		if ($this->get_vendor($data['vendor']) === 'dls')
-		{
-			$data['block_name'] = str_replace('dls_', '', $data['block_name']);
-		}
-
-		return $data['block_name'];
-	}
-
-	/**
 	* Get group name
 	*
 	* @param string $group_name name of the group

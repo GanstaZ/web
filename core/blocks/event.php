@@ -11,12 +11,12 @@
 namespace dls\web\core\blocks;
 
 /**
-* DLS Web blocks helper class
+* DLS Web blocks event class
 */
-class template_data
+class event
 {
 	/** @var array Contains validated blocks data */
-	protected $data;
+	protected static $data;
 
 	/**
 	* Set template data
@@ -29,24 +29,23 @@ class template_data
 	{
 		if (!$this->get($name))
 		{
-			$this->data[$name] = $data;
+			self::$data[$name] = $data;
 		}
 
-		$this->data[$name] = array_merge($this->data[$name], $data);
+		self::$data[$name] = array_merge(self::$data[$name], $data);
 	}
 
 	/**
 	* Get data from a given category
-	* Get template data for enabled blocks from a given category
 	*
 	* @param string $category Category name
 	* @return array $this->blocks_data
 	*/
 	public function get($category)
 	{
-		if ($this->data[$category])
+		if (self::$data[$category])
 		{
-			return $this->data[$category];
+			return self::$data[$category];
 		}
 	}
 }

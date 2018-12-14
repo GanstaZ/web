@@ -11,58 +11,33 @@
 namespace dls\web\core\blocks;
 
 use phpbb\db\driver\driver_interface;
-use dls\web\core\helper;
 
 /**
-* DLS Web blocks manager
+* DLS Web blocks controller
 */
-class block_manager
+class blocks_controller
 {
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var blocks table */
-	protected $blocks_main;
-
-	/** @var blocks data table */
-	protected $blocks_data;
-
-	/** @var \dls\web\core\helper */
-	protected $helper;
-
-	/** @var \template_data */
-	protected $template_data;
+	/** @var \dls\web\core\blocks\manager */
+	protected $manager;
 
 	/** @var array Contains enabled block services */
 	protected $blocks;
-
-	protected $tester;
 
 	/**
 	* Constructor
 	*
 	* @param \phpbb\db\driver\driver_interface $db Db object
-	* @param \phpbb\di\service_collection $blocks_data Service container
-	* @param string $blocks_main The name of the blocks category table
-	* @param string $blocks_data The name of the blocks data table
-	* @param \dls\web\core\helper $helper Data helper object
-	* @param \template_data $template_data Data helper object
+	* @param \dls\web\core\blocks\manager $manager Data manager object
 	*/
-	public function __construct(driver_interface $db, \phpbb\di\service_collection $blocks_collection, $blocks_main, $blocks_data, helper $helper, template_data $template_data)
+	public function __construct(driver_interface $db, manager $manager)
 	{
 		$this->db = $db;
-		$this->blocks_main = $blocks_main;
-		$this->blocks_data = $blocks_data;
-		$this->helper = $helper;
-		//$this->template = $template;
-		$this->template_data = $template_data;
+		$this->manager = $manager;
 
-		$this->register_blocks($blocks_collection);
-	}
-
-	public function tester()
-	{
-		return $this->tester;//['side_blocks'];
+		$this->register_blocks();
 	}
 
 	/**
@@ -71,41 +46,32 @@ class block_manager
 	* @param Service collection of blocks
 	* @return null
 	*/
-	protected function register_blocks($blocks_collection)
+	protected function register_blocks()
 	{
-		//$sql = 'SELECT *
-				//FROM ' . $this->blocks_data . '
-				//WHERE active = 1
-					//AND position <> 0
-				//ORDER BY position';
-
 		$this->blocks = [];
 
-		$sql = 'SELECT b.*, bd.*
-				FROM ' . $this->blocks_main . ' b, ' . $this->blocks_data . ' bd
-				WHERE b.category_id = bd.category_id
-					AND bd.active = 1
-					AND bd.position <> 0
-				ORDER BY bd.position ASC';
+		$sql = 'SELECT *
+				FROM ' . $this->manager->blocks_data() . '
+				WHERE active = 1
+					AND position <> 0
+				ORDER BY position';
 		$result = $this->db->sql_query($sql, 86400);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$data = [
 				'block_name' => (string) $row['block_name'],
-				'vendor' => (string) $row['vendor'],
+				'ext_name' => (string) $row['ext_name'],
 				'service' => '',
 			];
 
-			$data['block_name'] = $this->helper->is_dls($data);
-			$this->blocks[$row['category_name']][$row['block_name']] = $data;
-			$block = $blocks_collection[$this->helper->get_service_name($row['block_name'], $row['vendor'])];
+			$data['block_name'] = $this->manager->is_dls($data);
+			$this->blocks[$row['cat_name']][$row['block_name']] = $data;
 
 			// Validate service name
-			if ($block && $this->helper->is_valid_name($block->get_data()))
+			if ($block = $this->manager->get($row['block_name']))
 			{
-				$this->blocks[$row['category_name']][$row['block_name']]['service'] = $block;
-				$this->tester[$row['category_name']][$row['block_name']] = $data;
+				$this->blocks[$row['cat_name']][$row['block_name']]['service'] = $block;
 			}
 		}
 		$this->db->sql_freeresult($result);
@@ -148,7 +114,7 @@ class block_manager
 	*/
 	protected function set_data($cat_name)
 	{
-		$this->template_data->set_data($cat_name, array_column($this->get_block($cat_name), 'vendor', 'block_name'));
+		$this->manager->set($cat_name, array_column($this->get_block($cat_name), 'ext_name', 'block_name'));
 	}
 
 	/**
@@ -236,7 +202,7 @@ class block_manager
 			$is_valid = $this->get_block($cat_name)[$block];
 			if ($is_valid)
 			{
-				$this->template_data->set_data($cat_name, [$is_valid['block_name'] => $is_valid['vendor']]);
+				$this->manager->set($cat_name, [$is_valid['block_name'] => $is_valid['ext_name']]);
 				$array[$block] = $this->get_block($cat_name)[$block];
 			}
 		}

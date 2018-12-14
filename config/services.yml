@@ -49,18 +49,6 @@ services:
             - '@request'
             - '@dls.web.helper'
 
-    dls.web.admin.blocks.controller:
-        class: dls\web\controller\admin_blocks_controller
-        arguments:
-            - '@service_container'
-            - '@cache'
-            - '@config'
-            - '@dbal.conn'
-            - '@language'
-            - '@request'
-            - '%dls.web.tables.blocks_data%'
-            - '@dls.web.helper'
-
     dls.web.news.controller:
         class: dls\web\controller\news_controller
         arguments:

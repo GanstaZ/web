@@ -1,13 +1,27 @@
 services:
     dls.web.blocks.manager:
-        class: dls\web\core\blocks\block_manager
+        class: dls\web\core\blocks\manager
         arguments:
-            - '@dbal.conn'
             - '@dls.web.blocks.collection'
             - '%dls.web.tables.blocks%'
-            - '%dls.web.tables.blocks_data%'
+            - '@dls.web.blocks.event'
+
+    dls.web.admin.blocks.controller:
+        class: dls\web\controller\admin_blocks_controller
+        arguments:
+            - '@service_container'
+            - '@dbal.conn'
+            - '@language'
+            - '@request'
+            - '@dls.web.blocks.manager'
             - '@dls.web.helper'
-            - '@dls.web.blocks.template.data'
+            - '@cache'
+
+    dls.web.blocks.controller:
+        class: dls\web\core\blocks\blocks_controller
+        arguments:
+            - '@dbal.conn'
+            - '@dls.web.blocks.manager'
 
     dls.web.blocks.collection:
         class: phpbb\di\service_collection
@@ -16,13 +30,13 @@ services:
         tags:
             - { name: service_collection, tag: dls.web.blocks }
 
-    dls.web.blocks.template.data:
-        class: dls\web\core\blocks\template_data
+    dls.web.blocks.event:
+        class: dls\web\core\blocks\event
 
     dls.web.blocks.extension:
         class: dls\web\core\twig\extension
         arguments:
-            - '@dls.web.blocks.template.data'
+            - '@dls.web.blocks.event'
         tags:
             - { name: twig.extension }
 

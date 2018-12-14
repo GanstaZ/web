@@ -75,8 +75,8 @@ class whos_online implements block_interface
 	{
 		return [
 			'block_name' => 'dls_whos_online',
-			'cat_name' => 'bottom_blocks',
-			'vendor' => 'dls_web',
+			'cat_name' => 'bottom',
+			'ext_name' => 'dls_web',
 		];
 	}
 

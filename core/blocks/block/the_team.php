@@ -50,8 +50,8 @@ class the_team implements block_interface
 	{
 		return [
 			'block_name' => 'dls_the_team',
-			'cat_name' => 'side_blocks',
-			'vendor' => 'dls_web',
+			'cat_name' => 'side',
+			'ext_name' => 'dls_web',
 		];
 	}
 

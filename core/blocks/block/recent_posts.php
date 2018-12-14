@@ -55,8 +55,8 @@ class recent_posts implements block_interface
 	{
 		return [
 			'block_name' => 'dls_recent_posts',
-			'cat_name' => 'side_blocks',
-			'vendor' => 'dls_web',
+			'cat_name' => 'side',
+			'ext_name' => 'dls_web',
 		];
 	}
 

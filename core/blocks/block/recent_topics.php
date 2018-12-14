@@ -10,6 +10,10 @@
 
 namespace dls\web\core\blocks\block;
 
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use dls\web\core\helper;
+
 /**
 * DLS Web Recent Topics block
 */
@@ -21,31 +25,29 @@ class recent_topics implements block_interface
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \phpbb\template\template */
-	protected $template;
-
 	/** @var \dls\web\core\helper */
-	protected $core;
+	protected $helper;
 
 	/** @var phpBB root path */
 	protected $root_path;
 
+	/** @var file extension */
+	protected $php_ext;
+
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config     $config Config object
-	* @param \phpbb\db\driver\driver_interface $db		 Db object
-	* @param \phpbb\template\template		   $template Template object
-	* @param \dls\web\core\helper			   $core	 Helper object
-	* @param string $root_path Path to the phpbb includes directory.
+	* @param \phpbb\config\config $config Config object
+	* @param \phpbb\db\driver\driver_interface $db Db object
+	* @param \dls\web\core\helper $helper Data helper object
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\template\template $template, \dls\web\core\helper $core, $root_path)
+	public function __construct(config $config, driver_interface $db, helper $helper)
 	{
 		$this->config = $config;
 		$this->db = $db;
-		$this->template = $template;
-		$this->core = $core;
-		$this->root_path = $root_path;
+		$this->helper = $helper;
+		$this->root_path = $this->helper->get('root_path');
+		$this->php_ext = $this->helper->get('php_ext');
 	}
 
 	/**
@@ -74,9 +76,9 @@ class recent_topics implements block_interface
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$this->template->assign_block_vars('recent_topics', [
-				'link'	=> append_sid("{$this->root_path}viewtopic.php", 't=' . $row['topic_id']),
-				'title' => $this->core->truncate($row['topic_title'], $this->config['dls_title_length']),
+			$this->helper->assign('block_vars', 'recent_topics', [
+				'link'	=> append_sid("{$this->root_path}viewtopic.{$this->php_ext}", 't=' . $row['topic_id']),
+				'title' => $this->helper->truncate($row['topic_title'], $this->config['dls_title_length']),
 			]);
 		}
 		$this->db->sql_freeresult($result);

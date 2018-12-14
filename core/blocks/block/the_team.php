@@ -10,6 +10,8 @@
 
 namespace dls\web\core\blocks\block;
 
+use dls\web\core\helper;
+
 /**
 * DLS Web The Team block
 */
@@ -21,25 +23,20 @@ class the_team implements block_interface
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \phpbb\template\template */
-	protected $template;
-
 	/** @var \dls\web\core\helper */
 	protected $helper;
 
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config     $config Config object
-	* @param \phpbb\db\driver\driver_interface $db		 Db object
-	* @param \phpbb\template\template		   $template Template object
-	* @param \dls\web\core\helper			   $helper	 Helper object
+	* @param \phpbb\config\config $config Config object
+	* @param \phpbb\db\driver\driver_interface $db Db object
+	* @param \dls\web\core\helper $helper Data helper object
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\template\template $template, \dls\web\core\helper $helper)
+	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, helper $helper)
 	{
 		$this->config = $config;
 		$this->db = $db;
-		$this->template = $template;
 		$this->helper = $helper;
 	}
 
@@ -69,7 +66,7 @@ class the_team implements block_interface
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		$this->template->assign_var('get_team_name', $this->helper->get_name($row['group_name']));
+		$this->helper->assign('var', 'get_team_name', $this->helper->get_name($row['group_name']));
 
 		$sql = 'SELECT ug.*, u.username, u.user_id, u.user_colour, u.username_clean
 				FROM ' . USER_GROUP_TABLE . ' ug, ' . USERS_TABLE . ' u
@@ -80,7 +77,7 @@ class the_team implements block_interface
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$this->template->assign_block_vars('the_team', [
+			$this->helper->assign('block_vars', 'the_team', [
 				'member' => get_username_string('full', (int) $row['user_id'], $row['username'], $row['user_colour']),
 			]);
 		}

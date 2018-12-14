@@ -10,17 +10,22 @@
 
 namespace dls\web\migrations\v23;
 
-class m_dls_zodiac extends \phpbb\db\migration\migration
+class m4_dls_zodiac extends \phpbb\db\migration\migration
 {
 	/**
-	* This migration depends on dls's m_dls_main migration
-	* already being installed.
+	* {@inheritdoc}
 	*/
 	static public function depends_on()
 	{
-		return ['\dls\web\migrations\v23\m_dls_main'];
+		return ['\dls\web\migrations\v23\m1_dls_main'];
 	}
 
+	/**
+	* Add the initial data in the database
+	*
+	* @return array Array of table data
+	* @access public
+	*/
 	public function update_data()
 	{
 		return [
@@ -31,6 +36,9 @@ class m_dls_zodiac extends \phpbb\db\migration\migration
 		];
 	}
 
+	/**
+	* Custom function to add data
+	*/
 	public function zodiac_data()
 	{
 		if ($this->db_tools->sql_table_exists($this->table_prefix . 'zodiac'))
@@ -81,6 +89,9 @@ class m_dls_zodiac extends \phpbb\db\migration\migration
 		}
 	}
 
+	/**
+	* Custom function to add data
+	*/
 	public function zodiac_dates()
 	{
 		if ($this->db_tools->sql_table_exists($this->table_prefix . 'zodiac_data'))
@@ -242,6 +253,9 @@ class m_dls_zodiac extends \phpbb\db\migration\migration
 		}
 	}
 
+	/**
+	* Custom function to add data
+	*/
 	public function zodiac_heavenly_stems()
 	{
 		if ($this->db_tools->sql_table_exists($this->table_prefix . 'zodiac_heavenly_stems'))

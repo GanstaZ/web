@@ -11,21 +11,21 @@
 namespace dls\web\core\twig;
 
 /**
-* DLS Web template blocks extension
+* DLS Web template loader extension for blocks
 */
 class extension extends \Twig_Extension
 {
-	/** @var \dls\web\core\block\loader */
-	protected $loader;
+	/** @var \dls\web\core\blocks\event */
+	protected $event;
 
 	/**
 	* Constructor
 	*
-	* @param \dls\web\core\block\loader $loader Blocks loader object
+	* @param \dls\web\core\blocks\event $event Block helper object
 	*/
-	public function __construct(\dls\web\core\block\loader $loader)
+	public function __construct(\dls\web\core\blocks\event $event)
 	{
-		$this->loader = $loader;
+		$this->event = $event;
 	}
 
 	/**
@@ -39,14 +39,14 @@ class extension extends \Twig_Extension
 	}
 
 	/**
-	* Get load method from loader service
+	* Get block data
 	*
-	* @param string $block Category name
+	* @param string $cat_name Category name
 	* @return method
 	*/
-	public function get_block_loader($block)
+	public function get_block_loader($cat_name)
 	{
-		return $this->loader->load($block);
+		return $this->event->get($cat_name);
 	}
 
 	/**
@@ -76,15 +76,15 @@ class extension extends \Twig_Extension
 	/**
 	* Load blocks
 	*
-	* @param \Twig_Environment $env		Twig_Environment instance
-	* @param string			   $context Current context
-	* @param string			   $block	Name of the category
+	* @param \Twig_Environment $env		 Twig_Environment instance
+	* @param string			   $context	 Current context
+	* @param string			   $cat_name Name of the category
 	*
 	* @return mixed
 	*/
-	public function blocks(\Twig_Environment $env, $context, $block)
+	public function blocks(\Twig_Environment $env, $context, $cat_name)
 	{
-		foreach ($this->loader->load($block) as $name => $path)
+		foreach ($this->event->get($cat_name) as $name => $path)
 		{
 			$path = $path . '/block';
 

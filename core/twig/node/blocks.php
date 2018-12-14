@@ -34,14 +34,14 @@ class blocks extends \Twig_Node
 		$block = $this->getNode('expr')->getAttribute('name');
 		$block_loader = $this->environment->getExtension('dls\web\core\twig\extension')->get_block_loader($block);
 
-		foreach ($block_loader as $b_name => $b_path)
+		foreach ($block_loader as $name => $path)
 		{
-			$b_path = $b_path . '/block';
+			$path = $path . '/block';
 
-			if ($this->environment->isDebug() || $this->environment->getLoader()->exists("@{$b_path}/{$b_name}.html"))
+			if ($this->environment->isDebug() || $this->environment->getLoader()->exists("@{$path}/{$name}.html"))
 			{
 				$compiler
-					->write("\$this->env->loadTemplate('@{$b_path}/{$b_name}.html')->display(\$context);\n")
+					->write("\$this->env->loadTemplate('@{$path}/{$name}.html')->display(\$context);\n")
 				;
 			}
 		}

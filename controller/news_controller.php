@@ -28,14 +28,14 @@ class news_controller
 	*
 	* @param \phpbb\controller\helper		   $helper Controoler helper object
 	* @param \dls\web\core\news				   $news   News object
-	* @param \dls\web\core\block\block_manager $Block Block object
+	* @param \dls\web\core\blocks\block_manager $Block Block object
 	*/
-	public function __construct(\phpbb\controller\helper $helper, \dls\web\core\news $news, \dls\web\core\block\block_manager $block)
+	public function __construct(\phpbb\controller\helper $helper, \dls\web\core\news $news, \dls\web\core\blocks\block_manager $block)
 	{
 		$this->helper = $helper;
 		$this->news	  = $news;
 
-		$block->load('main_block');
+		$block->load();
 	}
 
 	/**

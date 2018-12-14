@@ -1,0 +1,11 @@
+<div class="block">
+	<h2>{{ lang('LEADERS') }}</h2>
+	<div class="inner-block">
+		<ul class="no_style">
+			<li class="head"><strong>{{ lang('USERNAME') }}</strong><span class="right"><strong>{{ lang('POSTS') }}</strong></span></li>
+		{% for posters in top_posters %}
+			<li>{{ loop.index }}.<i class="fa fa-star fa-fw icon-gold" aria-hidden="true"></i>{{ posters.top }}<span class="right">{{ posters.posts }}</span></li>
+		{% endfor %}
+		</ul>
+	</div>
+</div>

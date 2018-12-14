@@ -2,9 +2,12 @@ version: "2"
 checks:
   argument-count:
     enabled: false
+  method-complexity:
+    config:
+      threshold: 10
   method-lines:
     config:
-      threshold: 40
+      threshold: 50
 plugins:
   # ... CONFIG CONTENT ...
   phpmd:

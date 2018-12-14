@@ -10,6 +10,8 @@ services:
         arguments:
             - '@group_helper'
             - '@template'
+            - '%core.root_path%'
+            - '%core.php_ext%'
 
     dls.web.news:
         class: dls\web\core\news

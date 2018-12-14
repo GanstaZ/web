@@ -10,6 +10,14 @@
 
 namespace dls\web\core\blocks\block;
 
+use phpbb\auth\auth;
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\language\language;
+use phpbb\user;
+use dls\web\core\helper;
+use phpbb\event\dispatcher;
+
 /**
 * DLS Web Who's Online block
 */
@@ -30,11 +38,8 @@ class whos_online implements block_interface
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var \phpbb\template\template */
-	protected $template;
-
 	/** @var \dls\web\core\helper */
-	protected $core;
+	protected $helper;
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
@@ -42,30 +47,31 @@ class whos_online implements block_interface
 	/** @var phpBB root path */
 	protected $root_path;
 
+	/** @var file extension */
+	protected $php_ext;
+
 	/**
 	* Constructor
 	*
-	* @param \phpbb\auth\auth				   $auth	   Auth object
-	* @param \phpbb\config\config     $config Config object
-	* @param \phpbb\db\driver\driver_interface $db		   Db object
-	* @param \phpbb\language\language		   $language   Language object
-	* @param \phpbb\user					   $user	   User object
-	* @param \phpbb\template\template		   $template   Template object
-	* @param \dls\web\core\helper			   $core	   Helper object
-	* @param \phpbb\event\dispatcher		   $dispatcher Dispatcher object
-	* @param string $root_path Path to the phpbb includes directory.
+	* @param \phpbb\auth\auth $auth Auth object
+	* @param \phpbb\config\config $config Config object
+	* @param \phpbb\db\driver\driver_interface $db Db object
+	* @param \phpbb\language\language $language Language object
+	* @param \phpbb\user $user User object
+	* @param \dls\web\core\helper $helper Data helper object
+	* @param \phpbb\event\dispatcher $dispatcher Dispatcher object
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\user $user, \phpbb\template\template $template, \dls\web\core\helper $core, \phpbb\event\dispatcher $dispatcher, $root_path)
+	public function __construct(auth $auth, config $config, driver_interface $db, language $language, user $user, helper $helper, dispatcher $dispatcher)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->db = $db;
 		$this->language = $language;
 		$this->user = $user;
-		$this->template = $template;
-		$this->core = $core;
+		$this->helper = $helper;
 		$this->dispatcher = $dispatcher;
-		$this->root_path = $root_path;
+		$this->root_path = $this->helper->get('root_path');
+		$this->php_ext = $this->helper->get('php_ext');
 	}
 
 	/**
@@ -103,7 +109,7 @@ class whos_online implements block_interface
 			$this->birthdays();
 		}
 
-		$this->template->assign_vars([
+		$this->helper->assign('vars',[
 			'TOTAL_POSTS' => $this->language->lang('TOTAL_POSTS_COUNT', $total_posts),
 			'TOTAL_TOPICS' => $this->language->lang('TOTAL_TOPICS', $total_topics),
 			'TOTAL_USERS' => $this->language->lang('TOTAL_USERS', $total_users),
@@ -180,7 +186,7 @@ class whos_online implements block_interface
 			];
 		}
 
-		$this->template->assign_block_vars_array('birthdays', $birthdays);
+		$this->helper->assign('block_vars_array', 'birthdays', $birthdays);
 	}
 
 	/**
@@ -194,45 +200,43 @@ class whos_online implements block_interface
 
 		// Grab group details for legend display
 		$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type, g.group_legend
-				FROM ' . GROUPS_TABLE . ' g
-				LEFT JOIN ' . USER_GROUP_TABLE . ' ug
-					ON (
-						g.group_id = ug.group_id
-						AND ug.user_id = ' . (int) $this->user->data['user_id'] . '
-						AND ug.user_pending = 0
-					)
-				WHERE g.group_legend > 0
-					AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . (int) $this->user->data['user_id'] . ')
-				ORDER BY g.' . $order_legend . ' ASC';
+			FROM ' . GROUPS_TABLE . ' g
+			LEFT JOIN ' . USER_GROUP_TABLE . ' ug
+				ON (
+					g.group_id = ug.group_id
+					AND ug.user_id = ' . (int) $this->user->data['user_id'] . '
+					AND ug.user_pending = 0
+				)
+			WHERE g.group_legend > 0
+				AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . (int) $this->user->data['user_id'] . ')
+			ORDER BY g.' . $order_legend;
 
 		if ($this->auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
 		{
 			$sql = 'SELECT group_id, group_name, group_colour, group_type, group_legend
-					FROM ' . GROUPS_TABLE . '
-					WHERE group_legend > 0
-					ORDER BY ' . $order_legend . ' ASC';
+				FROM ' . GROUPS_TABLE . '
+				WHERE group_legend > 0
+				ORDER BY ' . $order_legend;
 		}
-
 		$result = $this->db->sql_query($sql);
 
 		$legend = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$colour_text = ($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . '"' : '';
-			$group_name = $this->core->get_name($row['group_name']);
-			$group_link = append_sid("{$this->root_path}memberlist.php", 'mode=group&amp;g=' . $row['group_id']);
+			$group_name = $this->helper->get_name($row['group_name']);
+			$group_link = append_sid("{$this->root_path}memberlist.{$this->php_ext}", 'mode=group&amp;g=' . $row['group_id']);
 
-			if ($this->is_authed($row))
+			if ($this->not_authed($row))
 			{
 				$legend[] = '<span' . $colour_text . '>' . $group_name . '</span>';
 			}
 
 			$legend[] = '<a' . $colour_text . ' href="' . $group_link . '">' . $group_name . '</a>';
 		}
+		$this->db->sql_freeresult($result);
 
-			$this->db->sql_freeresult($result);
-
-			return implode($this->language->lang('COMMA_SEPARATOR'), $legend);
+		return implode($this->language->lang('COMMA_SEPARATOR'), $legend);
 	}
 
 	/**
@@ -241,7 +245,7 @@ class whos_online implements block_interface
 	* @param  array $row Groups data
 	* @return bool
 	*/
-	protected function is_authed($row)
+	protected function not_authed($row)
 	{
 		return $row['group_name'] == 'BOTS' || ($this->user->data['user_id'] != ANONYMOUS && !$this->auth->acl_get('u_viewprofile'));
 	}

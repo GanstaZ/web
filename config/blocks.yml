@@ -60,7 +60,6 @@ services:
         arguments:
             - '@config'
             - '@dbal.conn'
-            - '@template'
             - '@dls.web.helper'
         tags:
             - { name: dls.web.blocks }
@@ -79,9 +78,7 @@ services:
         arguments:
             - '@config'
             - '@dbal.conn'
-            - '@template'
             - '@dls.web.helper'
-            - '%core.root_path%'
         tags:
             - { name: dls.web.blocks }
 
@@ -90,9 +87,7 @@ services:
         arguments:
             - '@config'
             - '@dbal.conn'
-            - '@template'
             - '@dls.web.helper'
-            - '%core.root_path%'
         tags:
             - { name: dls.web.blocks }
 
@@ -104,9 +99,7 @@ services:
             - '@dbal.conn'
             - '@language'
             - '@user'
-            - '@template'
             - '@dls.web.helper'
             - '@dispatcher'
-            - '%core.root_path%'
         tags:
             - { name: dls.web.blocks }

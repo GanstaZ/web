@@ -86,7 +86,7 @@ class admin_blocks_controller
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			// Check for unavailable data
-			$this->manager->check_availability($row['block_name']);
+			$this->manager->check($row['block_name']);
 
 			$data_ary[] = $row['block_name'];
 			$rowset[$row['cat_name']][$row['block_name']] = [
@@ -98,8 +98,10 @@ class admin_blocks_controller
 		}
 		$this->db->sql_freeresult($result);
 
-		$u_update = 'Nothing to update';
-		if ($s_status = $this->manager->check_status())
+		// Check for new blocks
+		$this->manager->check($data_ary);
+
+		if ($s_status = $this->manager->get_status())
 		{
 			$u_update = implode($this->language->lang('COMMA_SEPARATOR'), $this->manager->status($s_status));
 		}

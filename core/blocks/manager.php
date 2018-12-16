@@ -63,10 +63,7 @@ class manager
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$rowset[$row['block_name']] = [
-				'block_name' => $row['block_name'],
-				'active'	 => $row['active'],
-			];
+			$rowset[$row['block_name']] = $row['active'];
 		}
 		$this->db->sql_freeresult($result);
 
@@ -77,11 +74,49 @@ class manager
 
 			if ($this->is_valid_name($data))
 			{
-				self::$blocks[$data['block_name']] = $block;
-
-				// Check for new blocks
-				$this->check_available($data, $rowset);
+				self::$blocks[$data['block_name']] = (!$rowset[$data['block_name']]) ? $data : $block;
 			}
+		}
+	}
+
+	/**
+	* Check conditioning
+	*
+	* @param string $status
+	* @return array
+	*/
+	public function check($block_data)
+	{
+		// Check for new blocks
+		if (is_array($block_data))
+		{
+			$this->prepare(array_diff_key(self::$blocks, array_flip($block_data)));
+		}
+		else if (is_string($block_data) && !$this->get($block_data))
+		{
+			// Set our block/service as unavailable
+			$this->status['purge'][] = $block_data;
+		}
+	}
+
+	/**
+	* Prepare data for installation
+	*
+	* @param array $block_data
+	* @return null
+	*/
+	protected function prepare($block_data)
+	{
+		foreach ($block_data as $data)
+		{
+			$this->status['update'][] = $data['block_name'];
+			$this->status['add'][] = [
+				'block_name' => $data['block_name'],
+				'ext_name'	 => $data['ext_name'],
+				'position'	 => 0,
+				'active'	 => 0,
+				'cat_name'   => $data['cat_name'],
+			];
 		}
 	}
 
@@ -133,57 +168,21 @@ class manager
 	}
 
 	/**
-	* Check for new blocks
-	*
-	* @param array $data
-	* @param array $rowset
-	* @return null
-	*/
-	public function check_available($data, $rowset)
-	{
-		if (!$rowset[$data['block_name']])
-		{
-			$this->status['update'][] = $data['block_name'];
-			$this->status['add'][] = [
-				'block_name' => $data['block_name'],
-				'ext_name'	 => $data['ext_name'],
-				'position'	 => 0,
-				'active'	 => 0,
-				'cat_name'   => $data['cat_name'],
-			];
-		}
-	}
-
-	/**
-	* Is our block/service available
-	*
-	* @param string $block_name The name of the block we want to validate
-	* @return null
-	*/
-	public function check_availability($block_name)
-	{
-		if (!$this->get($block_name))
-		{
-			$this->status['purge'][] = $block_name;
-		}
-	}
-
-	/**
 	* Check for update/purge status
 	*
 	* @return string $status
 	*/
-	public function check_status()
+	public function get_status()
 	{
 		if (!$this->status)
 		{
 			return;
 		}
-		else if ($this->status['update'])
+		else if ($this->status('update'))
 		{
 			$status = 'update';
 		}
-		else if ($this->status['purge'])
+		else if ($this->status('purge'))
 		{
 			$status = 'purge';
 		}

@@ -10,21 +10,18 @@
 
 namespace dls\web\controller;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use phpbb\db\driver\driver_interface;
 use phpbb\language\language;
 use phpbb\request\request;
 use dls\web\core\blocks\manager;
 use dls\web\core\helper;
+use phpbb\cache\service;
 
 /**
 * DLS Web admin blocks controller
 */
 class admin_blocks_controller
 {
-	/** @var ContainerInterface */
-	protected $container;
-
 	/** @var \phpbb\cache\service */
 	protected $cache;
 
@@ -49,7 +46,6 @@ class admin_blocks_controller
 	/**
 	* Constructor
 	*
-	* @param ContainerInterface $container A container
 	* @param \phpbb\db\driver\driver_interface $db Db object
 	* @param \phpbb\language\language $language Language object
 	* @param \phpbb\request\request $request Request object
@@ -57,10 +53,9 @@ class admin_blocks_controller
 	* @param \dls\web\core\helper $helper Data helper object
 	* @param \phpbb\cache\service $cache A cache instance or null
 	*/
-	public function __construct(ContainerInterface $container, driver_interface $db, language $language, request $request, manager $manager, helper $helper, \phpbb\cache\service $cache = null)
+	public function __construct(driver_interface $db, language $language, request $request, manager $manager, helper $helper, service $cache = null)
 	{
 		$this->cache = $cache;
-		$this->container = $container;
 		$this->db = $db;
 		$this->language = $language;
 		$this->request = $request;
@@ -90,10 +85,10 @@ class admin_blocks_controller
 		$data_ary = $rowset = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$data_ary[] = $row['block_name'];
 			// Check for unavailable data
-			$this->manager->status_unavailable($this->container, $row);
+			$this->manager->check_availability($row['block_name']);
 
+			$data_ary[] = $row['block_name'];
 			$rowset[$row['cat_name']][$row['block_name']] = [
 				'cat_name'	 => $row['cat_name'],
 				'block_name' => $row['block_name'],
@@ -103,16 +98,11 @@ class admin_blocks_controller
 		}
 		$this->db->sql_freeresult($result);
 
-		// Check for new blocks
-		$new_block = $this->manager->status_available($rowset);
-
 		$u_update = 'Nothing to update';
-		if ($status = $this->manager->check_status())
+		if ($s_status = $this->manager->check_status())
 		{
-			$u_update = implode($this->language->lang('COMMA_SEPARATOR'), $this->manager->info($status));
+			$u_update = implode($this->language->lang('COMMA_SEPARATOR'), $this->manager->status($s_status));
 		}
-
-		echo '<pre>' . print_r($this->manager->info($status), true) . '</pre>';
 
 		// Is the form submitted
 		if ($this->request->is_set_post('submit'))
@@ -123,7 +113,7 @@ class admin_blocks_controller
 			}
 
 			// If the form has been submitted, set all data and save it
-			$this->update_data($data_ary, $new_block);
+			$this->update_data($data_ary);
 
 			// Show user confirmation of success and provide link back to the previous screen
 			trigger_error($this->language->lang('ACP_DLS_SETTINGS_SAVED') . adm_back_link($this->u_action));
@@ -134,8 +124,8 @@ class admin_blocks_controller
 
 		// Set template vars
 		$this->helper->assign('vars', [
-			'S_UPDATE' => ($status) ? true : false,
-			'U_UPDATE' => $this->language->lang(strtoupper($status) . '_BLOCKS', $u_update),
+			'S_UPDATE' => ($s_status) ? true : false,
+			'U_UPDATE' => $this->language->lang(strtoupper("{$s_status}_BLOCKS"), $u_update),
 			'U_ACTION' => $this->u_action,
 		]);
 	}
@@ -144,10 +134,9 @@ class admin_blocks_controller
 	* Update data
 	*
 	* @param array $data_ary Array of block names
-	* @param array $new_block Blocks data
 	* @return null
 	*/
-	public function update_data($data_ary, $new_block)
+	public function update_data($data_ary)
 	{
 		foreach ($data_ary as $block_name)
 		{
@@ -156,20 +145,23 @@ class admin_blocks_controller
 				'position' => $this->request->variable($block_name . '_b', (int) 0),
 			];
 
+			// Update selected/requested block data
 			$this->db->sql_query('UPDATE ' . $this->manager->blocks_data() . ' SET ' . $this->db->sql_build_array('UPDATE', $block_data) . "
 				WHERE block_name = '" . $this->db->sql_escape($block_name) . "'"
 			);
 
-			if (in_array($block_name, $this->manager->info('remove')))
+			// Purge removed block/service data from db. No confirm_box is needed! It is just a cleanup process :)
+			if (in_array($block_name, $this->manager->status('purge')))
 			{
 				$this->db->sql_query('DELETE FROM ' . $this->manager->blocks_data() . "
 				WHERE block_name = '" . $this->db->sql_escape($block_name) . "'");
 			}
 		}
 
-		if ($new_block)
+		// Add new block
+		if ($add_new_block = $this->manager->status('add'))
 		{
-			$this->db->sql_multi_insert($this->manager->blocks_data(), $new_block);
+			$this->db->sql_multi_insert($this->manager->blocks_data(), $add_new_block);
 		}
 
 		$this->cache->purge();
@@ -178,7 +170,7 @@ class admin_blocks_controller
 	/**
 	* Assign template block data for blocks
 	*
-	* @param array $rowset Blocks data is stored here
+	* @param array $rowset Block data is stored here
 	* @return null
 	*/
 	protected function assign_template_block_data(array $rowset)
@@ -196,7 +188,6 @@ class admin_blocks_controller
 			{
 				$block_options = $this->helper->get_options(range(0, $count_blocks), $block['position']);
 				$count_position = $this->helper->count($data, 'position', $block['position']);
-				//print_r($count_position);
 				$this->helper->assign('block_vars', 'category.block', [
 					'name' => $block['block_name'],
 					'position' => $block['block_name'] . '_b',

@@ -22,8 +22,8 @@ $lang = array_merge($lang, [
 	'SIDE'	 => 'Side blocks',
 	'BOTTOM'	 => 'Bottom blocks',
 	'DEFAULT_BLOCKS' => 'Default blocks',
-	'UPDATE_BLOCKS'	 => 'New block(s) available: %s. Click submit to install.',
-	'REMOVE_BLOCKS'	 => 'Block(s) unavailable: %s. Click submit to uninstall.',
+	'UPDATE_BLOCKS'	 => 'Update available! Click submit to install: %s.',
+	'PURGE_BLOCKS'	 => 'Purge required! Click submit to remove: %s.',
 
 	'DLS_MINI_PROFILE'	=> 'Enable mini profile',
 	'DLS_INFORMATION'	=> 'Enable information',

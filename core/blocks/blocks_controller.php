@@ -68,7 +68,6 @@ class blocks_controller
 			$data['block_name'] = $this->manager->is_dls($data);
 			$this->blocks[$row['cat_name']][$row['block_name']] = $data;
 
-			// Validate service name
 			if ($block = $this->manager->get($row['block_name']))
 			{
 				$this->blocks[$row['cat_name']][$row['block_name']]['service'] = $block;

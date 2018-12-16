@@ -10,11 +10,16 @@
 
 namespace dls\web\core\blocks;
 
+use phpbb\db\driver\driver_interface;
+
 /**
 * DLS Web blocks manager
 */
 class manager
 {
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
 	/** @var blocks data table */
 	protected $blocks_data;
 
@@ -25,20 +30,59 @@ class manager
 	protected static $blocks = false;
 
 	/** @var array Contains info about current status */
-	protected $info;
+	protected $status;
 
 	/**
 	* Constructor
 	*
+	* @param \phpbb\db\driver\driver_interface $db Db object
 	* @param string $blocks_data The name of the blocks data table
 	* @param \dls\web\core\blocks\event $event Data object
 	*/
-	public function __construct(\phpbb\di\service_collection $blocks_collection, $blocks_data, event $event)
+	public function __construct(driver_interface $db, \phpbb\di\service_collection $blocks_collection, $blocks_data, event $event)
 	{
+		$this->db = $db;
 		$this->blocks_data = $blocks_data;
 		$this->event = $event;
 
 		$this->register_validated_blocks($blocks_collection);
+	}
+
+	/**
+	* Register all validated blocks
+	*
+	* @param Service collection of blocks
+	* @return null
+	*/
+	protected function register_validated_blocks($blocks_collection)
+	{
+		$sql = 'SELECT block_name, active
+				FROM ' . $this->blocks_data . '
+				ORDER BY block_id';
+		$result = $this->db->sql_query($sql, 3600);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$rowset[$row['block_name']] = [
+				'block_name' => $row['block_name'],
+				'active'	 => $row['active'],
+			];
+		}
+		$this->db->sql_freeresult($result);
+
+		self::$blocks = [];
+		foreach ($blocks_collection as $block)
+		{
+			$data = $block->get_data();
+
+			if ($this->is_valid_name($data))
+			{
+				self::$blocks[$data['block_name']] = $block;
+
+				// Check for new blocks
+				$this->check_available($data, $rowset);
+			}
+		}
 	}
 
 	/**
@@ -54,40 +98,20 @@ class manager
 	}
 
 	/**
-	* Get status info
+	* Get status
 	*
 	* @param string $status
 	* @return array
 	*/
-	public function info($status)
+	public function status($status)
 	{
-		return ($this->info[$status]) ? $this->info[$status] : [];
+		return ($this->status[$status]) ? $this->status[$status] : [];
 	}
 
 	/**
-	* Register all validated blocks
+	* Blocks data table
 	*
-	* @param Service collection of blocks
-	* @return null
-	*/
-	protected function register_validated_blocks($blocks_collection)
-	{
-		self::$blocks = [];
-		foreach ($blocks_collection as $block)
-		{
-			$data = $block->get_data();
-
-			if ($this->is_valid_name($data))
-			{
-				self::$blocks[$data['block_name']] = $block;
-			}
-		}
-	}
-
-	/**
-	* Blocks data
-	*
-	* @return string blocks data table
+	* @return string table name
 	*/
 	public function blocks_data()
 	{
@@ -111,67 +135,57 @@ class manager
 	/**
 	* Check for new blocks
 	*
+	* @param array $data
 	* @param array $rowset
-	* @return array
+	* @return null
 	*/
-	public function status_available($rowset)
+	public function check_available($data, $rowset)
 	{
-		$new_blocks = [];
-		foreach (self::$blocks as $new_block)
+		if (!$rowset[$data['block_name']])
 		{
-			$new = $new_block->get_data();
-
-			if (!$rowset[$new['cat_name']][$new['block_name']])
-			{
-				$this->info['update'][] = $new['block_name'];
-				$new_blocks[] = [
-					'block_name' => $new['block_name'],
-					'ext_name'	 => $new['ext_name'],
-					'position'	 => 0,
-					'active'	 => 0,
-					'cat_name'   => $new['cat_name'],
-				];
-			}
-		}
-
-		return $new_blocks;
-	}
-
-	/**
-	* Check for unavailable blocks
-	*
-	* @param ContainerInterface $container A container
-	* @param array $row The name of the block we want to remove
-	* @return void
-	*/
-	public function status_unavailable($container, $row)
-	{
-		$service = $this->get_service_name($row['block_name'], $row['ext_name']);
-		if (!$container->has($service))
-		{
-			$this->info['remove'][] = $row['block_name'];
+			$this->status['update'][] = $data['block_name'];
+			$this->status['add'][] = [
+				'block_name' => $data['block_name'],
+				'ext_name'	 => $data['ext_name'],
+				'position'	 => 0,
+				'active'	 => 0,
+				'cat_name'   => $data['cat_name'],
+			];
 		}
 	}
 
 	/**
-	* Check for update/remove status
+	* Is our block/service available
 	*
-	* @param array $info
-	* @return string
+	* @param string $block_name The name of the block we want to validate
+	* @return null
+	*/
+	public function check_availability($block_name)
+	{
+		if (!$this->get($block_name))
+		{
+			$this->status['purge'][] = $block_name;
+		}
+	}
+
+	/**
+	* Check for update/purge status
+	*
+	* @return string $status
 	*/
 	public function check_status()
 	{
-		if (!$this->info)
+		if (!$this->status)
 		{
 			return;
 		}
-		else if ($this->info['update'])
+		else if ($this->status['update'])
 		{
 			$status = 'update';
 		}
-		else if ($this->info['remove'])
+		else if ($this->status['purge'])
 		{
-			$status = 'remove';
+			$status = 'purge';
 		}
 
 		return $status;
@@ -181,54 +195,11 @@ class manager
 	* Get vendor name
 	*
 	* @param string $ext_name Name of the extension
-	* @return string
+	* @return string vendor name
 	*/
 	public function get_vendor($ext_name)
 	{
-		//return utf8_substr($ext_name, 0, utf8_strpos($ext_name, '_'));
 		return strstr($ext_name, '_', true);
-	}
-
-	/**
-	* Get block name from service
-	*    For example dls.web.block.some.name => dls_some_name
-	*
-	* @param string $service Name of the service
-	* @param string $ext_name Name of the extension
-	* @param string $remove Remove part of the string
-	* @param mixed $replace Default is underscore
-	* @return string block name
-	*/
-	public function get_block_name($service, $ext_name, $remove = '.block.', $replace = '_')
-	{
-		$start = utf8_strpos($ext_name, $replace);
-		if (!is_bool($start))
-		{
-			$string = utf8_substr($ext_name, $start + utf8_strlen($replace));
-
-			return str_replace("{$string}{$remove}", $replace, $service);
-		}
-	}
-
-	/**
-	* Get service name
-	*
-	* @param string $service Name of the service
-	* @param string $ext_name Name of the extension
-	* @param string $insert Insert a string part
-	* @param mixed $search Default is underscore
-	* @param mixed $replace Default is dot
-	* @return string service name
-	*/
-	public function get_service_name($service, $ext_name, $insert = '.block.', $search = '_', $replace = '.')
-	{
-		$start = utf8_strpos($service, $search);
-		if (!is_bool($start))
-		{
-			$string = utf8_substr($service, $start + utf8_strlen($search));
-
-			return str_replace($search, $replace, "{$ext_name}{$insert}{$string}");
-		}
 	}
 
 	/**

@@ -2,6 +2,7 @@ services:
     dls.web.blocks.manager:
         class: dls\web\core\blocks\manager
         arguments:
+            - '@dbal.conn'
             - '@dls.web.blocks.collection'
             - '%dls.web.tables.blocks%'
             - '@dls.web.blocks.event'
@@ -9,7 +10,6 @@ services:
     dls.web.admin.blocks.controller:
         class: dls\web\controller\admin_blocks_controller
         arguments:
-            - '@service_container'
             - '@dbal.conn'
             - '@language'
             - '@request'

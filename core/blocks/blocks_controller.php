@@ -66,22 +66,15 @@ class blocks_controller
 
 		if (null !== $data)
 		{
-			$where = "cat_name = '" . $this->db->sql_escape($data) . "' AND active = 1";
+			$where = "cat_name = '" . $this->where_clause_affix($data);
 
 			if (is_array($data))
 			{
-				if ($type === 'category')
-				{
-					$where = $this->db->sql_in_set('cat_name', $data);
-				}
-				else if ($type === 'blocks')
-				{
-					$where = $this->db->sql_in_set('block_name', $data);
-				}
+				$where = $this->get_where_clause($data, $type);
 			}
 			else if (is_string($data) && $type === 'blocks')
 			{
-				$where = "block_name = '" . $this->db->sql_escape($data) . "' AND active = 1";
+				$where = "block_name = '" . $this->where_clause_affix($data);
 			}
 		}
 
@@ -89,6 +82,36 @@ class blocks_controller
 		$this->register_blocks($where);
 
 		return array_filter($this->blocks);
+	}
+
+	/**
+	* Get where clause
+	*
+	* @param mixed $data
+	* @param string $type [default: category, blocks]
+	* @return string where
+	*/
+	protected function get_where_clause($data, $type)
+	{
+		if ($type === 'category')
+		{
+			return $this->db->sql_in_set('cat_name', $data);
+		}
+		else if ($type === 'blocks')
+		{
+			return $this->db->sql_in_set('block_name', $data);
+		}
+	}
+
+	/**
+	* Get escaped data for where clause
+	*
+	* @param string $data
+	* @return string
+	*/
+	protected function where_clause_affix($data)
+	{
+		return $this->db->sql_escape($data) . "' AND active = 1";
 	}
 
 	/**

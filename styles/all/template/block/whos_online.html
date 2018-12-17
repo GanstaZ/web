@@ -8,7 +8,7 @@
 			{% if U_VIEWONLINE %}
 			<li><br /></li>
 			<li>{{ LOGGED_IN_USER_LIST }}</li>
-			{% if LEGEND %}<li><em>{{ lang('LEGEND') }}{{ lang('COLON') }} {{ LEGEND }}</em></li>{% endif %}
+			{% if LEGEND %}<li><em>{{ lang('LEGEND') ~ lang('COLON') }} {{ LEGEND }}</em></li>{% endif %}
 			{% endif %}
 		</ul>
 	</div>
@@ -17,7 +17,9 @@
 	<div class="whos_inner">
 		<h2>{{ lang('BIRTHDAYS') }}</h2>
 		<p class="whos_p">
-			{% if BIRTHDAY_LIST %}{{ lang('CONGRATULATIONS') }}{{ lang('COLON') }} <strong>{{ BIRTHDAY_LIST }}</strong>{% else %}{{ lang('NO_BIRTHDAYS') }}{% endif %}
+			{% if birthdays %}
+				{{ lang('CONGRATULATIONS') ~ lang('COLON') }} <strong>{% for birthday in birthdays %}{{ birthday.USERNAME }}{% if birthday.AGE is not empty %} ({{ birthday.AGE }}){% endif %}{% if not birthday.S_LAST_ROW %}, {% endif %}{% endfor %}</strong>{% else %}{{ lang('NO_BIRTHDAYS') }}
+			{% endif %}
 		</p>
 	</div>
 	{% endif %}
@@ -35,3 +37,4 @@
  </div>
 {# End Bottom Content #}
 {% endif %}
+

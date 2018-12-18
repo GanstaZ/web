@@ -24,7 +24,7 @@ class blocks_module
 		global $phpbb_container;
 
 		// Get an instance of the admin blocks controller
-		$admin_controller = $phpbb_container->get('dls.web.admin.blocks.controller');
+		$admin_controller = $phpbb_container->get('dls.web.admin.block.controller');
 
 		$this->tpl_name = 'acp_blocks';
 		$this->page_title = $phpbb_container->get('language')->lang('ACP_DLS_BLOCKS_TITLE');

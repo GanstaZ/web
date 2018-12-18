@@ -1,42 +1,42 @@
 services:
-    dls.web.blocks.manager:
+    dls.web.block.manager:
         class: dls\web\core\blocks\manager
         arguments:
             - '@dbal.conn'
-            - '@dls.web.blocks.collection'
+            - '@dls.web.block.collection'
             - '%dls.web.tables.blocks%'
 
-    dls.web.admin.blocks.controller:
+    dls.web.admin.block.controller:
         class: dls\web\controller\admin_blocks_controller
         arguments:
             - '@dbal.conn'
             - '@language'
             - '@request'
-            - '@dls.web.blocks.manager'
+            - '@dls.web.block.manager'
             - '@dls.web.helper'
             - '@cache'
 
-    dls.web.blocks.controller:
+    dls.web.block.controller:
         class: dls\web\core\blocks\blocks_controller
         arguments:
             - '@dbal.conn'
-            - '@dls.web.blocks.manager'
-            - '@dls.web.blocks.event'
+            - '@dls.web.block.manager'
+            - '@dls.web.block.event'
 
-    dls.web.blocks.collection:
+    dls.web.block.collection:
         class: phpbb\di\service_collection
         arguments:
             - '@service_container'
         tags:
-            - { name: service_collection, tag: dls.web.blocks }
+            - { name: service_collection, tag: dls.web.block }
 
-    dls.web.blocks.event:
+    dls.web.block.event:
         class: dls\web\core\blocks\event
 
-    dls.web.blocks.extension:
+    dls.web.block.extension:
         class: dls\web\core\twig\extension
         arguments:
-            - '@dls.web.blocks.event'
+            - '@dls.web.block.event'
         tags:
             - { name: twig.extension }
 
@@ -44,7 +44,7 @@ services:
     dls.web.block.mini.profile:
         class: dls\web\core\blocks\block\mini_profile
         tags:
-            - { name: dls.web.blocks }
+            - { name: dls.web.block }
 
     dls.web.block.information:
         class: dls\web\core\blocks\block\information
@@ -53,7 +53,7 @@ services:
             - '@template'
             - '@dispatcher'
         tags:
-            - { name: dls.web.blocks }
+            - { name: dls.web.block }
 
     dls.web.block.the.team:
         class: dls\web\core\blocks\block\the_team
@@ -62,7 +62,7 @@ services:
             - '@dbal.conn'
             - '@dls.web.helper'
         tags:
-            - { name: dls.web.blocks }
+            - { name: dls.web.block }
 
     dls.web.block.top.posters:
         class: dls\web\core\blocks\block\top_posters
@@ -71,7 +71,7 @@ services:
             - '@dbal.conn'
             - '@template'
         tags:
-            - { name: dls.web.blocks }
+            - { name: dls.web.block }
 
     dls.web.block.recent.posts:
         class: dls\web\core\blocks\block\recent_posts
@@ -80,7 +80,7 @@ services:
             - '@dbal.conn'
             - '@dls.web.helper'
         tags:
-            - { name: dls.web.blocks }
+            - { name: dls.web.block }
 
     dls.web.block.recent.topics:
         class: dls\web\core\blocks\block\recent_topics
@@ -89,7 +89,7 @@ services:
             - '@dbal.conn'
             - '@dls.web.helper'
         tags:
-            - { name: dls.web.blocks }
+            - { name: dls.web.block }
 
     dls.web.block.whos.online:
         class: dls\web\core\blocks\block\whos_online
@@ -102,4 +102,4 @@ services:
             - '@dls.web.helper'
             - '@dispatcher'
         tags:
-            - { name: dls.web.blocks }
+            - { name: dls.web.block }

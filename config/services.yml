@@ -56,4 +56,4 @@ services:
         arguments:
             - '@controller.helper'
             - '@dls.web.news'
-            - '@dls.web.blocks.manager'
+            - '@dls.web.block.controller'

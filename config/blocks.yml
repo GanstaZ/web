@@ -7,7 +7,7 @@ services:
             - '%dls.web.tables.blocks%'
 
     dls.web.admin.block.controller:
-        class: dls\web\controller\admin_blocks_controller
+        class: dls\web\controller\admin_block_controller
         arguments:
             - '@dbal.conn'
             - '@language'
@@ -17,7 +17,7 @@ services:
             - '@cache'
 
     dls.web.block.controller:
-        class: dls\web\core\blocks\blocks_controller
+        class: dls\web\controller\block_controller
         arguments:
             - '@dbal.conn'
             - '@dls.web.block.manager'

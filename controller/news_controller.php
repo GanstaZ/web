@@ -10,6 +10,10 @@
 
 namespace dls\web\controller;
 
+use phpbb\controller\helper;
+use dls\web\core\news;
+use dls\web\controller\block_controller;
+
 /**
 * DLS Web news controller
 */
@@ -26,11 +30,11 @@ class news_controller
 	/**
 	* Constructor
 	*
-	* @param \phpbb\controller\helper		   $helper Controoler helper object
-	* @param \dls\web\core\news				   $news   News object
-	* @param \dls\web\core\blocks\block_manager $Block Block object
+	* @param \phpbb\controller\helper $helper Controoler helper object
+	* @param \dls\web\core\news $news News object
+	* @param \dls\web\controller\block_controller $Block Block object
 	*/
-	public function __construct(\phpbb\controller\helper $helper, \dls\web\core\news $news, \dls\web\core\blocks\block_manager $block)
+	public function __construct(helper $helper, news $news, block_controller $block)
 	{
 		$this->helper = $helper;
 		$this->news	  = $news;

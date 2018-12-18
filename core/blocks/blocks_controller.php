@@ -23,6 +23,9 @@ class blocks_controller
 	/** @var \dls\web\core\blocks\manager */
 	protected $manager;
 
+	/** @var \dls\web\core\blocks\event */
+	protected $event;
+
 	/** @var array Contains enabled block services */
 	protected $blocks;
 
@@ -31,182 +34,127 @@ class blocks_controller
 	*
 	* @param \phpbb\db\driver\driver_interface $db Db object
 	* @param \dls\web\core\blocks\manager $manager Data manager object
+	* @param \dls\web\core\blocks\event $event Data object
 	*/
-	public function __construct(driver_interface $db, manager $manager)
+	public function __construct(driver_interface $db, manager $manager, event $event)
 	{
 		$this->db = $db;
+		$this->event = $event;
 		$this->manager = $manager;
-
-		$this->register_blocks();
-	}
-
-	/**
-	* Register all enabled blocks
-	*
-	* @param Service collection of blocks
-	* @return null
-	*/
-	protected function register_blocks()
-	{
-		$this->blocks = [];
-
-		$sql = 'SELECT *
-				FROM ' . $this->manager->blocks_data() . '
-				WHERE active = 1
-					AND position <> 0
-				ORDER BY position';
-		$result = $this->db->sql_query($sql, 86400);
-
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$data = [
-				'block_name' => (string) $row['block_name'],
-				'ext_name' => (string) $row['ext_name'],
-				'service' => '',
-			];
-
-			$data['block_name'] = $this->manager->is_dls($data);
-			$this->blocks[$row['cat_name']][$row['block_name']] = $data;
-
-			if ($block = $this->manager->get($row['block_name']))
-			{
-				$this->blocks[$row['cat_name']][$row['block_name']]['service'] = $block;
-			}
-		}
-		$this->db->sql_freeresult($result);
 	}
 
 	/**
 	* Load blocks
 	*
-	* @param mixed $cat_name
-	* @param string $type [default: category, blocks]
+	* @param mixed $data
+	* @param string $type [default: category, block]
 	* @return null
 	*/
-	public function load($cat_name = null, string $type = 'category')
+	public function load($data = null, string $type = 'category')
 	{
-		if ($blocks = $this->get_blocks($cat_name, $type))
+		if ($blocks = $this->get_blocks($data, $type))
 		{
 			$this->loading($blocks);
 		}
 	}
 
 	/**
-	* Get block data
-	*
-	* @param string $cat_name
-	* @return array
-	*/
-	protected function get_block($cat_name)
-	{
-		if ($this->blocks[$cat_name])
-		{
-			return $this->blocks[$cat_name];
-		}
-	}
-
-	/**
-	* Set category template data
-	*
-	* @param string $cat_name
-	* @return void
-	*/
-	protected function set_data($cat_name)
-	{
-		$this->manager->set($cat_name, array_column($this->get_block($cat_name), 'ext_name', 'block_name'));
-	}
-
-	/**
 	* Get blocks
 	*
-	* @param mixed $cat_name
-	* @param string $type [default: category, blocks]
+	* @param mixed $data
+	* @param string $type [default: category, block]
 	* @return array
 	*/
-	protected function get_blocks($cat_name, $type)
+	protected function get_blocks($data, $type)
 	{
-		if (null !== $cat_name && $type === 'category')
-		{
-			if (is_array($cat_name))
-			{
-				return $this->get_requested_categories($cat_name);
-			}
-			$this->set_data($cat_name);
+		$where = 'active = 1';
 
-			return $this->get_block($cat_name);
+		if (null !== $data)
+		{
+			$where = $this->get_where_clause($data, $type);
 		}
 
-		return $this->get_all_blocks($cat_name, $type);
+		// Register requested data
+		$this->register_blocks($where);
+
+		return array_filter($this->blocks);
 	}
 
 	/**
-	* Get requested categories
+	* Register all enabled blocks
 	*
-	* @param array $categories Array of category names
-	* @return array
+	* @param string $where sql where clause
+	* @return null
 	*/
-	protected function get_requested_categories(array $categories)
+	protected function register_blocks($where)
 	{
-		$requested = [];
-		foreach ($categories as $cat_name)
+		$sql = 'SELECT *
+				FROM ' . $this->manager->blocks_data() . '
+				WHERE ' . $where . '
+					AND position <> 0
+				ORDER BY position';
+		$result = $this->db->sql_query($sql, 86400);
+
+		$this->blocks = [];
+		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if ($this->get_block($cat_name))
+			$data = [
+				'block_name' => (string) $row['block_name'],
+				'ext_name' => (string) $row['ext_name'],
+			];
+
+			$data['block_name'] = $this->manager->is_dls($data);
+
+			if ($block = $this->manager->get($row['block_name']))
 			{
-				$this->set_data($cat_name);
-				$requested = array_merge($requested, $this->get_block($cat_name));
+				$this->blocks[$row['block_name']] = $block;
+				$this->event->set_data($row['cat_name'], [$data['block_name'] => $data['ext_name']]);
 			}
 		}
-
-		return $requested;
+		$this->db->sql_freeresult($result);
 	}
 
 	/**
-	* Get all blocks
+	* Get where clause
 	*
-	* @param mixed $cat_name
-	* @param string $type [default: category, blocks]
-	* @return array
+	* @param mixed $data
+	* @param string $type [default: category, block]
+	* @return string where
 	*/
-	protected function get_all_blocks($cat_name, $type)
+	protected function get_where_clause($data, $type)
 	{
-		$requested = [];
-		foreach (array_keys($this->blocks) as $name)
+		$where = '';
+		if (is_array($data))
 		{
-			if (is_null($cat_name))
+			$where = $this->db->sql_in_set('cat_name', $data);
+
+			if ($type === 'block')
 			{
-				$this->set_data($name);
-				$requested = array_merge($requested, $this->get_block($name));
+				$where = $this->db->sql_in_set('block_name', $data);
 			}
-			else if (is_array($cat_name) && $type === 'blocks')
+		}
+		else if (is_string($data))
+		{
+			$where = "block_name = '" . $this->where_clause_affix($data);
+
+			if ($type === 'category')
 			{
-				$requested = array_merge($requested, $this->get_requested_blocks($name, $cat_name));
+				$where = "cat_name = '" . $this->where_clause_affix($data);
 			}
 		}
 
-		return $requested;
+		return $where;
 	}
 
 	/**
-	* Get requested blocks
+	* Get escaped data for where clause
 	*
-	* @param string $cat_name
-	* @param array $blocks_ary Array of block names
-	* @return array
+	* @param string $data
+	* @return string
 	*/
-	protected function get_requested_blocks($cat_name, array $blocks_ary)
+	protected function where_clause_affix($data)
 	{
-		$array = [];
-		foreach ($blocks_ary as $block)
-		{
-			$is_valid = $this->get_block($cat_name)[$block];
-			if ($is_valid)
-			{
-				$this->manager->set($cat_name, [$is_valid['block_name'] => $is_valid['ext_name']]);
-				$array[$block] = $this->get_block($cat_name)[$block];
-			}
-		}
-
-		return $array;
+		return $this->db->sql_escape($data) . "' AND active = 1";
 	}
 
 	/**
@@ -219,7 +167,7 @@ class blocks_controller
 	{
 		foreach ($blocks as $block)
 		{
-			$block['service']->load();
+			$block->load();
 		}
 	}
 }

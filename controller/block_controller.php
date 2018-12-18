@@ -8,14 +8,16 @@
 *
 */
 
-namespace dls\web\core\blocks;
+namespace dls\web\controller;
 
 use phpbb\db\driver\driver_interface;
+use dls\web\core\blocks\manager;
+use dls\web\core\blocks\event;
 
 /**
-* DLS Web blocks controller
+* DLS Web block controller
 */
-class blocks_controller
+class block_controller
 {
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;

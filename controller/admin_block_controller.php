@@ -18,9 +18,9 @@ use dls\web\core\helper;
 use phpbb\cache\service;
 
 /**
-* DLS Web admin blocks controller
+* DLS Web admin block controller
 */
-class admin_blocks_controller
+class admin_block_controller
 {
 	/** @var \phpbb\cache\service */
 	protected $cache;

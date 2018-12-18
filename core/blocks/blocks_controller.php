@@ -23,6 +23,9 @@ class blocks_controller
 	/** @var \dls\web\core\blocks\manager */
 	protected $manager;
 
+	/** @var \dls\web\core\blocks\event */
+	protected $event;
+
 	/** @var array Contains enabled block services */
 	protected $blocks;
 
@@ -31,10 +34,12 @@ class blocks_controller
 	*
 	* @param \phpbb\db\driver\driver_interface $db Db object
 	* @param \dls\web\core\blocks\manager $manager Data manager object
+	* @param \dls\web\core\blocks\event $event Data object
 	*/
-	public function __construct(driver_interface $db, manager $manager)
+	public function __construct(driver_interface $db, manager $manager, event $event)
 	{
 		$this->db = $db;
+		$this->event = $event;
 		$this->manager = $manager;
 	}
 
@@ -103,7 +108,7 @@ class blocks_controller
 			if ($block = $this->manager->get($row['block_name']))
 			{
 				$this->blocks[$row['block_name']] = $block;
-				$this->manager->set($row['cat_name'], [$data['block_name'] => $data['ext_name']]);
+				$this->event->set_data($row['cat_name'], [$data['block_name'] => $data['ext_name']]);
 			}
 		}
 		$this->db->sql_freeresult($result);

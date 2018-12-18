@@ -23,9 +23,6 @@ class manager
 	/** @var blocks data table */
 	protected $blocks_data;
 
-	/** @var \dls\web\core\blocks\event */
-	protected $event;
-
 	/** @var array Contains validated block services */
 	protected static $blocks = false;
 
@@ -37,13 +34,11 @@ class manager
 	*
 	* @param \phpbb\db\driver\driver_interface $db Db object
 	* @param string $blocks_data The name of the blocks data table
-	* @param \dls\web\core\blocks\event $event Data object
 	*/
-	public function __construct(driver_interface $db, \phpbb\di\service_collection $blocks_collection, $blocks_data, event $event)
+	public function __construct(driver_interface $db, \phpbb\di\service_collection $blocks_collection, $blocks_data)
 	{
 		$this->db = $db;
 		$this->blocks_data = $blocks_data;
-		$this->event = $event;
 
 		$this->register_validated_blocks($blocks_collection);
 	}
@@ -118,18 +113,6 @@ class manager
 				'cat_name'   => $data['cat_name'],
 			];
 		}
-	}
-
-	/**
-	* Set event data
-	*
-	* @param string $cat_name
-	* @param array $blocks
-	* @return void
-	*/
-	public function set($cat_name, $blocks)
-	{
-		$this->event->set_data($cat_name, $blocks);
 	}
 
 	/**

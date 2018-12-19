@@ -11,6 +11,7 @@
 namespace dls\web\event;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use phpbb\request\request;
 
 /**
 * DLS Web Event listener
@@ -26,6 +27,9 @@ class listener implements EventSubscriberInterface
 	/** @var \phpbb\language\language */
 	protected $language;
 
+	/** @var \phpbb\request\request */
+	protected $request;
+
 	/** @var \phpbb\template\template */
 	protected $template;
 
@@ -38,14 +42,16 @@ class listener implements EventSubscriberInterface
 	* @param \phpbb\config\config		  $config	Config object
 	* @param \phpbb\controller\helper	  $helper	Controller helper object
 	* @param \phpbb\language\language	  $language Language object
+	* @param \phpbb\request\request		  $request	 Request object
 	* @param \phpbb\template\template	  $template Template object
 	* @param \dls\web\core\plugin\manager $plugin	Plugin object
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\language\language $language, \phpbb\template\template $template, \dls\web\core\plugin\manager $plugin)
+	public function __construct(\phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\language\language $language, request $request, \phpbb\template\template $template, \dls\web\core\plugin\manager $plugin)
 	{
 		$this->config	= $config;
 		$this->helper	= $helper;
 		$this->language = $language;
+		$this->request	= $request;
 		$this->template = $template;
 		$this->plugin	= $plugin;
 	}
@@ -59,6 +65,8 @@ class listener implements EventSubscriberInterface
 	{
 		return [
 			'core.user_setup'  => 'add_language',
+			'core.acp_manage_forums_request_data'	 => 'web_manage_forums_request_data',
+			'core.acp_manage_forums_display_form'	 => 'web_manage_forums_display_form',
 			'core.page_header' => 'add_dls_web_data',
 			'core.memberlist_prepare_profile_data' => 'prepare_profile_data',
 			'core.memberlist_view_profile' => 'view_profile_stats',
@@ -80,6 +88,30 @@ class listener implements EventSubscriberInterface
 		];
 
 		$event['lang_set_ext'] = $lang_set_ext;
+	}
+
+	/**
+	* Event core.acp_manage_forums_request_data
+	*
+	* @param \phpbb\event\data $event The event object
+	*/
+	public function web_manage_forums_request_data($event)
+	{
+		$forum_data = $event['forum_data'];
+		$forum_data['news_fid_enable'] = $this->request->variable('news_fid_enable', 0);
+		$event['forum_data'] = $forum_data;
+	}
+
+	/**
+	* Event core.acp_manage_forums_display_form
+	*
+	* @param \phpbb\event\data $event The event object
+	*/
+	public function web_manage_forums_display_form($event)
+	{
+		$template_data = $event['template_data'];
+		$template_data['S_NEWS_FID'] = $event['forum_data']['news_fid_enable'];
+		$event['template_data'] = $template_data;
 	}
 
 	/**

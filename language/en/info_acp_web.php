@@ -28,4 +28,9 @@ $lang = array_merge($lang, [
 	'ACP_DLS_BLOCKS' => 'DLS blocks manager',
 
 	'ACP_DLS_SETTINGS_SAVED' => 'Settings have been saved successfully!',
+
+	// News settings
+	'ACP_NEWS_LEGEND' => 'News settings',
+	'ACP_NEWS_ENABLE' => 'Enable forum',
+	'ACP_NEWS_ENABLE_EXPLAIN' => 'Set <strong>Yes</strong> to enable this forum for news.',
 ]);

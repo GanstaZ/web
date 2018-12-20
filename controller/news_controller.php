@@ -25,8 +25,6 @@ class news_controller
 	/** @var \dls\web\core\news */
 	protected $news;
 
-	protected $category_ids = [2, 3, 4];
-
 	/**
 	* Constructor
 	*
@@ -55,16 +53,10 @@ class news_controller
 	*/
 	public function handle($id, $page)
 	{
-		// Check news id
-		if (!$id || !in_array($id, $this->category_ids))
-		{
-			throw new \phpbb\exception\http_exception(403, 'NO_FORUM', [$id]);
-		}
-
 		$this->news->set_page($page);
 		$this->news->base($id);
 
-		$title = sprintf($this->news->get('language')->lang('VIEW_NEWS'), $id);
+		$title = $this->news->get('language')->lang('VIEW_NEWS', $id);
 
 		return $this->helper->render('news.html', $title, 200, true);
 	}
@@ -80,7 +72,7 @@ class news_controller
 	{
 		$this->news->get_article($aid);
 
-		$title = sprintf($this->news->get('language')->lang('VIEW_ARTICLE'), $aid);
+		$title = $this->news->get('language')->lang('VIEW_ARTICLE', $aid);
 
 		return $this->helper->render('article.html', $title, 200, true);
 	}

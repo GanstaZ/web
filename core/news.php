@@ -10,6 +10,16 @@
 
 namespace dls\web\core;
 
+use phpbb\auth\auth;
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\controller\helper as controller_helper;
+use phpbb\language\language;
+use phpbb\textformatter\s9e\renderer;
+use dls\web\core\helper;
+use phpbb\user;
+use phpbb\pagination;
+
 /**
 * DLS Web news class
 */
@@ -25,16 +35,16 @@ class news
 	protected $db;
 
 	/** @var \phpbb\controller\helper */
-	protected $helper;
+	protected $controller_helper;
 
 	/** @var \phpbb\language\language */
 	protected $language;
 
-	/** @var \phpbb\template\template */
-	protected $template;
+	/** @var \phpbb\textformatter\s9e\renderer */
+	protected $renderer;
 
-	/** @var \dls\web\core\core */
-	protected $core;
+	/** @var \dls\web\core\helper */
+	protected $helper;
 
 	/** @var \phpbb\user */
 	protected $user;
@@ -45,36 +55,40 @@ class news
 	/** @var phpBB root path */
 	protected $root_path;
 
+	/** @var int Page offset for pagination */
 	protected $page;
+
+	/** @var bool is trim set */
 	protected $is_trimmed;
+
+	/** @var string news order */
 	protected $news_order = 'p.post_id DESC';
 
 	/**
 	* Constructor
 	*
-	* @param \phpbb\auth\auth				   $auth	   Auth object
-	* @param \phpbb\config\config			   $config	   Config object
-	* @param \phpbb\db\driver\driver_interface $db		   Db object
-	* @param \phpbb\controller\helper		   $helper	   Controller helper object
-	* @param \phpbb\language\language		   $language   Language object
-	* @param \phpbb\template\template		   $template   Template object
-	* @param \dls\web\core\helper			   $core	   Core helper object
-	* @param \phpbb\user					   $user	   User object
-	* @param \phpbb\pagination				   $pagination Pagination object
-	* @param string $root_path Path to the phpbb includes directory.
+	* @param \phpbb\auth\auth $auth Auth object
+	* @param \phpbb\config\config $config Config object
+	* @param \phpbb\db\driver\driver_interface $db Db object
+	* @param \phpbb\controller\helper $controller_helper Controller helper object
+	* @param \phpbb\language\language $language Language object
+	* @param \phpbb\textformatter\s9e\renderer $renderer Renderer object
+	* @param \dls\web\core\helper $helper Helper object
+	* @param \phpbb\user $user User object
+	* @param \phpbb\pagination $pagination Pagination object
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\language\language $language, \phpbb\template\template $template, \dls\web\core\helper $core, \phpbb\user $user, \phpbb\pagination $pagination, $root_path)
+	public function __construct(auth $auth, config $config, driver_interface $db, controller_helper $controller_helper, language $language, renderer $renderer, helper $helper, user $user, pagination $pagination)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->db = $db;
-		$this->helper = $helper;
+		$this->controller_helper = $controller_helper;
 		$this->language = $language;
-		$this->template = $template;
-		$this->core = $core;
+		$this->renderer = $renderer;
+		$this->helper = $helper;
 		$this->user = $user;
 		$this->pagination = $pagination;
-		$this->root_path = $root_path;
+		$this->root_path = $this->helper->get('root_path');
 
 		if (!function_exists('phpbb_get_user_rank'))
 		{
@@ -95,9 +109,9 @@ class news
 	}
 
 	/**
-	* Set start
+	* Set page start
 	*
-	* @param int $start
+	* @param int $page
 	*/
 	public function set_page($page)
 	{
@@ -125,6 +139,14 @@ class news
 	*/
 	public function base($forum_id)
 	{
+		$category = $this->get_categories();
+
+		// Check news id
+		if (!$forum_id || !$category[$forum_id])
+		{
+			throw new \phpbb\exception\http_exception(403, 'NO_FORUM', [$forum_id]);
+		}
+
 		// Check permissions
 		if (!$this->auth->acl_gets('f_list', 'f_read', $forum_id))
 		{
@@ -136,9 +158,9 @@ class news
 			login_box('', $this->language->lang('LOGIN_VIEWFORUM'));
 		}
 
-		$this->template->assign_vars([
-			'cat_name' => $this->category_name($forum_id),
-			'cat_link' => $this->helper->route('dls_web_news_base', ['id' => $forum_id]),
+		$this->helper->assign('vars', [
+			'cat_name' => $category[$forum_id],
+			'cat_link' => $this->controller_helper->route('dls_web_news_base', ['id' => $forum_id]),
 		]);
 
 		// Do the sql thang
@@ -149,7 +171,7 @@ class news
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$this->template->assign_block_vars('news', $this->get_template_data($row, true));
+			$this->helper->assign('block_vars', 'news', $this->get_template_data($row));
 		}
 
 		$this->db->sql_freeresult($result);
@@ -176,7 +198,7 @@ class news
 
 			$this->pagination->generate_template_pagination($base, 'pagination', 'page', $total, $this->config['dls_limit'], $this->page);
 
-			$this->template->assign_var('total_news', $this->language->lang('TOTAL_POSTS_COUNT', $total));
+			$this->helper->assign('var', 'total_news', $this->language->lang('TOTAL_POSTS_COUNT', $total));
 		}
 
 		return;
@@ -185,66 +207,85 @@ class news
 	/**
 	* Get sql data
 	*
+	* @param int $s_id id to get news or article data
+	* @param string $where query where clause [forum or topic]
 	* @return array
 	*/
-	public function get_sql_data($forum_id)
+	public function get_sql_data($s_id, $where = 'forum')
 	{
-		return [
-			'SELECT' => 'p.post_id, p.post_text, p.bbcode_bitfield, p.bbcode_uid, t.topic_id, t.forum_id,
-			t.topic_visibility, t.topic_title, t.topic_poster, t.topic_time, t.topic_views, t.topic_status,
-			t.topic_posts_approved, t.topic_first_post_id',
+		$sql_ary = [
+			'SELECT'	=> 't.topic_id, t.forum_id, t.topic_title, t.topic_time, t.topic_views, t.topic_status, t.topic_posts_approved,
+			p.post_id, p.poster_id, p.post_text, u.user_id, u.username, u.user_posts, u.user_rank, u.user_colour, u.user_avatar,
+			u.user_avatar_type, u.user_avatar_width, u.user_avatar_height',
 
-			'FROM' => [
-				POSTS_TABLE => 'p',
+			'FROM'		=> [
+				TOPICS_TABLE => 't',
 			],
 
 			'LEFT_JOIN' => [
 				[
-					'FROM' => [TOPICS_TABLE => 't'],
-					'ON' => 'p.post_id = t.topic_first_post_id'
+					'FROM' => [POSTS_TABLE => 'p'],
+					'ON'   => 'p.post_id = t.topic_first_post_id'
+				],
+				[
+					'FROM' => [USERS_TABLE => 'u'],
+					'ON'   => 'u.user_id = p.poster_id'
 				],
 			],
 
-			'WHERE' => 't.forum_id = ' . (int) $forum_id . '
+			'WHERE'		=> 't.' . $where . '_id = ' . (int) $s_id . '
 				AND t.topic_status <> ' . ITEM_MOVED . '
 				AND t.topic_visibility = 1',
-			'ORDER_BY' => $this->news_order,
 		];
+
+		if ($where === 'forum')
+		{
+			$sql_ary['ORDER_BY'] = $this->news_order;
+		}
+
+		return $sql_ary;
 	}
 
 	/**
 	* Get template data
 	*
+	* @param array $row data array
+	* @param string $action default is trim
 	* @return array
 	*/
-	public function get_template_data($row, $trim = null)
+	public function get_template_data($row, $action = 'trim')
 	{
-		$poster = $this->poster($row['topic_poster']);
-		$rank_title = phpbb_get_user_rank($poster, $poster['user_posts']);
-		$bbcode_options = OPTION_FLAG_BBCODE + OPTION_FLAG_SMILIES + OPTION_FLAG_LINKS;
-		$text = generate_text_for_display($row['post_text'], $row['bbcode_uid'], $row['bbcode_bitfield'], $bbcode_options, true);
+		$poster = [
+			'user_rank'		=> $row['user_rank'],
+			'avatar'		=> $row['user_avatar'],
+			'avatar_type'	=> $row['user_avatar_type'],
+			'avatar_width'	=> $row['user_avatar_width'],
+			'avatar_height'	=> $row['user_avatar_height'],
+		];
+
+		$rank_title = phpbb_get_user_rank($poster, $row['user_posts']);
+		$text = $this->renderer->render($row['post_text']);
 
 		return [
 			'id'	  => $row['post_id'],
-			'link'	  => $this->helper->route('dls_web_article', ['aid' => $row['topic_id']]),
-			'title'	  => $this->core->truncate($row['topic_title'], $this->config['dls_title_length']),
+			'link'	  => $this->controller_helper->route('dls_web_article', ['aid' => $row['topic_id']]),
+			'title'	  => $this->helper->truncate($row['topic_title'], $this->config['dls_title_length']),
 			'date'	  => $this->user->format_date($row['topic_time']),
-			'author'  => get_username_string('full', $poster['user_id'], $poster['username'], $poster['user_colour']),
+			'author'  => get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
 			'avatar'  => phpbb_get_user_avatar($poster),
 			'rank'	  => $rank_title['title'],
 			'views'	  => $row['topic_views'],
 			'replies' => $row['topic_posts_approved'] - 1,
-			'text'	  => ($trim) ? $this->trim_message($text) : $text,
+			'text'	  => ($action === 'trim') ? $this->trim_message($text) : $text,
 			'topic_link' => append_sid("{$this->root_path}viewtopic.php", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
 			'is_trimmed' => $this->is_trimmed(),
 		];
 	}
 
 	/**
-	* Trim message.
+	* Trim message
 	*
-	* @param string $text trim message, if needed.
-	*
+	* @param string $text trim message if needed
 	* @return mixed
 	*/
 	public function trim_message($text)
@@ -263,8 +304,7 @@ class news
 	/**
 	* Get offset
 	*
-	* @param string $text trim message, if needed.
-	*
+	* @param string $text trim message, if needed
 	* @return string
 	*/
 	public function get_offset($text)
@@ -275,75 +315,39 @@ class news
 	}
 
 	/**
-	* Get category name
+	* Get news categories
 	*
-	* @param int $cat_id use to get forum name.
-	*
-	* @return mixed or null
+	* @return array
 	*/
-	public function category_name($category_id = null)
+	public function get_categories()
 	{
-		$sql = 'SELECT forum_name
+		$sql = 'SELECT forum_id, forum_name
 				FROM ' . FORUMS_TABLE . '
-				WHERE forum_id = ' . (int) $category_id;
-		$result = $this->db->sql_query($sql, 3600);
-		$row = $this->db->sql_fetchrow($result);
+				WHERE forum_type = ' . FORUM_POST . '
+					AND news_fid_enable = 1';
+		$result = $this->db->sql_query($sql, 86400);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$forum_ary[(int) $row['forum_id']] = (string) $row['forum_name'];
+		}
 		$this->db->sql_freeresult($result);
 
-		return (!$row) ? false : $row['forum_name'];
-	}
-
-	/**
-	* Get category name
-	*
-	* @param int $cat_id use to get forum name.
-	*
-	* @return mixed or null
-	*/
-	public function poster($poster_id = null)
-	{
-		$sql = 'SELECT user_id, username, user_posts, user_rank, user_colour, user_avatar, user_avatar_type, user_avatar_width, user_avatar_height
-				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . (int) $poster_id;
-		$result = $this->db->sql_query($sql, 3600);
-		$row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		return (!$row) ? false : $row;
+		return ($forum_ary) ? $forum_ary : [];
 	}
 
 	/**
 	* Get article
 	*
-	* @param int $topic_id the id of the article.
-	*
-	* @return mixed or null
+	* @param int $topic_id the id of the article
+	* @return mixed
 	*/
-	public function get_article($topic_id = null)
+	public function get_article($topic_id)
 	{
 		// Do the sql thang
-		$sql = $this->db->sql_build_query('SELECT', [
-			'SELECT' => 'p.post_id, p.post_text, p.bbcode_bitfield, p.bbcode_uid, t.topic_id, t.forum_id,
-			t.topic_visibility, t.topic_title, t.topic_poster, t.topic_time, t.topic_views, t.topic_status,
-			t.topic_posts_approved, t.topic_first_post_id',
-
-			'FROM' => [
-				POSTS_TABLE => 'p',
-			],
-
-			'LEFT_JOIN' => [
-				[
-					'FROM' => [TOPICS_TABLE => 't'],
-					'ON' => 'p.post_id = t.topic_first_post_id'
-				],
-			],
-
-			'WHERE' => 't.topic_id = ' . (int) $topic_id . '
-				AND t.topic_status <> ' . ITEM_MOVED . '
-				AND t.topic_visibility = 1',
-		]);
-
-		$result = $this->db->sql_query($sql, 3600);
+		$sql_ary = $this->get_sql_data($topic_id, 'topic');
+		$sql = $this->db->sql_build_query('SELECT', $sql_ary);
+		$result = $this->db->sql_query($sql, 86400);
 		$row = $this->db->sql_fetchrow($result);
 
 		if (!$row)
@@ -351,7 +355,7 @@ class news
 			throw new \phpbb\exception\http_exception(403, 'NO_TOPICS', [$row]);
 		}
 
-		$this->template->assign_vars($this->get_template_data($row));
+		$this->helper->assign('vars', $this->get_template_data($row, 'no'));
 
 		$this->db->sql_freeresult($result);
 

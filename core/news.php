@@ -97,18 +97,6 @@ class news
 	}
 
 	/**
-	* Get
-	*
-	* @param string $name Name of the service we want to use.
-	*
-	* @return object
-	*/
-	public function get($name)
-	{
-		return $this->{$name};
-	}
-
-	/**
 	* Set page start
 	*
 	* @param int $page
@@ -142,9 +130,9 @@ class news
 		$category = $this->get_categories();
 
 		// Check news id
-		if (!$forum_id || !$category[$forum_id])
+		if (!$category[$forum_id])
 		{
-			throw new \phpbb\exception\http_exception(403, 'NO_FORUM', [$forum_id]);
+			throw new \phpbb\exception\http_exception(404, 'NO_FORUM', [$forum_id]);
 		}
 
 		// Check permissions
@@ -173,19 +161,15 @@ class news
 		{
 			$this->helper->assign('block_vars', 'news', $this->get_template_data($row));
 		}
-
 		$this->db->sql_freeresult($result);
 
 		if ($this->config['dls_show_pagination'])
 		{
-			// get total posts.
+			// Get total posts
 			$sql_ary['SELECT'] = 'COUNT(p.post_id) AS num_posts';
 			$sql = $this->db->sql_build_query('SELECT', $sql_ary);
 			$result = $this->db->sql_query($sql);
-
-			// get the total topics, this is a single row, single field.
 			$total = (int) $this->db->sql_fetchfield('num_posts');
-			// free the result
 			$this->db->sql_freeresult($result);
 
 			$base = [
@@ -286,7 +270,7 @@ class news
 	* Trim message
 	*
 	* @param string $text trim message if needed
-	* @return mixed
+	* @return string
 	*/
 	public function trim_message($text)
 	{
@@ -295,23 +279,11 @@ class news
 		if (utf8_strlen($text) > $this->config['dls_content_length'])
 		{
 			$this->is_trimmed = true;
-			$text = $this->get_offset($text);
+			$offset = ($this->config['dls_content_length'] - 3) - utf8_strlen($text);
+			$text = utf8_substr($text, 0, utf8_strrpos($text, ' ', $offset)) . $this->language->lang('ELLIPSIS');
 		}
 
 		return $text;
-	}
-
-	/**
-	* Get offset
-	*
-	* @param string $text trim message, if needed
-	* @return string
-	*/
-	public function get_offset($text)
-	{
-		$offset = ($this->config['dls_content_length'] - 3) - utf8_strlen($text);
-
-		return utf8_substr($text, 0, utf8_strrpos($text, ' ', $offset)) . $this->language->lang('ELLIPSIS');
 	}
 
 	/**

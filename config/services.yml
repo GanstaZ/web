@@ -55,5 +55,6 @@ services:
         class: dls\web\controller\news_controller
         arguments:
             - '@controller.helper'
+            - '@language'
             - '@dls.web.news'
             - '@dls.web.block.controller'

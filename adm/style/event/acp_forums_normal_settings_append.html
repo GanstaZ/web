@@ -1,0 +1,12 @@
+<fieldset>
+	<legend>{{ lang('ACP_NEWS_LEGEND') }}</legend>
+
+	<dl>
+		<dt><label for="news_fid_enable">{{ lang('ACP_NEWS_ENABLE') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_NEWS_ENABLE_EXPLAIN') }}</span></dt>
+		<dd>
+			<label><input type="radio" class="radio" name="news_fid_enable" value="1" {% if S_NEWS_FID %} checked="checked"{% endif %} /> {{ lang('YES') }}</label>
+			<label><input type="radio" class="radio" name="news_fid_enable" value="0" {% if not S_NEWS_FID %} checked="checked"{% endif %} /> {{ lang('NO') }}</label>
+		</dd>
+	</dl>
+
+</fieldset>

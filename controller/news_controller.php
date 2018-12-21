@@ -11,6 +11,7 @@
 namespace dls\web\controller;
 
 use phpbb\controller\helper;
+use phpbb\language\language;
 use dls\web\core\news;
 use dls\web\controller\block_controller;
 
@@ -22,22 +23,25 @@ class news_controller
 	/** @var \phpbb\controller\helper */
 	protected $helper;
 
+	/** @var \phpbb\language\language */
+	protected $language;
+
 	/** @var \dls\web\core\news */
 	protected $news;
-
-	protected $category_ids = [2, 3, 4];
 
 	/**
 	* Constructor
 	*
 	* @param \phpbb\controller\helper $helper Controoler helper object
+	* @param \phpbb\language\language $language Language object
 	* @param \dls\web\core\news $news News object
 	* @param \dls\web\controller\block_controller $Block Block object
 	*/
-	public function __construct(helper $helper, news $news, block_controller $block)
+	public function __construct(helper $helper, language $language, news $news, block_controller $block)
 	{
 		$this->helper = $helper;
-		$this->news	  = $news;
+		$this->language = $language;
+		$this->news = $news;
 
 		$block->load();
 	}
@@ -55,16 +59,10 @@ class news_controller
 	*/
 	public function handle($id, $page)
 	{
-		// Check news id
-		if (!$id || !in_array($id, $this->category_ids))
-		{
-			throw new \phpbb\exception\http_exception(403, 'NO_FORUM', [$id]);
-		}
-
 		$this->news->set_page($page);
 		$this->news->base($id);
 
-		$title = sprintf($this->news->get('language')->lang('VIEW_NEWS'), $id);
+		$title = $this->language->lang('VIEW_NEWS', $id);
 
 		return $this->helper->render('news.html', $title, 200, true);
 	}
@@ -80,7 +78,7 @@ class news_controller
 	{
 		$this->news->get_article($aid);
 
-		$title = sprintf($this->news->get('language')->lang('VIEW_ARTICLE'), $aid);
+		$title = $this->language->lang('VIEW_ARTICLE', $aid);
 
 		return $this->helper->render('article.html', $title, 200, true);
 	}

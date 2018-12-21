@@ -234,10 +234,10 @@ class news
 	* Get template data
 	*
 	* @param array $row data array
-	* @param string $action default is trim
+	* @param bool $trim Trim text [default is true]
 	* @return array
 	*/
-	public function get_template_data($row, $action = 'trim')
+	public function get_template_data($row, bool $trim = true)
 	{
 		$poster = [
 			'user_rank'		=> $row['user_rank'],
@@ -260,7 +260,7 @@ class news
 			'rank'	  => $rank_title['title'],
 			'views'	  => $row['topic_views'],
 			'replies' => $row['topic_posts_approved'] - 1,
-			'text'	  => ($action === 'trim') ? $this->trim_message($text) : $text,
+			'text'	  => $trim ? $this->trim_message($text) : $text,
 			'topic_link' => append_sid("{$this->root_path}viewtopic.php", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
 			'is_trimmed' => $this->is_trimmed(),
 		];
@@ -327,7 +327,7 @@ class news
 			throw new \phpbb\exception\http_exception(403, 'NO_TOPICS', [$row]);
 		}
 
-		$this->helper->assign('vars', $this->get_template_data($row, 'no'));
+		$this->helper->assign('vars', $this->get_template_data($row, false));
 
 		$this->db->sql_freeresult($result);
 

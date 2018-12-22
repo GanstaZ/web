@@ -77,15 +77,16 @@ class manager
 	/**
 	* Check conditioning
 	*
-	* @param string $status
+	* @param mixed $block_data
+	* @param array $count
 	* @return array
 	*/
-	public function check($block_data)
+	public function check($block_data, $count = null)
 	{
 		// Check for new blocks
 		if (is_array($block_data))
 		{
-			$this->prepare(array_diff_key(self::$blocks, array_flip($block_data)));
+			$this->prepare(array_diff_key(self::$blocks, array_flip($block_data)), $count);
 		}
 		else if (is_string($block_data) && !$this->get($block_data))
 		{
@@ -98,9 +99,10 @@ class manager
 	* Prepare data for installation
 	*
 	* @param array $block_data
+	* @param array $count
 	* @return null
 	*/
-	protected function prepare($block_data)
+	protected function prepare($block_data, $count)
 	{
 		foreach ($block_data as $data)
 		{
@@ -108,7 +110,7 @@ class manager
 			$this->status['add'][] = [
 				'block_name' => $data['block_name'],
 				'ext_name'	 => $data['ext_name'],
-				'position'	 => 0,
+				'position'	 => $count[$data['cat_name']] ? end(array_keys($count['side']['position'])) : 1,
 				'active'	 => 0,
 				'cat_name'   => $data['cat_name'],
 			];

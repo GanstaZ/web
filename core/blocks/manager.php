@@ -106,11 +106,18 @@ class manager
 	{
 		foreach ($block_data as $data)
 		{
+			$position = 1;
+			if ($count[$data['cat_name']])
+			{
+				$position = end(array_keys($count[$data['cat_name']]['position']));
+				$count[$data['cat_name']]['position'][] = $position++;
+			}
+
 			$this->status['update'][] = $data['block_name'];
 			$this->status['add'][] = [
 				'block_name' => $data['block_name'],
 				'ext_name'	 => $data['ext_name'],
-				'position'	 => $count[$data['cat_name']] ? end(array_keys($count['side']['position'])) : 1,
+				'position'	 => $position,
 				'active'	 => 0,
 				'cat_name'   => $data['cat_name'],
 			];

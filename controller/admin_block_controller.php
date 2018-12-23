@@ -82,11 +82,18 @@ class admin_block_controller
 				ORDER BY block_id';
 		$result = $this->db->sql_query($sql);
 
-		$data_ary = $rowset = [];
+		$data_ary = $rowset = $count = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			// Check for unavailable data
 			$this->manager->check($row['block_name']);
+
+			$count[$row['cat_name']]['block']++;
+			$count[$row['cat_name']]['position'][(int) $row['position']]++;
+			if ($count[$row['cat_name']]['position'][(int) $row['position']] > 1 && !$row['active'])
+			{
+				$count[$row['cat_name']]['position'][(int) $row['position']]--;
+			}
 
 			$data_ary[] = $row['block_name'];
 			$rowset[$row['cat_name']][$row['block_name']] = [
@@ -99,7 +106,7 @@ class admin_block_controller
 		$this->db->sql_freeresult($result);
 
 		// Check for new blocks
-		$this->manager->check($data_ary);
+		$this->manager->check($data_ary, $count);
 
 		if ($s_status = $this->manager->get_status())
 		{
@@ -122,7 +129,7 @@ class admin_block_controller
 		}
 
 		// Set output vars for display in the template
-		$this->assign_template_block_data($rowset);
+		$this->assign_template_block_data($rowset, $count);
 
 		// Set template vars
 		$this->helper->assign('vars', [
@@ -173,14 +180,15 @@ class admin_block_controller
 	* Assign template block data for blocks
 	*
 	* @param array $rowset Block data is stored here
+	* @param array $count Array of counted data [quantity of blocks and positions]
 	* @return null
 	*/
-	protected function assign_template_block_data(array $rowset)
+	protected function assign_template_block_data(array $rowset, $count)
 	{
 		foreach ($rowset as $category => $data)
 		{
 			$l_category = $this->language->lang(strtoupper($category));
-			$count_blocks = $this->helper->count($data, 'cat_name', $category);
+			$count_blocks = $count[$category]['block'];
 
 			// Set categories
 			$this->helper->assign('block_vars', 'category', ['cat_name' => $l_category,]);
@@ -188,8 +196,9 @@ class admin_block_controller
 			// Add data to given categories
 			foreach ($data as $block)
 			{
-				$block_options = $this->helper->get_options(range(0, $count_blocks), $block['position']);
-				$count_position = $this->helper->count($data, 'position', $block['position']);
+				$block_options = $this->helper->get_options(range(1, $count_blocks), $block['position']);
+				$count_position = $count[$category]['position'][$block['position']];
+
 				$this->helper->assign('block_vars', 'category.block', [
 					'name' => $block['block_name'],
 					'position' => $block['block_name'] . '_b',

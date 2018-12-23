@@ -90,19 +90,6 @@ class helper
 	}
 
 	/**
-	* Count data
-	*
-	* @param array $data Data
-	* @param string $column Column
-	* @param int|string $field Field
-	* @return int
-	*/
-	public function count($data, $column, $field)
-	{
-		return count(array_keys(array_column($data, $column), $field));
-	}
-
-	/**
 	* Get position options
 	*
 	* @param array $values Array of values

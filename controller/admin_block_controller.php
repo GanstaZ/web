@@ -90,7 +90,7 @@ class admin_block_controller
 
 			$count[$row['cat_name']]['block']++;
 			$count[$row['cat_name']]['position'][(int) $row['position']]++;
-			if (!$row['active'])
+			if ($count[$row['cat_name']]['position'][(int) $row['position']] > 1 && !$row['active'])
 			{
 				$count[$row['cat_name']]['position'][(int) $row['position']]--;
 			}
@@ -196,7 +196,7 @@ class admin_block_controller
 			// Add data to given categories
 			foreach ($data as $block)
 			{
-				$block_options = $this->helper->get_options(range(0, $count_blocks), $block['position']);
+				$block_options = $this->helper->get_options(range(1, $count_blocks), $block['position']);
 				$count_position = $count[$category]['position'][$block['position']];
 
 				$this->helper->assign('block_vars', 'category.block', [

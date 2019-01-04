@@ -82,18 +82,17 @@ class manager
 	}
 
 	/**
-	* Get block data
+	* Get block/s data
 	*
-	* @param string $service Service name
-	* @return object
+	* @param null|string $service Service name or all
+	* @return object|array
 	*/
-	public function get($service)
+	public function get($service = null)
 	{
-		if (self::$blocks[$service])
+		if (null !== $service && self::$blocks[$service])
 		{
 			return self::$blocks[$service];
 		}
-	}
 
 		return self::$blocks;
 	}

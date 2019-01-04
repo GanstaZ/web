@@ -26,9 +26,6 @@ class manager
 	/** @var array Contains validated block services */
 	protected static $blocks = false;
 
-	/** @var array Contains info about current status */
-	protected $status;
-
 	/**
 	* Constructor
 	*
@@ -75,67 +72,6 @@ class manager
 	}
 
 	/**
-	* Check conditioning
-	*
-	* @param mixed $block_data
-	* @param array $count
-	* @return array
-	*/
-	public function check($block_data, $count = null)
-	{
-		// Check for new blocks
-		if (is_array($block_data))
-		{
-			$this->prepare(array_diff_key(self::$blocks, array_flip($block_data)), $count);
-		}
-		else if (is_string($block_data) && !$this->get($block_data))
-		{
-			// Set our block/service as unavailable
-			$this->status['purge'][] = $block_data;
-		}
-	}
-
-	/**
-	* Prepare data for installation
-	*
-	* @param array $block_data
-	* @param array $count
-	* @return null
-	*/
-	protected function prepare($block_data, $count)
-	{
-		foreach ($block_data as $data)
-		{
-			$position = 1;
-			if ($count[$data['cat_name']])
-			{
-				$position = end(array_keys($count[$data['cat_name']]['position']));
-				$count[$data['cat_name']]['position'][] = $position++;
-			}
-
-			$this->status['update'][] = $data['block_name'];
-			$this->status['add'][] = [
-				'block_name' => $data['block_name'],
-				'ext_name'	 => $data['ext_name'],
-				'position'	 => $position,
-				'active'	 => 0,
-				'cat_name'   => $data['cat_name'],
-			];
-		}
-	}
-
-	/**
-	* Get status
-	*
-	* @param string $status
-	* @return array
-	*/
-	public function status($status)
-	{
-		return ($this->status[$status]) ? $this->status[$status] : [];
-	}
-
-	/**
 	* Blocks data table
 	*
 	* @return string table name
@@ -159,27 +95,7 @@ class manager
 		}
 	}
 
-	/**
-	* Check for update/purge status
-	*
-	* @return string $status
-	*/
-	public function get_status()
-	{
-		if (!$this->status)
-		{
-			return;
-		}
-		else if ($this->status('update'))
-		{
-			$status = 'update';
-		}
-		else if ($this->status('purge'))
-		{
-			$status = 'purge';
-		}
-
-		return $status;
+		return self::$blocks;
 	}
 
 	/**

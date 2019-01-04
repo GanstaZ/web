@@ -40,6 +40,9 @@ class admin_block_controller
 	/** @var \dls\web\core\helper */
 	protected $helper;
 
+	/** @var array Contains info about current status */
+	protected $status;
+
 	/** @var string Custom form action */
 	protected $u_action;
 
@@ -86,7 +89,7 @@ class admin_block_controller
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			// Check for unavailable data
-			$this->manager->check($row['block_name']);
+			$this->check($row['block_name']);
 
 			$count[$row['cat_name']]['block']++;
 			$count[$row['cat_name']]['position'][(int) $row['position']]++;
@@ -106,11 +109,11 @@ class admin_block_controller
 		$this->db->sql_freeresult($result);
 
 		// Check for new blocks
-		$this->manager->check($data_ary, $count);
+		$this->check($data_ary, $count);
 
-		if ($s_status = $this->manager->get_status())
+		if ($s_status = $this->get_status())
 		{
-			$u_update = implode($this->language->lang('COMMA_SEPARATOR'), $this->manager->status($s_status));
+			$u_update = implode($this->language->lang('COMMA_SEPARATOR'), $this->status($s_status));
 		}
 
 		// Is the form submitted
@@ -130,6 +133,8 @@ class admin_block_controller
 
 		// Set output vars for display in the template
 		$this->assign_template_block_data($rowset, $count);
+
+		unset($data_ary, $rowset, $count);
 
 		// Set template vars
 		$this->helper->assign('vars', [
@@ -160,7 +165,7 @@ class admin_block_controller
 			);
 
 			// Purge removed block/service data from db. No confirm_box is needed! It is just a cleanup process :)
-			if (in_array($block_name, $this->manager->status('purge')))
+			if (in_array($block_name, $this->status('purge')))
 			{
 				$this->db->sql_query('DELETE FROM ' . $this->manager->blocks_data() . "
 				WHERE block_name = '" . $this->db->sql_escape($block_name) . "'");
@@ -168,7 +173,7 @@ class admin_block_controller
 		}
 
 		// Add new block
-		if ($add_new_block = $this->manager->status('add'))
+		if ($add_new_block = $this->status('add'))
 		{
 			$this->db->sql_multi_insert($this->manager->blocks_data(), $add_new_block);
 		}
@@ -209,6 +214,90 @@ class admin_block_controller
 				]);
 			}
 		}
+	}
+
+	/**
+	* Check conditioning
+	*
+	* @param mixed $block_data
+	* @param array $count
+	* @return void
+	*/
+	public function check($block_data, $count = null)
+	{
+		// Check for new blocks
+		if (is_array($block_data))
+		{
+			$this->prepare(array_diff_key($this->manager->get(), array_flip($block_data)), $count);
+		}
+		else if (is_string($block_data) && !$this->manager->get($block_data))
+		{
+			// Set our block/service as unavailable
+			$this->status['purge'][] = $block_data;
+		}
+	}
+
+	/**
+	* Prepare data for installation
+	*
+	* @param array $block_data
+	* @param array $count
+	* @return void
+	*/
+	protected function prepare($block_data, $count)
+	{
+		foreach ($block_data as $data)
+		{
+			$position = 1;
+			if ($count[$data['cat_name']])
+			{
+				$position = end(array_keys($count[$data['cat_name']]['position']));
+				$count[$data['cat_name']]['position'][] = $position++;
+			}
+
+			$this->status['update'][] = $data['block_name'];
+			$this->status['add'][] = [
+				'block_name' => $data['block_name'],
+				'ext_name'	 => $data['ext_name'],
+				'position'	 => $position,
+				'active'	 => 0,
+				'cat_name'   => $data['cat_name'],
+			];
+		}
+	}
+
+	/**
+	* Get status
+	*
+	* @param string $status
+	* @return array
+	*/
+	public function status($status)
+	{
+		return ($this->status[$status]) ? $this->status[$status] : [];
+	}
+
+	/**
+	* Check for update/purge status
+	*
+	* @return string $status
+	*/
+	public function get_status()
+	{
+		if (!$this->status)
+		{
+			return;
+		}
+		else if ($this->status('update'))
+		{
+			$status = 'update';
+		}
+		else if ($this->status('purge'))
+		{
+			$status = 'purge';
+		}
+
+		return $status;
 	}
 
 	/**

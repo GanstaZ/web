@@ -23,25 +23,25 @@ use phpbb\event\dispatcher;
 */
 class whos_online implements block_interface
 {
-	/** @var \phpbb\auth\auth */
+	/** @var auth */
 	protected $auth;
 
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \phpbb\language\language */
+	/** @var language */
 	protected $language;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var \dls\web\core\helper */
+	/** @var helper */
 	protected $helper;
 
-	/** @var \phpbb\event\dispatcher */
+	/** @var dispatcher */
 	protected $dispatcher;
 
 	/** @var phpBB root path */
@@ -53,13 +53,13 @@ class whos_online implements block_interface
 	/**
 	* Constructor
 	*
-	* @param \phpbb\auth\auth $auth Auth object
-	* @param \phpbb\config\config $config Config object
-	* @param \phpbb\db\driver\driver_interface $db Db object
-	* @param \phpbb\language\language $language Language object
-	* @param \phpbb\user $user User object
-	* @param \dls\web\core\helper $helper Data helper object
-	* @param \phpbb\event\dispatcher $dispatcher Dispatcher object
+	* @param auth             $auth       Auth object
+	* @param config           $config     Config object
+	* @param driver_interface $db         Database object
+	* @param language         $language   Language object
+	* @param user             $user       User object
+	* @param helper           $helper     Data helper object
+	* @param dispatcher       $dispatcher Dispatcher object
 	*/
 	public function __construct(auth $auth, config $config, driver_interface $db, language $language, user $user, helper $helper, dispatcher $dispatcher)
 	{
@@ -77,7 +77,7 @@ class whos_online implements block_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_data()
+	public function get_data(): array
 	{
 		return [
 			'block_name' => 'dls_whos_online',
@@ -89,7 +89,7 @@ class whos_online implements block_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function load()
+	public function load(): void
 	{
 		$total_posts = (int) $this->config['num_posts'];
 		$total_topics = (int) $this->config['num_topics'];
@@ -109,18 +109,17 @@ class whos_online implements block_interface
 			$this->birthdays();
 		}
 
-		$this->helper->assign('vars',[
-			'TOTAL_POSTS' => $this->language->lang('TOTAL_POSTS_COUNT', $total_posts),
+		$this->helper->assign('vars', [
+			'TOTAL_POSTS'  => $this->language->lang('TOTAL_POSTS_COUNT', $total_posts),
 			'TOTAL_TOPICS' => $this->language->lang('TOTAL_TOPICS', $total_topics),
-			'TOTAL_USERS' => $this->language->lang('TOTAL_USERS', $total_users),
-			'NEWEST_USER' => $this->language->lang('NEWEST_USER', get_username_string('full', $this->config['newest_user_id'], $this->config['newest_username'], $this->config['newest_user_colour'])),
+			'TOTAL_USERS'  => $this->language->lang('TOTAL_USERS', $total_users),
+			'NEWEST_USER'  => $this->language->lang('NEWEST_USER', get_username_string('full', (int) $this->config['newest_user_id'], $this->config['newest_username'], $this->config['newest_user_colour'])),
 
 			'LEGEND' => $this->legend(),
-			'BIRTHDAY_LIST' => (empty($birthday_list)) ? '' : implode($this->language->lang('COMMA_SEPARATOR'), $birthday_list),
 
-			'POSTS_PER_DAY' => $this->language->lang('T_POST_DAY', (float) $posts_per_day),
+			'POSTS_PER_DAY'  => $this->language->lang('T_POST_DAY', (float) $posts_per_day),
 			'TOPICS_PER_DAY' => $this->language->lang('T_TOPICS_DAY', (float) $topics_per_day),
-			'USERS_PER_DAY' => $this->language->lang('T_USERS_DAY', (float) $users_per_day),
+			'USERS_PER_DAY'  => $this->language->lang('T_USERS_DAY', (float) $users_per_day),
 			'S_DISPLAY_BIRTHDAY_LIST' => $show_birthdays,
 		]);
 
@@ -140,7 +139,7 @@ class whos_online implements block_interface
 	*
 	* @return void
 	*/
-	protected function birthdays()
+	protected function birthdays(): void
 	{
 		$birthdays = [];
 
@@ -176,7 +175,7 @@ class whos_online implements block_interface
 
 		foreach ($rows as $row)
 		{
-			$birthday_username = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
+			$birthday_username = get_username_string('full', (int) $row['user_id'], $row['username'], $row['user_colour']);
 			$birthday_year = (int) substr($row['user_birthday'], -4);
 			$birthday_age = ($birthday_year) ? max(0, $now['year'] - $birthday_year) : '';
 
@@ -194,7 +193,7 @@ class whos_online implements block_interface
 	*
 	* @return string
 	*/
-	protected function legend()
+	protected function legend(): string
 	{
 		$order_legend = ($this->config['legend_sort_groupname']) ? 'group_name' : 'group_legend';
 
@@ -225,7 +224,7 @@ class whos_online implements block_interface
 		{
 			$colour_text = ($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . '"' : '';
 			$group_name = $this->helper->get_name($row['group_name']);
-			$group_link = append_sid("{$this->root_path}memberlist.{$this->php_ext}", 'mode=group&amp;g=' . $row['group_id']);
+			$group_link = append_sid("{$this->helper->get('root_path')}memberlist.{$this->helper->get('php_ext')}", "mode=group&amp;g={$row['group_id']}");
 
 			if ($this->not_authed($row))
 			{
@@ -245,7 +244,7 @@ class whos_online implements block_interface
 	* @param  array $row Groups data
 	* @return bool
 	*/
-	protected function not_authed($row)
+	protected function not_authed($row): bool
 	{
 		return $row['group_name'] == 'BOTS' || ($this->user->data['user_id'] != ANONYMOUS && !$this->auth->acl_get('u_viewprofile'));
 	}

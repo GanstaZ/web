@@ -10,38 +10,42 @@
 
 namespace dls\web\core\blocks\block;
 
+use phpbb\config\config;
+use phpbb\template\template;
+use phpbb\event\dispatcher;
+
 /**
 * DLS Web Information block
 */
 class information implements block_interface
 {
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
-	/** @var \phpbb\event\dispatcher */
+	/** @var dispatcher */
 	protected $dispatcher;
 
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config     $config Config object
-	* @param \phpbb\template\template $template	  Template object
-	* @param \phpbb\event\dispatcher  $dispatcher Dispatcher object
+	* @param config		$config		Config object
+	* @param template	$template	Template object
+	* @param dispatcher $dispatcher Dispatcher object
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\event\dispatcher $dispatcher)
+	public function __construct(config $config, template $template, dispatcher $dispatcher)
 	{
 		$this->config = $config;
-		$this->template = $template;
 		$this->dispatcher = $dispatcher;
+		$this->template = $template;
 	}
 
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_data()
+	public function get_data(): array
 	{
 		return [
 			'block_name' => 'dls_information',
@@ -53,7 +57,7 @@ class information implements block_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function load()
+	public function load(): void
 	{
 		/**
 		* Event dls.web.information_before

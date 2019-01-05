@@ -26,7 +26,7 @@ class mini_profile implements block_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_data()
+	public function get_data(): array
 	{
 		return [
 			'block_name' => 'dls_mini_profile',
@@ -38,7 +38,7 @@ class mini_profile implements block_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function load()
+	public function load(): void
 	{
 	}
 }

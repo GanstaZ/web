@@ -57,4 +57,4 @@ services:
             - '@controller.helper'
             - '@language'
             - '@dls.web.news'
-            - '@dls.web.block.controller'
+            - '@dls.web.block.manager'

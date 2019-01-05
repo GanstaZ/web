@@ -13,37 +13,37 @@ namespace dls\web\controller;
 use phpbb\controller\helper;
 use phpbb\language\language;
 use dls\web\core\news;
-use dls\web\controller\block_controller;
+use dls\web\core\blocks\manager;
 
 /**
 * DLS Web news controller
 */
 class news_controller
 {
-	/** @var \phpbb\controller\helper */
+	/** @var controller helper */
 	protected $helper;
 
-	/** @var \phpbb\language\language */
+	/** @var language */
 	protected $language;
 
-	/** @var \dls\web\core\news */
+	/** @var news */
 	protected $news;
 
 	/**
 	* Constructor
 	*
-	* @param \phpbb\controller\helper $helper Controoler helper object
-	* @param \phpbb\language\language $language Language object
-	* @param \dls\web\core\news $news News object
-	* @param \dls\web\controller\block_controller $Block Block object
+	* @param helper	  $helper	Controller helper object
+	* @param language $language Language object
+	* @param news	  $news		News object
+	* @param manager  $manager	Manager object
 	*/
-	public function __construct(helper $helper, language $language, news $news, block_controller $block)
+	public function __construct(helper $helper, language $language, news $news, manager $manager)
 	{
 		$this->helper = $helper;
 		$this->language = $language;
 		$this->news = $news;
 
-		$block->load();
+		$manager->load();
 	}
 
 	/**

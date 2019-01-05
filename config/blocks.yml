@@ -4,6 +4,7 @@ services:
         arguments:
             - '@dbal.conn'
             - '@dls.web.block.collection'
+            - '@dls.web.block.event'
             - '%dls.web.tables.blocks%'
 
     dls.web.admin.block.controller:
@@ -15,13 +16,6 @@ services:
             - '@dls.web.block.manager'
             - '@dls.web.helper'
             - '@cache'
-
-    dls.web.block.controller:
-        class: dls\web\controller\block_controller
-        arguments:
-            - '@dbal.conn'
-            - '@dls.web.block.manager'
-            - '@dls.web.block.event'
 
     dls.web.block.collection:
         class: phpbb\di\service_collection

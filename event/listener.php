@@ -10,43 +10,48 @@
 
 namespace dls\web\event;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use phpbb\config\config;
+use phpbb\controller\helper;
+use phpbb\language\language;
 use phpbb\request\request;
+use phpbb\template\template;
+use dls\web\core\plugin\manager;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
 * DLS Web Event listener
 */
 class listener implements EventSubscriberInterface
 {
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\controller\helper */
+	/** @var helper */
 	protected $helper;
 
-	/** @var \phpbb\language\language */
+	/** @var language */
 	protected $language;
 
-	/** @var \phpbb\request\request */
+	/** @var request */
 	protected $request;
 
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
-	/** @var \dls\web\core\plugin\manager */
+	/** @var manager */
 	protected $plugin;
 
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config		  $config	Config object
-	* @param \phpbb\controller\helper	  $helper	Controller helper object
-	* @param \phpbb\language\language	  $language Language object
-	* @param \phpbb\request\request		  $request	 Request object
-	* @param \phpbb\template\template	  $template Template object
-	* @param \dls\web\core\plugin\manager $plugin	Plugin object
+	* @param config	  $config	Config object
+	* @param helper	  $helper	Controller helper object
+	* @param language $language Language object
+	* @param request  $request	Request object
+	* @param template $template Template object
+	* @param manager  $plugin	Plugin object
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\language\language $language, request $request, \phpbb\template\template $template, \dls\web\core\plugin\manager $plugin)
+	public function __construct(config $config, helper $helper, language $language, request $request, template $template, manager $plugin)
 	{
 		$this->config	= $config;
 		$this->helper	= $helper;
@@ -61,12 +66,12 @@ class listener implements EventSubscriberInterface
 	*
 	* @return array
 	*/
-	public static function getSubscribedEvents()
+	public static function getSubscribedEvents(): array
 	{
 		return [
 			'core.user_setup'  => 'add_language',
-			'core.acp_manage_forums_request_data'	 => 'web_manage_forums_request_data',
-			'core.acp_manage_forums_display_form'	 => 'web_manage_forums_display_form',
+			'core.acp_manage_forums_request_data'  => 'web_manage_forums_request_data',
+			'core.acp_manage_forums_display_form'  => 'web_manage_forums_display_form',
 			'core.page_header' => 'add_dls_web_data',
 			'core.memberlist_prepare_profile_data' => 'prepare_profile_data',
 			'core.memberlist_view_profile' => 'view_profile_stats',
@@ -78,7 +83,7 @@ class listener implements EventSubscriberInterface
 	*
 	* @param \phpbb\event\data $event The event object
 	*/
-	public function add_language($event)
+	public function add_language($event): void
 	{
 		// Load a single language file
 		$lang_set_ext = $event['lang_set_ext'];
@@ -95,7 +100,7 @@ class listener implements EventSubscriberInterface
 	*
 	* @param \phpbb\event\data $event The event object
 	*/
-	public function web_manage_forums_request_data($event)
+	public function web_manage_forums_request_data($event): void
 	{
 		$forum_data = $event['forum_data'];
 		$forum_data['news_fid_enable'] = $this->request->variable('news_fid_enable', 0);
@@ -107,7 +112,7 @@ class listener implements EventSubscriberInterface
 	*
 	* @param \phpbb\event\data $event The event object
 	*/
-	public function web_manage_forums_display_form($event)
+	public function web_manage_forums_display_form($event): void
 	{
 		$template_data = $event['template_data'];
 		$template_data['S_NEWS_FID'] = $event['forum_data']['news_fid_enable'];
@@ -119,7 +124,7 @@ class listener implements EventSubscriberInterface
 	*
 	* @param \phpbb\event\data $event The event object
 	*/
-	public function add_dls_web_data()
+	public function add_dls_web_data(): void
 	{
 		$this->template->assign_vars([
 			'U_NEWS' => $this->helper->route('dls_web_news_base'),
@@ -131,19 +136,17 @@ class listener implements EventSubscriberInterface
 	*
 	* @param \phpbb\event\data $event The event object
 	*/
-	public function prepare_profile_data($event)
+	public function prepare_profile_data($event): void
 	{
 		$user_xp = $this->plugin->get('level')->get_member_exp($event['data']['user_posts']);
 
-		$set_data = [
-			'S_ZODIAC'		  => ($this->config['dls_zodiac']) ? 1 : 0,
-			'S_LEVEL'		  => ($user_xp['level'] === 1) ? true : false,
+		$event['template_data'] = array_merge($event['template_data'], [
+			'S_ZODIAC'		  => ($this->config['dls_zodiac']) ? 1 : 0,	   // Will be fixed later (refactoring)
+			'S_LEVEL'		  => ($user_xp['level'] === 1) ? true : false, // Same sas above
 			'U_LEVEL'		  => $user_xp['level'],
 			'U_LEVEL_PERCENT' => $user_xp['percent'],
 			'U_POINTS'		  => $user_xp['end'],
-		];
-
-		$event['template_data'] = array_merge($event['template_data'], $set_data);
+		]);
 	}
 
 	/**
@@ -151,7 +154,7 @@ class listener implements EventSubscriberInterface
 	*
 	* @param \phpbb\event\data $event The event object
 	*/
-	public function view_profile_stats($event)
+	public function view_profile_stats($event): void
 	{
 		$u_bday = $event['member']['user_birthday'];
 

@@ -18,10 +18,10 @@ use phpbb\template\template;
 */
 class helper
 {
-	/** @var \phpbb\group\helper */
+	/** @var helper */
 	protected $group_helper;
 
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
 	/** @var array Contains phpBB vars */
@@ -30,10 +30,10 @@ class helper
 	/**
 	* Constructor
 	*
-	* @param \phpbb\group\helper $group_helper Group helper object
-	* @param \phpbb\template\template $template Template object
-	* @param string $root_path Path to the phpbb includes directory
-	* @param string $php_ext PHP file extension
+	* @param group_helper $group_helper Group helper object
+	* @param template	  $template		Template object
+	* @param string		  $root_path	Path to the phpbb includes directory
+	* @param string		  $php_ext		PHP file extension
 	*/
 	public function __construct(group_helper $group_helper, template $template, $root_path, $php_ext)
 	{
@@ -45,11 +45,11 @@ class helper
 	/**
 	* Assign key variable pairs from an array to a specified block
 	*
-	* @param string $type Template function [var, vars, block_vars]
-	* @param array $data Template data
-	* @return true
+	* @param string $type Template function [var, vars, block_vars, block_vars_array]
+	* @param mixed $data Template data
+	* @return void
 	*/
-	public function assign($type, ...$data)
+	public function assign(string $type, ...$data): void
 	{
 		$this->template->{"assign_$type"}($data[0], $data[1]);
 	}
@@ -59,19 +59,18 @@ class helper
 	*
 	* @return string
 	*/
-	public function get(string $var)
+	public function get(string $var): ?string
 	{
-		return ($this->phpbb_vars[$var]) ? $this->phpbb_vars[$var] : null;
+		return $this->phpbb_vars[$var] ?? null;
 	}
 
 	/**
 	* Get group name
 	*
 	* @param string $group_name name of the group
-	*
 	* @return string group_name
 	*/
-	public function get_name($group_name)
+	public function get_name(string $group_name): string
 	{
 		return $this->group_helper->get_name($group_name);
 	}
@@ -80,13 +79,12 @@ class helper
 	* Truncate title
 	*
 	* @param string $title Truncate title
-	* @param string $length Max length of the string
-	*
-	* @return mixed
+	* @param int $length Max length of the string
+	* @return string
 	*/
-	public function truncate($title, $length)
+	public function truncate(string $title, int $length): string
 	{
-		return truncate_string(censor_text($title), $length, 255, false, '...');
+		return truncate_string(censor_text($title), (int) $length, 255, false, '...');
 	}
 
 	/**
@@ -96,7 +94,7 @@ class helper
 	* @param int $active Currently active value
 	* @return string $options
 	*/
-	public function get_options($values, $active)
+	public function get_options(array $values, int $active): string
 	{
 		$options = '';
 		foreach ($values as $value)

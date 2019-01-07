@@ -8,7 +8,7 @@
 *
 */
 
-namespace dls\web\core\plugin\astro\logy;
+namespace dls\web\core\plugins\astro\logy;
 
 /**
 * DLS Web zodiac

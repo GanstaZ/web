@@ -8,7 +8,7 @@
 *
 */
 
-namespace dls\web\core\plugin\astro;
+namespace dls\web\core\plugins\astro;
 
 /**
 * DLS Web astro base class

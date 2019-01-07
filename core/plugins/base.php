@@ -8,7 +8,7 @@
 *
 */
 
-namespace dls\web\core\plugin;
+namespace dls\web\core\plugins;
 
 /**
 * DLS Web plugin base class

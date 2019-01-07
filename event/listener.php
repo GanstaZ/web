@@ -15,7 +15,7 @@ use phpbb\controller\helper;
 use phpbb\language\language;
 use phpbb\request\request;
 use phpbb\template\template;
-use dls\web\core\plugin\manager;
+use dls\web\core\plugins\manager;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**

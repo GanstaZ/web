@@ -8,12 +8,12 @@
 *
 */
 
-namespace dls\web\core\plugin\astro;
+namespace dls\web\core\plugins\astro;
 
 /**
 * DLS Web astro manager
 */
-class manager extends \dls\web\core\plugin\base
+class manager extends \dls\web\core\plugins\base
 {
 	/**
 	* Array that contains all available astro types

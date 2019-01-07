@@ -8,15 +8,15 @@
 *
 */
 
-namespace dls\web\core\plugin;
+namespace dls\web\core\plugins\astro;
 
 /**
-* DLS Web plugin base class
+* DLS Web astro base class
 */
-abstract class base implements plugin_interface
+abstract class base implements astro_interface
 {
 	/**
-	* Plugin name
+	* Astro name
 	* @var string
 	*/
 	protected $name;
@@ -30,9 +30,9 @@ abstract class base implements plugin_interface
 	}
 
 	/**
-	* Sets the name of the plugin
+	* Sets the name of the astro type
 	*
-	* @param string	$name Name of the plugin
+	* @param string	$val Set value to the given property
 	*/
 	public function set_name($name)
 	{

@@ -1,6 +1,6 @@
 services:
     dls.web.astro:
-        class: dls\web\core\plugin\astro\manager
+        class: dls\web\core\plugins\astro\manager
         arguments:
             - '@dls.web.astro.collection'
         calls:
@@ -16,7 +16,7 @@ services:
             - { name: service_collection, tag: dls.web.astro }
 # ----- Zodiac types -----
     dls.web.zodiac:
-        class: dls\web\core\plugin\astro\logy\zodiac
+        class: dls\web\core\plugins\astro\logy\zodiac
         arguments:
             - '@dbal.conn'
             - '%dls.web.tables.zodiac%'
@@ -28,7 +28,7 @@ services:
             - { name: dls.web.astro }
 
     dls.web.chinese.zodiac:
-        class: dls\web\core\plugin\astro\logy\chinese
+        class: dls\web\core\plugins\astro\logy\chinese
         arguments:
             - '@dbal.conn'
             - '%dls.web.tables.heavenly_stems%'

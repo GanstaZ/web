@@ -8,17 +8,17 @@
 *
 */
 
-namespace dls\web\core\plugin;
+namespace dls\web\core\plugins\astro;
 
 /**
-* DLS Web interface for plugins
+* DLS Web interface for astro
 */
-interface plugin_interface
+interface astro_interface
 {
 	/**
-	* Returns the name of the plugin
+	* Returns the name of the astro
 	*
-	* @return string Name of the plugin
+	* @return string Name of the astro
 	*/
 	public function get_name();
 }

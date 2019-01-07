@@ -8,12 +8,12 @@
 *
 */
 
-namespace dls\web\core\plugin\user;
+namespace dls\web\core\plugins\user;
 
 /**
 * DLS Web level plugin
 */
-class level extends \dls\web\core\plugin\base
+class level extends \dls\web\core\plugins\base
 {
 	/**
 	* Constructor

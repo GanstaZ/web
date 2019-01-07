@@ -19,41 +19,33 @@ use dls\web\core\helper;
 */
 class recent_posts implements block_interface
 {
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \dls\web\core\helper */
+	/** @var helper */
 	protected $helper;
-
-	/** @var phpBB root path */
-	protected $root_path;
-
-	/** @var file extension */
-	protected $php_ext;
 
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config $config Config object
-	* @param \phpbb\db\driver\driver_interface $db Db object
-	* @param \dls\web\core\helper $helper Data helper object
+	* @param config			  $config Config object
+	* @param driver_interface $db	  Database object
+	* @param helper			  $helper dls helper object
 	*/
 	public function __construct(config $config, driver_interface $db, helper $helper)
 	{
 		$this->config = $config;
 		$this->db = $db;
 		$this->helper = $helper;
-		$this->root_path = $this->helper->get('root_path');
-		$this->php_ext = $this->helper->get('php_ext');
 	}
 
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_data()
+	public function get_data(): array
 	{
 		return [
 			'block_name' => 'dls_recent_posts',
@@ -65,7 +57,7 @@ class recent_posts implements block_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function load()
+	public function load(): void
 	{
 		$sql = 'SELECT p.post_id, t.topic_id, t.topic_visibility, t.topic_title, t.topic_time, t.topic_status, t.topic_last_post_id
 				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t
@@ -78,7 +70,7 @@ class recent_posts implements block_interface
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$this->helper->assign('block_vars', 'recent_posts', [
-				'link'	=> append_sid("{$this->root_path}viewtopic.{$this->php_ext}", 't=' . $row['topic_id'] . '#p' . $row['post_id']),
+				'link'	=> append_sid("{$this->helper->get('root_path')}viewtopic.{$this->helper->get('php_ext')}", "t={$row['topic_id']}#p{$row['post_id']}"),
 				'title' => $this->helper->truncate($row['topic_title'], $this->config['dls_title_length']),
 			]);
 		}

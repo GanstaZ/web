@@ -25,7 +25,7 @@ class event
 	* @param array	$data Block data
 	* @return void
 	*/
-	public function set_data($name, $data)
+	public function set_data(string $name, array $data): void
 	{
 		if (!$this->get($name))
 		{
@@ -39,13 +39,10 @@ class event
 	* Get data from a given category
 	*
 	* @param string $category Category name
-	* @return array $this->blocks_data
+	* @return array
 	*/
-	public function get($category)
+	public function get(string $category): array
 	{
-		if (self::$data[$category])
-		{
-			return self::$data[$category];
-		}
+		return self::$data[$category] ?? [];
 	}
 }

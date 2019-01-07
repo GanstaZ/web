@@ -10,12 +10,14 @@
 
 namespace dls\web\core\plugin\misc;
 
+use phpbb\language\language;
+
 /**
 * DLS Web time ago plugin
 */
 class dls_time extends \dls\web\core\plugin\base
 {
-	/** @var \phpbb\language\language */
+	/** @var language */
 	protected $language;
 
 	/** @var string used in our time ago output */
@@ -24,9 +26,9 @@ class dls_time extends \dls\web\core\plugin\base
 	/**
 	* Constructor
 	*
-	* @param \phpbb\language\language $language
+	* @param language $language
 	*/
-	public function __construct(\phpbb\language\language $language)
+	public function __construct(language $language)
 	{
 		$this->language = $language;
 	}
@@ -38,7 +40,7 @@ class dls_time extends \dls\web\core\plugin\base
 	*
 	* @return string
 	*/
-	public function ago($date)
+	public function ago($date): string
 	{
 		$interval = date_create('now')->diff(new \DateTime($date));
 
@@ -67,7 +69,7 @@ class dls_time extends \dls\web\core\plugin\base
 	*
 	* @return string
 	*/
-	protected function plural($unit)
+	protected function plural($unit): string
 	{
 		$uot = (string) key($unit);
 		$int = (int) $unit[$uot];
@@ -76,19 +78,19 @@ class dls_time extends \dls\web\core\plugin\base
 	}
 
 	/**
-	* Calculate decade
+	* Calculate decade (Will be removed.. maybe not)
 	*
 	* @param string $uot Unit of time [second, minute...]
 	* @param int	$int Time value [1, 2...]
 	*
 	* @return string
 	*/
-	protected function calculate($uot, $int)
+	protected function calculate($uot, $int): ?string
 	{
 		$arr = [];
 		if ($uot !== 'year' || $int < 10)
 		{
-			return;
+			return null;
 		}
 
 		$arr['decade'] = substr($int, 0, -1);

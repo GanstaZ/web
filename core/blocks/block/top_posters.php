@@ -10,28 +10,32 @@
 
 namespace dls\web\core\blocks\block;
 
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\template\template;
+
 /**
 * DLS Web Top Posters block
 */
 class top_posters implements block_interface
 {
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config     $config Config object
-	* @param \phpbb\db\driver\driver_interface $db		 Db object
-	* @param \phpbb\template\template		   $template Template object
+	* @param config			  $config	Config object
+	* @param driver_interface $db		Database object
+	* @param template		  $template Template object
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\template\template $template)
+	public function __construct(config $config, driver_interface $db, template $template)
 	{
 		$this->config = $config;
 		$this->db = $db;
@@ -41,7 +45,7 @@ class top_posters implements block_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_data()
+	public function get_data(): array
 	{
 		return [
 			'block_name' => 'dls_top_posters',
@@ -53,7 +57,7 @@ class top_posters implements block_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function load()
+	public function load(): void
 	{
 		$sql = 'SELECT user_id, user_type, user_posts, username, user_colour
 				FROM ' . USERS_TABLE . '
@@ -66,7 +70,7 @@ class top_posters implements block_interface
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$this->template->assign_block_vars('top_posters', [
-				'top' => get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+				'top' => get_username_string('full', (int) $row['user_id'], $row['username'], $row['user_colour']),
 				'posts' => (int) $row['user_posts'],
 			]);
 		}

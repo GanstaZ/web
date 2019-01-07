@@ -57,7 +57,7 @@ class news_controller
 	* @throws \phpbb\exception\http_exception
 	* @return \Symfony\Component\HttpFoundation\Response A Symfony Response object
 	*/
-	public function handle($id, $page)
+	public function handle(int $id, int $page)
 	{
 		$this->news->set_page($page);
 		$this->news->base($id);
@@ -74,7 +74,7 @@ class news_controller
 	* @throws \phpbb\exception\http_exception
 	* @return \Symfony\Component\HttpFoundation\Response A Symfony Response object
 	*/
-	public function handle2($aid)
+	public function handle2(int $aid)
 	{
 		$this->news->get_article($aid);
 

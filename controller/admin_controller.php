@@ -22,22 +22,22 @@ use dls\web\core\helper;
 */
 class admin_controller
 {
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\config\db_text */
+	/** @var db_text */
 	protected $db_text;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \phpbb\language\language */
+	/** @var language */
 	protected $language;
 
-	/** @var \phpbb\request\request */
+	/** @var request */
 	protected $request;
 
-	/** @var \dls\web\core\helper */
+	/** @var helper */
 	protected $helper;
 
 	/** @var string Custom form action */
@@ -46,12 +46,12 @@ class admin_controller
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config $config Config object
-	* @param \phpbb\config\db_text $db_text Config text object
-	* @param \phpbb\db\driver\driver_interface $db Db object
-	* @param \phpbb\language\language $language Language object
-	* @param \phpbb\request\request $request Request object
-	* @param \dls\web\core\helper $helper Data helper object
+	* @param config			  $config	Config object
+	* @param db_text		  $db_text	Config text object
+	* @param driver_interface $db		Database object
+	* @param language		  $language Language object
+	* @param request		  $request	Request object
+	* @param helper			  $helper	Helper object
 	*/
 	public function __construct(config $config, db_text $db_text, driver_interface $db, language $language, request $request, helper $helper)
 	{
@@ -64,12 +64,12 @@ class admin_controller
 	}
 
 	/**
-	* Get options as forum_ids
+	* Get options as forum_ids (Will be replaced)
 	*
 	* @param int $fid Current forum_id
 	* @return string
 	*/
-	protected function get_ids($fid)
+	protected function get_ids($fid): string
 	{
 		$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TABLE . '
@@ -93,9 +93,8 @@ class admin_controller
 	* Display web settings
 	*
 	* @return void
-	* @access public
 	*/
-	public function display_web()
+	public function display_web(): void
 	{
 		// Add form key for form validation checks
 		add_form_key('dls/web');
@@ -148,7 +147,7 @@ class admin_controller
 	*
 	* @return void
 	*/
-	protected function set_options()
+	protected function set_options(): void
 	{
 		$this->config->set('dls_news_fid', $this->request->variable('dls_news_fid', (int) 0));
 		$this->config->set('dls_show_pagination', $this->request->variable('dls_show_pagination', (bool) 0));
@@ -160,12 +159,12 @@ class admin_controller
 	}
 
 	/**
-	* Assign template data
+	* Assign template data (this method will be removed)
 	*
 	* @param array $data Points data
 	* @return void
 	*/
-	protected function assign_template_data(array $data)
+	protected function assign_template_data(array $data): void
 	{
 		foreach ($data as $val)
 		{
@@ -181,9 +180,8 @@ class admin_controller
 	*
 	* @param string $u_action Custom form action
 	* @return void
-	* @access public
 	*/
-	public function set_page_url($u_action)
+	public function set_page_url($u_action): void
 	{
 		$this->u_action = $u_action;
 	}

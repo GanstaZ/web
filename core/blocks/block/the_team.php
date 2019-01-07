@@ -10,6 +10,8 @@
 
 namespace dls\web\core\blocks\block;
 
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
 use dls\web\core\helper;
 
 /**
@@ -17,23 +19,23 @@ use dls\web\core\helper;
 */
 class the_team implements block_interface
 {
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \dls\web\core\helper */
+	/** @var helper */
 	protected $helper;
 
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config $config Config object
-	* @param \phpbb\db\driver\driver_interface $db Db object
-	* @param \dls\web\core\helper $helper Data helper object
+	* @param config			  $config Config object
+	* @param driver_interface $db	  Database object
+	* @param helper			  $helper dls helper object
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, helper $helper)
+	public function __construct(config $config, driver_interface $db, helper $helper)
 	{
 		$this->config = $config;
 		$this->db = $db;
@@ -43,7 +45,7 @@ class the_team implements block_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_data()
+	public function get_data(): array
 	{
 		return [
 			'block_name' => 'dls_the_team',
@@ -55,7 +57,7 @@ class the_team implements block_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function load()
+	public function load(): void
 	{
 		$group_id = (int) $this->config['dls_the_team_fid'];
 

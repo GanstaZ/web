@@ -15,29 +15,29 @@ use phpbb\language\language;
 use phpbb\request\request;
 use dls\web\core\blocks\manager;
 use dls\web\core\helper;
-use phpbb\cache\service;
+use phpbb\cache\service as cache;
 
 /**
 * DLS Web admin block controller
 */
 class admin_block_controller
 {
-	/** @var \phpbb\cache\service */
+	/** @var cache */
 	protected $cache;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \phpbb\language\language */
+	/** @var language */
 	protected $language;
 
-	/** @var \phpbb\request\request */
+	/** @var request */
 	protected $request;
 
-	/** @var \dls\web\core\blocks\manager */
+	/** @var manager */
 	protected $manager;
 
-	/** @var \dls\web\core\helper */
+	/** @var helper */
 	protected $helper;
 
 	/** @var array Contains info about current status */
@@ -49,14 +49,14 @@ class admin_block_controller
 	/**
 	* Constructor
 	*
-	* @param \phpbb\db\driver\driver_interface $db Db object
-	* @param \phpbb\language\language $language Language object
-	* @param \phpbb\request\request $request Request object
-	* @param \dls\web\core\blocks\manager $manager Data manager object
-	* @param \dls\web\core\helper $helper Data helper object
-	* @param \phpbb\cache\service $cache A cache instance or null
+	* @param driver_interface $db		Database object
+	* @param language		  $language Language object
+	* @param request		  $request	Request object
+	* @param manager		  $manager	Data manager object
+	* @param helper			  $helper	Data helper object
+	* @param cache			  $cache	A cache instance or null
 	*/
-	public function __construct(driver_interface $db, language $language, request $request, manager $manager, helper $helper, service $cache = null)
+	public function __construct(driver_interface $db, language $language, request $request, manager $manager, helper $helper, cache $cache = null)
 	{
 		$this->cache = $cache;
 		$this->db = $db;
@@ -70,9 +70,8 @@ class admin_block_controller
 	* Display blocks
 	*
 	* @return void
-	* @access public
 	*/
-	public function display_blocks()
+	public function display_blocks(): void
 	{
 		// Add form key for form validation checks
 		add_form_key('dls/blocks');
@@ -148,9 +147,9 @@ class admin_block_controller
 	* Update data
 	*
 	* @param array $data_ary Array of block names
-	* @return null
+	* @return void
 	*/
-	public function update_data($data_ary)
+	public function update_data(array $data_ary): void
 	{
 		foreach ($data_ary as $block_name)
 		{
@@ -185,10 +184,10 @@ class admin_block_controller
 	* Assign template block data for blocks
 	*
 	* @param array $rowset Block data is stored here
-	* @param array $count Array of counted data [quantity of blocks and positions]
-	* @return null
+	* @param array $count  Array of counted data [quantity of blocks and positions]
+	* @return void
 	*/
-	protected function assign_template_block_data(array $rowset, $count)
+	protected function assign_template_block_data(array $rowset, array $count): void
 	{
 		foreach ($rowset as $category => $data)
 		{
@@ -219,11 +218,11 @@ class admin_block_controller
 	/**
 	* Check conditioning
 	*
-	* @param mixed $block_data
-	* @param array $count
+	* @param string|array $block_data
+	* @param null|array $count
 	* @return void
 	*/
-	public function check($block_data, $count = null)
+	public function check($block_data, $count = null): void
 	{
 		// Check for new blocks
 		if (is_array($block_data))
@@ -244,7 +243,7 @@ class admin_block_controller
 	* @param array $count
 	* @return void
 	*/
-	protected function prepare($block_data, $count)
+	protected function prepare(array $block_data, array $count): void
 	{
 		foreach ($block_data as $data)
 		{
@@ -261,7 +260,7 @@ class admin_block_controller
 				'ext_name'	 => $data['ext_name'],
 				'position'	 => $position,
 				'active'	 => 0,
-				'cat_name'   => $data['cat_name'],
+				'cat_name'	 => $data['cat_name'],
 			];
 		}
 	}
@@ -272,9 +271,9 @@ class admin_block_controller
 	* @param string $status
 	* @return array
 	*/
-	public function status($status)
+	public function status(string $status): array
 	{
-		return ($this->status[$status]) ? $this->status[$status] : [];
+		return $this->status[$status] ?? [];
 	}
 
 	/**
@@ -282,11 +281,11 @@ class admin_block_controller
 	*
 	* @return string $status
 	*/
-	public function get_status()
+	public function get_status(): ?string
 	{
 		if (!$this->status)
 		{
-			return;
+			return null;
 		}
 		else if ($this->status('update'))
 		{
@@ -305,9 +304,8 @@ class admin_block_controller
 	*
 	* @param string $u_action Custom form action
 	* @return void
-	* @access public
 	*/
-	public function set_page_url($u_action)
+	public function set_page_url(string $u_action): void
 	{
 		$this->u_action = $u_action;
 	}

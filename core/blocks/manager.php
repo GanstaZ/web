@@ -56,7 +56,7 @@ class manager
 	* @param Service collection of blocks
 	* @return void
 	*/
-	protected function register_blocks($block_collection)
+	protected function register_blocks($block_collection): void
 	{
 		$sql = 'SELECT block_name, active
 				FROM ' . $this->blocks_data . '
@@ -86,7 +86,7 @@ class manager
 	*
 	* @return string table name
 	*/
-	public function blocks_data()
+	public function blocks_data(): string
 	{
 		return $this->blocks_data;
 	}
@@ -94,7 +94,7 @@ class manager
 	/**
 	* Get block/s data
 	*
-	* @param null|string $service Service name or all
+	* @param null|string $service Service name
 	* @return object|array
 	*/
 	public function get($service = null)
@@ -114,7 +114,7 @@ class manager
 	* @param string $type [default: cat, block]
 	* @return null
 	*/
-	public function load($data = null, string $type = 'cat')
+	public function load($data = null, string $type = 'cat'): void
 	{
 		if (!in_array($type, $this->type))
 		{
@@ -134,7 +134,7 @@ class manager
 	* @param string $type
 	* @return array
 	*/
-	protected function get_blocks($data, $type)
+	protected function get_blocks($data, $type) : array
 	{
 		$where = (null !== $data) ? $this->where_clause($data, $type) : 'active = 1';
 
@@ -172,7 +172,7 @@ class manager
 	* @param string $type
 	* @return string
 	*/
-	protected function where_clause($data, $type)
+	protected function where_clause($data, $type): string
 	{
 		if (is_array($data))
 		{
@@ -190,7 +190,7 @@ class manager
 	* @param array $blocks Array of requested blocks
 	* @return void
 	*/
-	protected function loading($blocks)
+	protected function loading($blocks): void
 	{
 		foreach ($blocks as $block)
 		{
@@ -204,7 +204,7 @@ class manager
 	* @param string $ext_name Name of the extension
 	* @return string vendor name
 	*/
-	public function get_vendor($ext_name)
+	public function get_vendor(string $ext_name): string
 	{
 		return strstr($ext_name, '_', true);
 	}
@@ -215,7 +215,7 @@ class manager
 	* @param array $data Stores data that we need to validate
 	* @return bool Depending on whether or not the block is valid
 	*/
-	public function is_valid_name(array $data)
+	public function is_valid_name(array $data): bool
 	{
 		$ext_name = $this->get_vendor($data['ext_name']);
 		$validate = utf8_strpos($data['block_name'], $ext_name);
@@ -229,7 +229,7 @@ class manager
 	* @param array $data Data array
 	* @return string $data['block_name']
 	*/
-	public function is_dls(array $data)
+	public function is_dls(array $data): string
 	{
 		if ($this->get_vendor($data['ext_name']) === 'dls')
 		{

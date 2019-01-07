@@ -17,12 +17,3 @@ services:
             - [set_name, [level]]
         tags:
             - { name: dls.web.plugin }
-
-    dls.web.time.plugin:
-        class: dls\web\core\plugin\misc\dls_time
-        arguments:
-            - '@language'
-        calls:
-            - [set_name, [time]]
-        tags:
-            - { name: dls.web.plugin }

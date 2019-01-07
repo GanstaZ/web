@@ -8,14 +8,14 @@
 *
 */
 
-namespace dls\web\core\plugin\misc;
+namespace dls\web\core;
 
 use phpbb\language\language;
 
 /**
-* DLS Web time ago plugin
+* DLS Web time ago
 */
-class dls_time extends \dls\web\core\plugin\base
+class dls_time
 {
 	/** @var language */
 	protected $language;

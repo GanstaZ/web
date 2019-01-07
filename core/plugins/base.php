@@ -15,10 +15,7 @@ namespace dls\web\core\plugins;
 */
 abstract class base implements plugin_interface
 {
-	/**
-	* Plugin name
-	* @var string
-	*/
+	/** @var string Plugin name */
 	protected $name;
 
 	/**

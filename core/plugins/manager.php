@@ -10,37 +10,52 @@
 
 namespace dls\web\core\plugins;
 
+use phpbb\di\service_collection;
+
 /**
-* DLS Web plugin manager
+* DLS Web plugins manager
 */
 class manager
 {
-	/**
-	* Array that contains all available plugins
-	* @var array
-	*/
-	protected $plugins;
+	/** @var array Contains all available plugins */
+	protected static $plugins = false;
 
 	/**
 	* Constructor
 	*
-	* @param \phpbb\di\service_collection $plugins
+	* @param service_collection $plugins
 	*/
-	public function __construct(\phpbb\di\service_collection $plugins)
+	public function __construct(service_collection $plugins)
 	{
 		$this->register_plugins($plugins);
 	}
 
 	/**
+	* Register all available plugins
+	*
+	* @param Service collection of plugins
+	*/
+	protected function register_plugins($plugins): void
+	{
+		if (!empty($plugins))
+		{
+			self::$plugins = [];
+			foreach ($plugins as $plugin)
+			{
+				self::$plugins[$plugin->get_name()] = $plugin;
+			}
+		}
+	}
+
+	/**
 	* Get plugin
 	*
-	* @param string $name Name of the service we want to use.
-	*
+	* @param string $name Name of the plugin we want to load
 	* @return object
 	*/
 	public function get($name)
 	{
-		return $this->plugins[$name];
+		return self::$plugins[$name] ?? null;
 	}
 
 	/**
@@ -48,39 +63,22 @@ class manager
 	*
 	* @return array
 	*/
-	public function get_plugins()
+	public function get_plugins(): array
 	{
-		return $this->plugins;
+		return array_keys(self::$plugins) ?? [];
 	}
 
 	/**
 	* Remove plugin
 	*
-	* @param string $name Name of the plugin service we want to remove
-	*
+	* @param string $name Name of the plugin we want to remove
 	* @return void
 	*/
-	public function remove($name)
+	public function remove($name): void
 	{
-		if (isset($this->plugins[$name]) || array_key_exists($name, $this->plugins))
+		if (isset(self::$plugins[$name]) || array_key_exists($name, self::$plugins))
 		{
-			unset($this->plugins[$name]);
-		}
-	}
-
-	/**
-	* Register all available plugins
-	*
-	* @param array $plugins Array of available plugins
-	*/
-	protected function register_plugins($plugins)
-	{
-		if (!empty($plugins))
-		{
-			foreach ($plugins as $plugin)
-			{
-				$this->plugins[$plugin->get_name()] = $plugin;
-			}
+			unset(self::$plugins[$name]);
 		}
 	}
 }

@@ -49,12 +49,12 @@ class admin_block_controller
 	/**
 	* Constructor
 	*
-	* @param driver_interface $db       Database object
-	* @param language         $language Language object
-	* @param request          $request  Request object
-	* @param manager          $manager  Data manager object
-	* @param helper           $helper   Data helper object
-	* @param cache            $cache    A cache instance or null
+	* @param driver_interface $db		Database object
+	* @param language		  $language Language object
+	* @param request		  $request	Request object
+	* @param manager		  $manager	Data manager object
+	* @param helper			  $helper	Data helper object
+	* @param cache			  $cache	A cache instance or null
 	*/
 	public function __construct(driver_interface $db, language $language, request $request, manager $manager, helper $helper, cache $cache = null)
 	{
@@ -260,7 +260,7 @@ class admin_block_controller
 				'ext_name'	 => $data['ext_name'],
 				'position'	 => $position,
 				'active'	 => 0,
-				'cat_name'   => $data['cat_name'],
+				'cat_name'	 => $data['cat_name'],
 			];
 		}
 	}

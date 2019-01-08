@@ -8,7 +8,7 @@
 *
 */
 
-namespace dls\web\core\plugins\astro\logy;
+namespace dls\web\core\plugins\astro\zodiac;
 
 /**
 * DLS Web zodiac interface
@@ -19,7 +19,6 @@ interface zodiac_interface
 	* Load zodiac data (tropical, sidereal, chinese)
 	*
 	* @param object $format Format date string to (m-d, Y & so on)
-	*
 	* @return array
 	*/
 	public function load($format);
@@ -28,7 +27,6 @@ interface zodiac_interface
 	* Get the zodiac data
 	*
 	* @param array $row Zodiac data
-	*
 	* @return array Zodiac data, must have keys sign (clean name), info (element) e.g.
 	*		 ['sign' => '', 'info' => '', 'name' => '']
 	*/

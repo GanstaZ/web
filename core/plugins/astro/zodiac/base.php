@@ -8,12 +8,14 @@
 *
 */
 
-namespace dls\web\core\plugins\astro\logy;
+namespace dls\web\core\plugins\astro\zodiac;
+
+use dls\web\core\plugins\astro\astro_interface;
 
 /**
 * DLS Web zodiac base class
 */
-abstract class base extends \dls\web\core\plugins\astro\base implements zodiac_interface
+abstract class base implements astro_interface, zodiac_interface
 {
 	/**
 	* Zodiac format

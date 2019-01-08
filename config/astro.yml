@@ -14,26 +14,25 @@ services:
             - '@service_container'
         tags:
             - { name: service_collection, tag: dls.web.astro }
+
 # ----- Zodiac types -----
     dls.web.zodiac:
-        class: dls\web\core\plugins\astro\logy\zodiac
+        class: dls\web\core\plugins\astro\zodiac\zodiac
         arguments:
             - '@dbal.conn'
             - '%dls.web.tables.zodiac%'
             - '%dls.web.tables.zodiac_data%'
         calls:
-            - [set_name, [zodiac]]
             - [set_format, [m-d]]
         tags:
             - { name: dls.web.astro }
 
-    dls.web.chinese.zodiac:
-        class: dls\web\core\plugins\astro\logy\chinese
+    dls.web.zodiac.chinese:
+        class: dls\web\core\plugins\astro\zodiac\chinese
         arguments:
             - '@dbal.conn'
             - '%dls.web.tables.heavenly_stems%'
         calls:
-            - [set_name, [zodiac]]
             - [set_format, [Y]]
         tags:
             - { name: dls.web.astro }

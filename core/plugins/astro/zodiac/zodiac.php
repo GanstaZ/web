@@ -8,14 +8,16 @@
 *
 */
 
-namespace dls\web\core\plugins\astro\logy;
+namespace dls\web\core\plugins\astro\zodiac;
+
+use phpbb\db\driver\driver_interface;
 
 /**
 * DLS Web zodiac
 */
 class zodiac extends base
 {
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
 	/** @var zodiac table */
@@ -27,15 +29,26 @@ class zodiac extends base
 	/**
 	* Constructor
 	*
-	* @param \phpbb\db\driver\driver_interface $db			Db object
-	* @param string							   $zodiac		Zodiac table
-	* @param string							   $zodiac_data Data table
+	* @param driver_interface $db		   Database object
+	* @param string			  $zodiac	   Zodiac table
+	* @param string			  $zodiac_data Data table
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, $zodiac, $zodiac_data)
+	public function __construct(driver_interface $db, $zodiac, $zodiac_data)
 	{
 		$this->db = $db;
 		$this->zodiac = $zodiac;
 		$this->zodiac_data = $zodiac_data;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public static function astro_data(): array
+	{
+		return [
+			'type' => 'zodiac',
+			'name' => 'zodiac',
+		];
 	}
 
 	/**

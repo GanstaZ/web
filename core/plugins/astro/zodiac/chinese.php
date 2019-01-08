@@ -8,14 +8,16 @@
 *
 */
 
-namespace dls\web\core\plugins\astro\logy;
+namespace dls\web\core\plugins\astro\zodiac;
+
+use phpbb\db\driver\driver_interface;
 
 /**
 * DLS Web chinese zodiac
 */
 class chinese extends base
 {
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
 	/** @var zodiac heavenly stems table */
@@ -24,13 +26,24 @@ class chinese extends base
 	/**
 	* Constructor
 	*
-	* @param \phpbb\db\driver\driver_interface $db			 Db object
-	* @param string							   $zodiac_stems Zodiac heavenly stems table
+	* @param driver_interface $db			Database object
+	* @param string			  $zodiac_stems Zodiac heavenly stems table
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, $zodiac_stems)
+	public function __construct(driver_interface $db, $zodiac_stems)
 	{
 		$this->db = $db;
 		$this->zodiac_stems = $zodiac_stems;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public static function astro_data(): array
+	{
+		return [
+			'type' => 'zodiac',
+			'name' => 'chinese',
+		];
 	}
 
 	/**

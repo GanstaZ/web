@@ -10,79 +10,56 @@
 
 namespace dls\web\core\plugins\astro;
 
+use phpbb\di\service_collection;
+use dls\web\core\plugins\base;
+
 /**
 * DLS Web astro manager
 */
-class manager extends \dls\web\core\plugins\base
+class manager extends base
 {
-	/**
-	* Array that contains all available astro types
-	* @var array
-	*/
-	protected $astro;
+	/** @var array Contains all available astro types */
+	protected static $astro = false;
 
 	/**
 	* Constructor
 	*
-	* @param @param \phpbb\di\service_collection $astro_types Astro types passed via the service container
+	* @param service_collection $astro_types Service collection
 	*/
-	public function __construct(\phpbb\di\service_collection $astro_types)
+	public function __construct(service_collection $astro_types)
 	{
 		$this->register_astro_types($astro_types);
 	}
 
 	/**
-	* Get astro type by name
-	*	 For zodiac $this->get_astro_type($name)[0]->load($date->format('...'))
-	*
-	* @param string $name Name of the astro type
-	*
-	* @return object
-	*/
-	public function get_astro_type($name)
-	{
-		return isset($this->astro[$name]) ? $this->astro[$name] : [];
-	}
-
-	/**
-	* Get available types
-	*
-	* @return array
-	*/
-	public function get_all()
-	{
-		return $this->astro;
-	}
-
-	/**
-	* Remove type
-	*
-	* @param string $name Name of the type service we want to remove
-	*
-	* @return void
-	*/
-	public function remove($name)
-	{
-		if (isset($this->astro[$name]) || array_key_exists($name, $this->astro))
-		{
-			unset($this->astro[$name]);
-		}
-	}
-
-	/**
 	* Register all available astro types
 	*
-	* @param array $astro_types Array of available astro types
+	* @param Service collection of astro types
 	*/
-	protected function register_astro_types($astro_types)
+	protected function register_astro_types($astro_types): void
 	{
 		if (!empty($astro_types))
 		{
+			self::$astro = [];
 			foreach ($astro_types as $type)
 			{
-				$this->astro[$type->get_name()][] = $type;
+				$data = $type::astro_data();
+
+				self::$astro[$data['type']][$data['name']] = $type;
 			}
 		}
+	}
+
+	/**
+	* Get astro type by name
+	*	 For zodiac $this->get_astro_type($name)['service_name']->load($date->format('...'))
+	*
+	* @param string $name Name of the astro type
+	* @return array
+	*/
+	public function get_astro_type($name): array
+	{
+		return self::$astro[$name] ?? [];
 	}
 
 	/**
@@ -90,14 +67,13 @@ class manager extends \dls\web\core\plugins\base
 	*
 	* @param string		 $name Name of the astro type
 	* @param null|object $date Format date string to (m-d, Y & so on)
-	*
-	* @return array|object
+	* @return array
 	*/
-	public function get_data($name, $date = null)
+	public function get_data(string $name, $date = null): ?array
 	{
 		if (!$this->is_valid_input($name, $date))
 		{
-			return;
+			return null;
 		}
 
 		$array = [];
@@ -114,11 +90,10 @@ class manager extends \dls\web\core\plugins\base
 	*
 	* @param string		 $name Name of the astro type
 	* @param null|object $date Format date string to (m-d, Y & so on)
-	*
-	* @return bool true|false
+	* @return bool
 	*/
-	private function is_valid_input($name, $date)
+	private function is_valid_input($name, $date): bool
 	{
-		return isset($this->astro[$name]) || (!is_null($date) && !is_object($date));
+		return $this->get_astro_type($name) || (null !== $date && !is_object($date));
 	}
 }

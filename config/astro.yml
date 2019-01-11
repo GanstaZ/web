@@ -15,13 +15,19 @@ services:
         tags:
             - { name: service_collection, tag: dls.web.astro }
 
+    dls.web.zodiac.helper:
+        class: dls\web\core\plugins\astro\zodiac\helper
+        arguments:
+            - '@cache'
+            - '@dbal.conn'
+            - '%dls.web.tables.zodiac%'
+            - '%dls.web.tables.zodiac_data%'
+
 # ----- Zodiac types -----
     dls.web.zodiac:
         class: dls\web\core\plugins\astro\zodiac\zodiac
         arguments:
-            - '@dbal.conn'
-            - '%dls.web.tables.zodiac%'
-            - '%dls.web.tables.zodiac_data%'
+            - '@dls.web.zodiac.helper'
         calls:
             - [set_format, [m-d]]
         tags:
@@ -31,8 +37,18 @@ services:
         class: dls\web\core\plugins\astro\zodiac\chinese
         arguments:
             - '@dbal.conn'
+            - '@dls.web.zodiac.helper'
             - '%dls.web.tables.heavenly_stems%'
         calls:
             - [set_format, [Y]]
+        tags:
+            - { name: dls.web.astro }
+
+    dls.web.zodiac.myanmar:
+        class: dls\web\core\plugins\astro\zodiac\myanmar
+        arguments:
+            - '@dls.web.zodiac.helper'
+        calls:
+            - [set_format, [l]]
         tags:
             - { name: dls.web.astro }

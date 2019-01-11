@@ -13,12 +13,15 @@ namespace dls\web\core\plugins\astro\zodiac;
 use phpbb\db\driver\driver_interface;
 
 /**
-* DLS Web chinese zodiac
+* DLS Web Chinese zodiac
 */
 class chinese extends base
 {
 	/** @var driver_interface */
 	protected $db;
+
+	/** @var helper */
+	protected $helper;
 
 	/** @var zodiac heavenly stems table */
 	protected $zodiac_stems;
@@ -26,12 +29,14 @@ class chinese extends base
 	/**
 	* Constructor
 	*
-	* @param driver_interface $db			Database object
-	* @param string			  $zodiac_stems Zodiac heavenly stems table
+	* @param driver_interface $db			 Database object
+	* @param helper			  $helper Zodiac Helper object
+	* @param string			  $zodiac_stems	 Zodiac heavenly stems table
 	*/
-	public function __construct(driver_interface $db, $zodiac_stems)
+	public function __construct(driver_interface $db, helper $helper, $zodiac_stems)
 	{
 		$this->db = $db;
+		$this->helper = $helper;
 		$this->zodiac_stems = $zodiac_stems;
 	}
 
@@ -49,7 +54,7 @@ class chinese extends base
 	/**
 	* {@inheritdoc}
 	*/
-	public function load($year)
+	public function load(string $year): array
 	{
 		// Twelve earthly branches
 		$animals = ['PIG', 'RAT', 'OX', 'TIGER', 'RABBIT', 'DRAGON', 'SNAKE', 'HORSE', 'GOAT', 'MONKEY', 'ROOSTER', 'DOG'];
@@ -60,11 +65,11 @@ class chinese extends base
 
 		if (isset($animals[$get]) || array_key_exists($get, $animals))
 		{
-			return [$this->get_data([
-				'sign' => $animals[$get],
-				'enr'  => $year,
-				'type' => 5,
-			])];
+			$row = $this->get_stem($year);
+			$row['animal'] = $animals[$get];
+			$row = array_merge($row, $this->helper->zodiac_data(5)[(int) $row['zid']]);
+
+			return [$this->get_data($row)];
 		}
 	}
 
@@ -72,26 +77,24 @@ class chinese extends base
 	* Get stem
 	*
 	* @param int $year Year is equivalent to one of the sexagenary cycle number
-	*
 	* @return string $stem
 	*/
-	protected function get_stem($year)
+	public function get_stem(int $year): ?array
 	{
 		// Ten heavenly stems & their cycle numbers (number 0 is equivalent to 60)
-		$sql = 'SELECT stem, a_id, b_id, c_id, d_id, e_id, f_id
+		$sql = 'SELECT snr, enr, zid
 				FROM ' . $this->zodiac_stems . '
-				WHERE a_id = ' . (int) $year . '
-					OR b_id = ' . (int) $year . '
-					OR c_id = ' . (int) $year . '
-					OR d_id = ' . (int) $year . '
-					OR e_id = ' . (int) $year . '
-					OR f_id = ' . (int) $year;
+				WHERE aid = ' . (int) $year . '
+					OR bid = ' . (int) $year . '
+					OR cid = ' . (int) $year . '
+					OR did = ' . (int) $year . '
+					OR eid = ' . (int) $year . '
+					OR fid = ' . (int) $year;
 		$result = $this->db->sql_query($sql, 3600);
-		//$row = $this->db->sql_fetchrow($result);
-		$row = $this->db->sql_fetchfield('stem');
+		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		return (!$row) ? false : $row;
+		return $row ?? null;
 	}
 
 	/**
@@ -104,10 +107,9 @@ class chinese extends base
 	* 1 AD, 2 AD and 3 AD correspond respectively to the 58th, 59th and 60th years of the sexagenary cycle.
 	*
 	* @param string $year Year to calculate cycle
-	*
 	* @return float
 	*/
-	public function get_sexagenary_cycle_number($year)
+	public function get_sexagenary_cycle_number(string $year): float
 	{
 		if ($year < 0)
 		{
@@ -120,27 +122,11 @@ class chinese extends base
 	/**
 	* Sexagenary cycle formula
 	*
-	* @param string $year Year to calculate cycle
-	*
+	* @param int $year Year to calculate cycle
 	* @return float
 	*/
-	protected function cycle_formula($year)
+	protected function cycle_formula(int $year): float
 	{
 		return $year - (60 * (floor($year / 60)));
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function get_data($row)
-	{
-		return [
-			'sign'	=> $row['sign'],
-			'plant' => '',
-			'gems'	=> '',
-			'ruler' => '',
-			'extra' => $this->get_stem((int) $row['enr']),
-			'name'	=> $this->types[(int) $row['type']],
-		];
 	}
 }

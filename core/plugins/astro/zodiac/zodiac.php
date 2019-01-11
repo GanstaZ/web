@@ -10,34 +10,22 @@
 
 namespace dls\web\core\plugins\astro\zodiac;
 
-use phpbb\db\driver\driver_interface;
-
 /**
 * DLS Web zodiac
 */
 class zodiac extends base
 {
-	/** @var driver_interface */
-	protected $db;
-
-	/** @var zodiac table */
-	protected $zodiac;
-
-	/** @var zodiac data table */
-	protected $zodiac_data;
+	/** @var helper */
+	protected $helper;
 
 	/**
 	* Constructor
 	*
-	* @param driver_interface $db		   Database object
-	* @param string			  $zodiac	   Zodiac table
-	* @param string			  $zodiac_data Data table
+	* @param helper $helper Zodiac Helper object
 	*/
-	public function __construct(driver_interface $db, $zodiac, $zodiac_data)
+	public function __construct(helper $helper)
 	{
-		$this->db = $db;
-		$this->zodiac = $zodiac;
-		$this->zodiac_data = $zodiac_data;
+		$this->helper = $helper;
 	}
 
 	/**
@@ -54,23 +42,19 @@ class zodiac extends base
 	/**
 	* {@inheritdoc}
 	*/
-	public function load($dob)
+	public function load(string $dob): array
 	{
-		// Do the sql thang
-		$sql = 'SELECT z.*, zd.*
-					FROM ' . $this->zodiac . ' z, ' . $this->zodiac_data . ' zd
-					WHERE z.zodiac_id = zd.zid';
-		$result = $this->db->sql_query($sql, 3600);
-
 		$array = [];
-		while ($row = $this->db->sql_fetchrow($result))
+		foreach ($this->helper->filter([1, 2, 3, 4]) as $rows)
 		{
-			if ($this->compare($dob, $row))
+			foreach ($rows as $row)
 			{
-				$array[] = $this->get_data($row);
+				if ($this->compare($dob, $row))
+				{
+					$array[] = $this->get_data($row);
+				}
 			}
 		}
-		$this->db->sql_freeresult($result);
 
 		return $array;
 	}
@@ -80,27 +64,24 @@ class zodiac extends base
 	*
 	* @param string $dob date of birth (day and month)
 	* @param array	$row Array of dates
-	*
 	* @return bool
 	*/
-	protected function compare($dob, $row)
+	protected function compare(string $dob, array $row): bool
 	{
-		return $dob >= $row['start'] && $dob <= $row['end'];
+		[$month, $day] = $this->map($dob);
+		$date = $this->map($row['date']);
+
+		return ($month === $date[0] && $day >= $date[1]) || ($month === $date[2] && $day <= $date[3]);
 	}
 
 	/**
-	* {@inheritdoc}
+	* Map data
+	*
+	* @param string $date start/end date of the zodiac
+	* @return array
 	*/
-	public function get_data($row)
+	protected function map(string $date): array
 	{
-		return [
-			'sign'	=> $row['sign'],
-			'plant' => $row['plant'],
-			'gems'	=> $row['gems'],
-			'ruler' => $row['ruler'],
-			'moon'  => $row['ext'],
-			'extra' => $this->elements[(int) $row['enr']],
-			'name'	=> $this->types[(int) $row['type']],
-		];
+		return array_map('intval', explode('-', $date));
 	}
 }

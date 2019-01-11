@@ -25,9 +25,31 @@ $lang = array_merge($lang, [
 	'NATIVE'   => 'Native',
 	'CELTIC'   => 'Celtic',
 	'CHINESE'  => 'Chinese',
+	'MYANMAR'  => 'Myanmar',
 	'PLANT'	   => 'Plant',
 	'STONE'	   => 'Stone',
 	'RULER'	   => 'Ruler',
+
+	// Elements
+	'FIRE'	=> 'Fire',
+	'EARTH' => 'Earth',
+	'AIR'	=> 'Air',
+	'WATER' => 'Water',
+	'WOOD'  => 'Wood',
+	'METAL' => 'Metal',
+	'TOTEM' => 'Totem',
+
+	'STEM' => [
+		1 => 'Yang',
+		2 => 'Yin',
+	],
+
+	// Seasons
+	'AUTUMN' => 'Autumn',
+	'SPRING' => 'Spring',
+	'WINTER' => 'Winter',
+	'SUMMER' => 'Summer',
+	'LMOTS'  => 'Last month of the season',
 
 	// Tropical/Sidereal signs
 	'ARIES'		  => 'Aries',
@@ -74,24 +96,20 @@ $lang = array_merge($lang, [
 	'SEAHORSE'	 => 'Seahorse',
 	'WOODPECKER' => 'Woodpecker',
 	'BUTTERFLY'	 => 'Butterfly',
+	// Myanmar signs
+	'GARUDA'	  => 'Garuda',
+	'LION'	      => 'Lion',
+	'ELEPHANT'	  => 'Elephant',
+	'ELEPHANT_WT' => 'Elephant (With tusks)',
+	'GUINEA_PIG'  => 'Guinea Pig',
 
-	// Elements
-	'FIRE'	=> 'Fire %s',
-	'EARTH' => 'Earth %s',
-	'AIR'	=> 'Air %s',
-	'WATER' => 'Water %s',
-	'TOTEM' => 'Totem %s',
-
-	'YANG_WOOD'	 => 'Yang Wood %s',
-	'YIN_WOOD'	 => 'Yin Wood %s',
-	'YANG_FIRE'	 => 'Yang Fire %s',
-	'YIN_FIRE'	 => 'Yin Fire %s',
-	'YANG_EARTH' => 'Yang Earth %s',
-	'YIN_EARTH'	 => 'Yin Earth %s',
-	'YANG_METAL' => 'Yang Metal %s',
-	'YIN_METAL'	 => 'Yin Metal %s',
-	'YANG_WATER' => 'Yang Water %s',
-	'YIN_WATER'	 => 'Yin Water %s',
+	// Four symbols of the Chinese constellations
+	'WHITE_TIGER'	  => 'White Tiger',
+	'AZURE_DRAGON'	  => 'Azure Dragon',
+	'BLACK_TORTOISE'  => 'Black Tortoise',
+	'WERMILLION_BIRD' => 'Wermillion Bird',
+	// Yellow Emperor of the center of the universe
+	'YELLOW_DRAGON'   => 'Yellow Dragon',
 
 	// Plants (Trees/Flowers)
 	'BIRCH'	   => 'Birch',

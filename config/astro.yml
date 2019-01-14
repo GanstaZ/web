@@ -21,7 +21,7 @@ services:
             - '@cache'
             - '@dbal.conn'
             - '%dls.web.tables.zodiac%'
-            - '%dls.web.tables.zodiac_data%'
+            - '%dls.web.tables.zodiac_dates%'
 
 # ----- Zodiac types -----
     dls.web.zodiac:
@@ -37,7 +37,7 @@ services:
         class: dls\web\core\plugins\astro\zodiac\chinese
         arguments:
             - '@dbal.conn'
-            - '@dls.web.zodiac.helper'
+            - '%dls.web.tables.zodiac_symbols%'
             - '%dls.web.tables.heavenly_stems%'
         calls:
             - [set_format, [Y]]

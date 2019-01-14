@@ -32,6 +32,7 @@ class m4_dls_zodiac extends \phpbb\db\migration\migration
 			// Add zodiac data
 			['custom', [[$this, 'zodiac_data']]],
 			['custom', [[$this, 'zodiac_dates']]],
+			['custom', [[$this, 'zodiac_symbols']]],
 			['custom', [[$this, 'zodiac_heavenly_stems']]],
 		];
 	}
@@ -84,21 +85,15 @@ class m4_dls_zodiac extends \phpbb\db\migration\migration
 				['sign' => 'BUTTERFLY', 'plant'=> 'IVY',	  'gem' => 'OPAL',		 'ruler' => 'MOON',	   'ext' => 'EXPLORING',	'enr' => 3, 'dir' => 0,],
 				['sign' => 'WOLF',		'plant'=> 'REED',	  'gem' => 'JASPER',	 'ruler' => 'PLUTO',   'ext' => 'HARMONIC',		'enr' => 4, 'dir' => 0,],
 				['sign' => 'HAWK',		'plant'=> 'ELDER',	  'gem' => 'BLOODSTONE', 'ruler' => 'JUPITER', 'ext' => 'REGENERATING', 'enr' => 1, 'dir' => 0,],
-				// Chinese
-				['sign' => 'WHITE_TIGER',	  'plant'=> '', 'gem' => '', 'ruler' => 'VENUS',   'ext' => 'AUTUMN', 'enr' => 0, 'dir' => 4,],
-				['sign' => 'AZURE_DRAGON',	  'plant'=> '', 'gem' => '', 'ruler' => 'JUPITER', 'ext' => 'SPRING', 'enr' => 0, 'dir' => 2,],
-				['sign' => 'BLACK_TORTOISE',  'plant'=> '', 'gem' => '', 'ruler' => 'MERCURY', 'ext' => 'WINTER', 'enr' => 0, 'dir' => 1,],
-				['sign' => 'WERMILLION_BIRD', 'plant'=> '', 'gem' => '', 'ruler' => 'MARS',	   'ext' => 'SUMMER', 'enr' => 0, 'dir' => 3,],
-				['sign' => 'YELLOW_DRAGON',	  'plant'=> '', 'gem' => '', 'ruler' => 'SATURN',  'ext' => 'LMOTS',  'enr' => 0, 'dir' => 9,],
 				// Myanmar
-				['sign' => 'GARUDA',	  'plant'=> '', 'gem' => '', 'ruler' => 'SUN',	   'ext' => 'Sunday',		'enr' => 0, 'dir' => 5,],
-				['sign' => 'TIGER',		  'plant'=> '', 'gem' => '', 'ruler' => 'MOON',	   'ext' => 'Monday',		'enr' => 0, 'dir' => 2,],
-				['sign' => 'LION',		  'plant'=> '', 'gem' => '', 'ruler' => 'MARS',	   'ext' => 'Tuesday',		'enr' => 0, 'dir' => 6,],
-				['sign' => 'ELEPHANT_WT', 'plant'=> '', 'gem' => '', 'ruler' => 'MERCURY', 'ext' => 'Wednesday',	'enr' => 0, 'dir' => 3,],
-				['sign' => 'ELEPHANT',	  'plant'=> '', 'gem' => '', 'ruler' => 'RAHU',	   'ext' => 'Wednesday-12', 'enr' => 0, 'dir' => 8,],
-				['sign' => 'RAT',		  'plant'=> '', 'gem' => '', 'ruler' => 'JUPITER', 'ext' => 'Thursday',		'enr' => 0, 'dir' => 4,],
-				['sign' => 'GUINEA_PIG',  'plant'=> '', 'gem' => '', 'ruler' => 'VENUS',   'ext' => 'Friday',		'enr' => 0, 'dir' => 1,],
-				['sign' => 'DRAGON',	  'plant'=> '', 'gem' => '', 'ruler' => 'SATURN',  'ext' => 'Saturday',		'enr' => 0, 'dir' => 7,],
+				['sign' => 'GARUDA',	  'plant'=> '', 'gem' => '', 'ruler' => 'SUN',	   'ext' => 'Sunday',	   'enr' => 0, 'dir' => 5,],
+				['sign' => 'TIGER',		  'plant'=> '', 'gem' => '', 'ruler' => 'MOON',	   'ext' => 'Monday',	   'enr' => 0, 'dir' => 2,],
+				['sign' => 'LION',		  'plant'=> '', 'gem' => '', 'ruler' => 'MARS',	   'ext' => 'Tuesday',	   'enr' => 0, 'dir' => 6,],
+				['sign' => 'ELEPHANT_WT', 'plant'=> '', 'gem' => '', 'ruler' => 'MERCURY', 'ext' => 'Wednesday',   'enr' => 0, 'dir' => 3,],
+				['sign' => 'ELEPHANT',	  'plant'=> '', 'gem' => '', 'ruler' => 'RAHU',	   'ext' => 'Wednesday-2', 'enr' => 0, 'dir' => 8,],
+				['sign' => 'RAT',		  'plant'=> '', 'gem' => '', 'ruler' => 'JUPITER', 'ext' => 'Thursday',	   'enr' => 0, 'dir' => 4,],
+				['sign' => 'GUINEA_PIG',  'plant'=> '', 'gem' => '', 'ruler' => 'VENUS',   'ext' => 'Friday',	   'enr' => 0, 'dir' => 1,],
+				['sign' => 'DRAGON',	  'plant'=> '', 'gem' => '', 'ruler' => 'SATURN',  'ext' => 'Saturday',	   'enr' => 0, 'dir' => 7,],
 			];
 			$this->db->sql_multi_insert($this->table_prefix . 'zodiac', $sql_ary);
 		}
@@ -109,7 +104,7 @@ class m4_dls_zodiac extends \phpbb\db\migration\migration
 	*/
 	public function zodiac_dates()
 	{
-		if ($this->db_tools->sql_table_exists($this->table_prefix . 'zodiac_data'))
+		if ($this->db_tools->sql_table_exists($this->table_prefix . 'zodiac_dates'))
 		{
 			$sql_ary = [
 				// Tropical
@@ -165,23 +160,36 @@ class m4_dls_zodiac extends \phpbb\db\migration\migration
 				['zid' => 35, 'type' => 4, 'date' => '09-30-10-27',],
 				['zid' => 36, 'type' => 4, 'date' => '10-28-11-24',],
 				['zid' => 37, 'type' => 4, 'date' => '11-25-12-23',],
-				// Chinese
-				['zid' => 38, 'type' => 5, 'date' => '',],
-				['zid' => 39, 'type' => 5, 'date' => '',],
-				['zid' => 40, 'type' => 5, 'date' => '',],
-				['zid' => 41, 'type' => 5, 'date' => '',],
-				['zid' => 42, 'type' => 5, 'date' => '',],
 				// Myanmar
+				['zid' => 38, 'type' => 6, 'date' => '1',],
+				['zid' => 39, 'type' => 6, 'date' => '1',],
+				['zid' => 40, 'type' => 6, 'date' => '1',],
+				['zid' => 41, 'type' => 6, 'date' => '1',],
+				['zid' => 42, 'type' => 6, 'date' => '12',],
 				['zid' => 43, 'type' => 6, 'date' => '1',],
 				['zid' => 44, 'type' => 6, 'date' => '1',],
 				['zid' => 45, 'type' => 6, 'date' => '1',],
-				['zid' => 46, 'type' => 6, 'date' => '1',],
-				['zid' => 47, 'type' => 6, 'date' => '12',],
-				['zid' => 48, 'type' => 6, 'date' => '1',],
-				['zid' => 49, 'type' => 6, 'date' => '1',],
-				['zid' => 50, 'type' => 6, 'date' => '1',],
 			];
-			$this->db->sql_multi_insert($this->table_prefix . 'zodiac_data', $sql_ary);
+			$this->db->sql_multi_insert($this->table_prefix . 'zodiac_dates', $sql_ary);
+		}
+	}
+
+	/**
+	* Custom function to add data
+	*/
+	public function zodiac_symbols()
+	{
+		if ($this->db_tools->sql_table_exists($this->table_prefix . 'zodiac_symbols'))
+		{
+			$sql_ary = [
+				// Chinese
+				['symbol' => 'WHITE_TIGER',		'type' => 5, 'ruler' => 'VENUS',   'ext' => 'AUTUMN', 'dir' => 4,],
+				['symbol' => 'AZURE_DRAGON',	'type' => 5, 'ruler' => 'JUPITER', 'ext' => 'SPRING', 'dir' => 2,],
+				['symbol' => 'BLACK_TORTOISE',	'type' => 5, 'ruler' => 'MERCURY', 'ext' => 'WINTER', 'dir' => 1,],
+				['symbol' => 'WERMILLION_BIRD', 'type' => 5, 'ruler' => 'MARS',	   'ext' => 'SUMMER', 'dir' => 3,],
+				['symbol' => 'YELLOW_DRAGON',	'type' => 5, 'ruler' => 'SATURN',  'ext' => 'LMOTS',  'dir' => 9,],
+			];
+			$this->db->sql_multi_insert($this->table_prefix . 'zodiac_symbols', $sql_ary);
 		}
 	}
 
@@ -194,16 +202,16 @@ class m4_dls_zodiac extends \phpbb\db\migration\migration
 		{
 			$sql_ary = [
 				// Ten heavenly stems & their cycle numbers (number 0 is equivalent to 60)
-				['snr' => 1, 'enr' => 5, 'zid' => 39, 'aid' => 1,  'bid' => 11, 'cid' => 21, 'did' => 31, 'eid' => 41, 'fid'=> 51,],
-				['snr' => 2, 'enr' => 5, 'zid' => 39, 'aid' => 2,  'bid' => 12, 'cid' => 22, 'did' => 32, 'eid' => 42, 'fid'=> 52,],
-				['snr' => 1, 'enr' => 1, 'zid' => 41, 'aid' => 3,  'bid' => 13, 'cid' => 23, 'did' => 33, 'eid' => 43, 'fid'=> 53,],
-				['snr' => 2, 'enr' => 1, 'zid' => 41, 'aid' => 4,  'bid' => 14, 'cid' => 24, 'did' => 34, 'eid' => 44, 'fid'=> 54,],
-				['snr' => 1, 'enr' => 2, 'zid' => 42, 'aid' => 5,  'bid' => 15, 'cid' => 25, 'did' => 35, 'eid' => 45, 'fid'=> 55,],
-				['snr' => 2, 'enr' => 2, 'zid' => 42, 'aid' => 6,  'bid' => 16, 'cid' => 26, 'did' => 36, 'eid' => 46, 'fid'=> 56,],
-				['snr' => 1, 'enr' => 6, 'zid' => 38, 'aid' => 7,  'bid' => 17, 'cid' => 27, 'did' => 37, 'eid' => 47, 'fid'=> 57,],
-				['snr' => 2, 'enr' => 6, 'zid' => 38, 'aid' => 8,  'bid' => 18, 'cid' => 28, 'did' => 38, 'eid' => 48, 'fid'=> 58,],
-				['snr' => 1, 'enr' => 4, 'zid' => 40, 'aid' => 9,  'bid' => 19, 'cid' => 29, 'did' => 39, 'eid' => 49, 'fid'=> 59,],
-				['snr' => 2, 'enr' => 4, 'zid' => 40, 'aid' => 10, 'bid' => 20, 'cid' => 30, 'did' => 40, 'eid' => 50, 'fid'=> 0,],
+				['snr' => 1, 'enr' => 5, 'sid' => 2, 'aid' => 1,  'bid' => 11, 'cid' => 21, 'did' => 31, 'eid' => 41, 'fid'=> 51,],
+				['snr' => 2, 'enr' => 5, 'sid' => 2, 'aid' => 2,  'bid' => 12, 'cid' => 22, 'did' => 32, 'eid' => 42, 'fid'=> 52,],
+				['snr' => 1, 'enr' => 1, 'sid' => 4, 'aid' => 3,  'bid' => 13, 'cid' => 23, 'did' => 33, 'eid' => 43, 'fid'=> 53,],
+				['snr' => 2, 'enr' => 1, 'sid' => 4, 'aid' => 4,  'bid' => 14, 'cid' => 24, 'did' => 34, 'eid' => 44, 'fid'=> 54,],
+				['snr' => 1, 'enr' => 2, 'sid' => 5, 'aid' => 5,  'bid' => 15, 'cid' => 25, 'did' => 35, 'eid' => 45, 'fid'=> 55,],
+				['snr' => 2, 'enr' => 2, 'sid' => 5, 'aid' => 6,  'bid' => 16, 'cid' => 26, 'did' => 36, 'eid' => 46, 'fid'=> 56,],
+				['snr' => 1, 'enr' => 6, 'sid' => 1, 'aid' => 7,  'bid' => 17, 'cid' => 27, 'did' => 37, 'eid' => 47, 'fid'=> 57,],
+				['snr' => 2, 'enr' => 6, 'sid' => 1, 'aid' => 8,  'bid' => 18, 'cid' => 28, 'did' => 38, 'eid' => 48, 'fid'=> 58,],
+				['snr' => 1, 'enr' => 4, 'sid' => 3, 'aid' => 9,  'bid' => 19, 'cid' => 29, 'did' => 39, 'eid' => 49, 'fid'=> 59,],
+				['snr' => 2, 'enr' => 4, 'sid' => 3, 'aid' => 10, 'bid' => 20, 'cid' => 30, 'did' => 40, 'eid' => 50, 'fid'=> 0,],
 			];
 			$this->db->sql_multi_insert($this->table_prefix . 'zodiac_heavenly_stems', $sql_ary);
 		}

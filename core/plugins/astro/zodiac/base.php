@@ -55,7 +55,7 @@ abstract class base implements astro_interface, zodiac_interface
 		return [
 			'stem'	  => (int) $row['snr'],
 			'sign'	  => (string) $row['sign'],
-			'animal'  => (string) $row['animal'],
+			'symbol'  => (string) $row['symbol'],
 			'plant'	  => (string) $row['plant'],
 			'gem'	  => (string) $row['gem'],
 			'ruler'	  => (string) $row['ruler'],

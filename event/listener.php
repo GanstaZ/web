@@ -170,16 +170,16 @@ class listener implements EventSubscriberInterface
 			foreach ($u_zodiac->get_data('zodiac', $e_date) as $row)
 			{
 				$this->template->assign_block_vars('zodiac_data', [
-					'stem'	 => $row['stem'],
-					'sign'	 => $row['sign'],
-					'animal' => $row['animal'],
-					'plant'	 => $row['plant'],
-					'gem'	 => $row['gem'],
-					'ruler'	 => $row['ruler'],
-					'extra'	 => $row['extra'],
-					'dir'	 => $row['dir'],
-					'elem'	 => $row['element'],
-					'name'	 => $row['name'],
+					'stem'	  => $row['stem'],
+					'sign'	  => $row['sign'],
+					'symbol'  => $row['symbol'],
+					'plant'	  => $row['plant'],
+					'gem'	  => $row['gem'],
+					'ruler'	  => $row['ruler'],
+					'extra'	  => $row['extra'],
+					'dir'	  => $row['dir'],
+					'element' => $row['element'],
+					'name'	  => $row['name'],
 				]);
 			}
 		}

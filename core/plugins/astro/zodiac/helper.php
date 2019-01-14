@@ -27,8 +27,8 @@ class helper
 	/** @var zodiac table */
 	protected $zodiac;
 
-	/** @var zodiac data table */
-	protected $zodiac_data;
+	/** @var zodiac dates table */
+	protected $zodiac_dates;
 
 	/** @var int type */
 	protected $type = 6;
@@ -36,17 +36,17 @@ class helper
 	/**
 	* Constructor
 	*
-	* @param cache			  $cache	   Cache object
-	* @param driver_interface $db		   Database object
-	* @param string			  $zodiac	   Zodiac table
-	* @param string			  $zodiac_data Data table
+	* @param cache			  $cache		Cache object
+	* @param driver_interface $db			Database object
+	* @param string			  $zodiac		Zodiac table
+	* @param string			  $zodiac_dates Data table
 	*/
-	public function __construct(cache $cache, driver_interface $db, $zodiac, $zodiac_data)
+	public function __construct(cache $cache, driver_interface $db, $zodiac, $zodiac_dates)
 	{
 		$this->cache = $cache;
 		$this->db = $db;
 		$this->zodiac = $zodiac;
-		$this->zodiac_data = $zodiac_data;
+		$this->zodiac_dates = $zodiac_dates;
 	}
 
 	/**
@@ -60,14 +60,14 @@ class helper
 		if (($zodiac = $this->cache->get('_zodiac')) === false)
 		{
 			$sql = 'SELECT z.*, zd.*
-					FROM ' . $this->zodiac . ' z, ' . $this->zodiac_data . ' zd
-					WHERE z.zodiac_id = zd.zid';
+					FROM ' . $this->zodiac . ' z, ' . $this->zodiac_dates . ' zd
+					WHERE z.sign_id = zd.zid';
 			$result = $this->db->sql_query($sql);
 
 			$zodiac = [];
 			while ($row = $this->db->sql_fetchrow($result))
 			{
-				$select = (int) $row['zodiac_id'];
+				$select = (int) $row['sign_id'];
 
 				if ((int) $row['type'] === $this->type)
 				{

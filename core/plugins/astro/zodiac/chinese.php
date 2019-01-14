@@ -20,8 +20,8 @@ class chinese extends base
 	/** @var driver_interface */
 	protected $db;
 
-	/** @var helper */
-	protected $helper;
+	/** @var zodiac symbols table */
+	protected $zodiac_symbols;
 
 	/** @var zodiac heavenly stems table */
 	protected $zodiac_stems;
@@ -29,15 +29,15 @@ class chinese extends base
 	/**
 	* Constructor
 	*
-	* @param driver_interface $db			 Database object
-	* @param helper			  $helper Zodiac Helper object
-	* @param string			  $zodiac_stems	 Zodiac heavenly stems table
+	* @param driver_interface $db			  Database object
+	* @param string			  $zodiac_symbols Zodiac symbols table
+	* @param string			  $zodiac_stems	  Zodiac heavenly stems table
 	*/
-	public function __construct(driver_interface $db, helper $helper, $zodiac_stems)
+	public function __construct(driver_interface $db, $zodiac_symbols, $zodiac_stems)
 	{
 		$this->db = $db;
-		$this->helper = $helper;
 		$this->zodiac_stems = $zodiac_stems;
+		$this->zodiac_symbols = $zodiac_symbols;
 	}
 
 	/**
@@ -66,8 +66,7 @@ class chinese extends base
 		if (isset($animals[$get]) || array_key_exists($get, $animals))
 		{
 			$row = $this->get_stem($year);
-			$row['animal'] = $animals[$get];
-			$row = array_merge($row, $this->helper->zodiac_data(5)[(int) $row['zid']]);
+			$row['sign'] = $animals[$get];
 
 			return [$this->get_data($row)];
 		}
@@ -77,20 +76,20 @@ class chinese extends base
 	* Get stem
 	*
 	* @param int $year Year is equivalent to one of the sexagenary cycle number
-	* @return string $stem
+	* @return array $row
 	*/
 	public function get_stem(int $year): ?array
 	{
 		// Ten heavenly stems & their cycle numbers (number 0 is equivalent to 60)
-		$sql = 'SELECT snr, enr, zid
-				FROM ' . $this->zodiac_stems . '
-				WHERE aid = ' . (int) $year . '
-					OR bid = ' . (int) $year . '
-					OR cid = ' . (int) $year . '
-					OR did = ' . (int) $year . '
-					OR eid = ' . (int) $year . '
-					OR fid = ' . (int) $year;
-		$result = $this->db->sql_query($sql, 3600);
+		$sql = 'SELECT s.snr, s.enr, s.sid, zs.symbol, zs.type, zs.ruler, zs.ext, zs.dir
+				FROM ' . $this->zodiac_stems . ' s, ' . $this->zodiac_symbols . ' zs
+				WHERE s.sid = zs.symbol_id AND s.aid = ' . (int) $year . '
+					OR s.bid = ' . (int) $year . '
+					OR s.cid = ' . (int) $year . '
+					OR s.did = ' . (int) $year . '
+					OR s.eid = ' . (int) $year . '
+					OR s.fid = ' . (int) $year;
+		$result = $this->db->sql_query($sql, 86400);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 

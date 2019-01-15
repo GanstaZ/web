@@ -248,3 +248,36 @@ dl.tabs dd.ztab:hover {
 .capitalize {
 	text-transform: none;
 }
+
+dl.details dd.dls_dd {
+	overflow: visible;
+}
+
+.dropdown ul.dropdown-zodiac {
+	width: 240px;
+}
+
+.dropdown div.zhead {
+	line-height: 2em;
+}
+
+.dropdown li.zrow {
+	padding: 5px;
+}
+
+li.zrow strong {
+	font-weight: normal;
+	color: #000033;
+}
+
+.accordion-toggle {
+	cursor: pointer;
+}
+
+.accordion-content {
+	display: none;
+}
+
+.accordion-content.default {
+	display: block;
+}

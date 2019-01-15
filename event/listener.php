@@ -141,8 +141,7 @@ class listener implements EventSubscriberInterface
 		$user_xp = $this->plugin->get('level')->get_member_exp($event['data']['user_posts']);
 
 		$event['template_data'] = array_merge($event['template_data'], [
-			'S_ZODIAC'		  => ($this->config['dls_zodiac']) ? 1 : 0,	   // Will be fixed later (refactoring)
-			'S_LEVEL'		  => ($user_xp['level'] === 1) ? true : false, // Same sas above
+			'S_LEVEL'		  => ($user_xp['level'] === 1) ? true : false, // Will be fixed later (refactoring)
 			'U_LEVEL'		  => $user_xp['level'],
 			'U_LEVEL_PERCENT' => $user_xp['percent'],
 			'U_POINTS'		  => $user_xp['end'],
@@ -170,14 +169,17 @@ class listener implements EventSubscriberInterface
 
 			foreach ($u_zodiac->get_data('zodiac', $e_date) as $row)
 			{
-				$sign = $this->language->lang($row['sign']);
 				$this->template->assign_block_vars('zodiac_data', [
-					'sign'	=> $sign,
-					'plant' => $this->language->lang($row['plant']),
-					'gems'	=> $this->language->lang($row['gems']),
-					'ruler' => $this->language->lang($row['ruler']),
-					'extra' => $this->language->lang($row['extra'], $sign),
-					'name'	=> $this->language->lang($row['name']),
+					'stem'	  => $row['stem'],
+					'sign'	  => $row['sign'],
+					'symbol'  => $row['symbol'],
+					'plant'	  => $row['plant'],
+					'gem'	  => $row['gem'],
+					'ruler'	  => $row['ruler'],
+					'extra'	  => $row['extra'],
+					'dir'	  => $row['dir'],
+					'element' => $row['element'],
+					'name'	  => $row['name'],
 				]);
 			}
 		}

@@ -19,15 +19,29 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, [
-	'SUN'  => 'Sun',
-	'MOON' => 'Moon',
+	// Planets
+	'SUN'	  => 'Sun',
+	'MOON'	  => 'Moon',
 	'MERCURY' => 'Mercury',
 	'VENUS'	  => 'Venus',
-	'P_EARTH' => 'Earth',
+	'EARTH'	  => 'Earth',
 	'MARS'	  => 'Mars',
 	'JUPITER' => 'Jupiter',
 	'SATURN'  => 'Saturn',
 	'URANUS'  => 'Uranus',
 	'NEPTUNE' => 'Neptune',
 	'PLUTO'	  => 'Pluto',
+	'RAHU'	  => 'Rahu',
+
+	// Cardinal directions
+	'DIRECTION' => 'Cardinal direction',
+	'CENTER'	=> 'Center',
+	'NORTH'		=> 'North',
+	'EAST'		=> 'East',
+	'SOUTH'		=> 'South',
+	'WEST'		=> 'West',
+	'NORTHEAST' => 'Northeast',
+	'SOUTHEAST' => 'Southeast',
+	'SOUTHWEST' => 'Southwest',
+	'NORTHWEST' => 'Northwest',
 ]);

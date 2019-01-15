@@ -16,9 +16,10 @@ namespace dls\web\core\plugins\astro;
 interface astro_interface
 {
 	/**
-	* Returns the name of the astro
+	* Get astro data
 	*
-	* @return string Name of the astro
+	* @return array Astro data, must have keys type & name
+	*		 ['type' => '', 'name' => '']
 	*/
-	public function get_name();
+	public static function astro_data();
 }

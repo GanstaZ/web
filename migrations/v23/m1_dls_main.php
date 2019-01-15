@@ -15,6 +15,25 @@ class m1_dls_main extends \phpbb\db\migration\migration
 	/**
 	* {@inheritdoc}
 	*/
+	public function effectively_installed()
+	{
+		return $this->check('blocks') && $this->check('zodiac') && $this->check('zodiac_dates') && $this->check('zodiac_symbols') && $this->check('zodiac_heavenly_stems');
+	}
+
+	/**
+	* Check condition exists for a given table name
+	*
+	* @param $name Name of the table
+	* @return bool
+	*/
+	public function check($name)
+	{
+		return $this->db_tools->sql_table_exists($this->table_prefix . $name);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	static public function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v320\v320');
@@ -43,38 +62,51 @@ class m1_dls_main extends \phpbb\db\migration\migration
 				],
 				$this->table_prefix . 'zodiac' => [
 					'COLUMNS' => [
-						'zodiac_id' => ['UINT', null, 'auto_increment'],
-						'sign'	=> ['VCHAR', ''],
-						'plant' => ['VCHAR', ''],
-						'gems'	=> ['VCHAR', ''],
-						'ruler' => ['VCHAR', ''],
-						'ext'	=> ['VCHAR', ''],
-						'enr'	=> ['TINT:3', 0],
+						'sign_id' => ['UINT', null, 'auto_increment'],
+						'sign'	  => ['VCHAR', ''],
+						'plant'	  => ['VCHAR', ''],
+						'gem'	  => ['VCHAR', ''],
+						'ruler'	  => ['VCHAR', ''],
+						'ext'	  => ['VCHAR', ''],
+						'enr'	  => ['TINT:3', 0],
+						'dir'	  => ['TINT:3', 0],
 					],
-					'PRIMARY_KEY' => ['zodiac_id'],
+					'PRIMARY_KEY' => ['sign_id'],
 				],
-				$this->table_prefix . 'zodiac_data' => [
+				$this->table_prefix . 'zodiac_dates' => [
 					'COLUMNS' => [
 						'date_id' => ['UINT', null, 'auto_increment'],
-						'zid'	=> ['UINT', 0],
-						'type'	=> ['TINT:3', 0],
-						'start' => ['VCHAR:255', ''],
-						'end'	=> ['VCHAR:255', ''],
+						'zid'	  => ['UINT', 0],
+						'type'	  => ['TINT:3', 0],
+						'date'	  => ['VCHAR', ''],
 					],
 					'PRIMARY_KEY' => ['date_id'],
 				],
+				$this->table_prefix . 'zodiac_symbols' => [
+					'COLUMNS' => [
+						'symbol_id' => ['UINT', null, 'auto_increment'],
+						'symbol'	=> ['VCHAR', ''],
+						'type'		=> ['TINT:3', 0],
+						'ruler'		=> ['VCHAR', ''],
+						'ext'		=> ['VCHAR', ''],
+						'dir'		=> ['TINT:3', 0],
+					],
+					'PRIMARY_KEY' => ['symbol_id'],
+				],
 				$this->table_prefix . 'zodiac_heavenly_stems' => [
 					'COLUMNS' => [
-						'cycle_id' => ['UINT', null, 'auto_increment'],
-						'stem'	=> ['VCHAR', ''],
-						'a_id'	=> ['TINT:3', 0],
-						'b_id'	=> ['TINT:3', 0],
-						'c_id'	=> ['TINT:3', 0],
-						'd_id'	=> ['TINT:3', 0],
-						'e_id'	=> ['TINT:3', 0],
-						'f_id'	=> ['TINT:3', 0],
+						'stem_id' => ['UINT', null, 'auto_increment'],
+						'snr'	  => ['TINT:3', 0],
+						'enr'	  => ['TINT:3', 0],
+						'sid'	  => ['TINT:3', 0],
+						'aid'	  => ['TINT:3', 0],
+						'bid'	  => ['TINT:3', 0],
+						'cid'	  => ['TINT:3', 0],
+						'did'	  => ['TINT:3', 0],
+						'eid'	  => ['TINT:3', 0],
+						'fid'	  => ['TINT:3', 0],
 					],
-					'PRIMARY_KEY' => ['cycle_id'],
+					'PRIMARY_KEY' => ['stem_id'],
 				],
 			],
 		];
@@ -92,7 +124,8 @@ class m1_dls_main extends \phpbb\db\migration\migration
 			'drop_tables' => [
 				$this->table_prefix . 'blocks',
 				$this->table_prefix . 'zodiac',
-				$this->table_prefix . 'zodiac_data',
+				$this->table_prefix . 'zodiac_dates',
+				$this->table_prefix . 'zodiac_symbols',
 				$this->table_prefix . 'zodiac_heavenly_stems',
 			],
 		];

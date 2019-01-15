@@ -43,12 +43,17 @@ class chinese extends base
 	/**
 	* {@inheritdoc}
 	*/
-	public static function astro_data(): array
+	public function get_name(): string
 	{
-		return [
-			'type' => 'zodiac',
-			'name' => 'chinese',
-		];
+		return 'chinese';
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_type(): string
+	{
+		return 'zodiac';
 	}
 
 	/**

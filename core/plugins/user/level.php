@@ -13,7 +13,7 @@ namespace dls\web\core\plugins\user;
 /**
 * DLS Web level plugin
 */
-class level extends \dls\web\core\plugins\base
+class level implements \dls\web\core\plugins\plugin_interface
 {
 	/**
 	* Constructor
@@ -21,6 +21,22 @@ class level extends \dls\web\core\plugins\base
 	*/
 	public function __construct()
 	{
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_name(): string
+	{
+		return 'level';
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_type(): string
+	{
+		return 'achievement';
 	}
 
 	/**

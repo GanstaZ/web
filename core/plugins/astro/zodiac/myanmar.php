@@ -31,12 +31,17 @@ class myanmar extends base
 	/**
 	* {@inheritdoc}
 	*/
-	public static function astro_data(): array
+	public function get_name(): string
 	{
-		return [
-			'type' => 'zodiac',
-			'name' => 'myanmar',
-		];
+		return 'myanmar';
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_type(): string
+	{
+		return 'zodiac';
 	}
 
 	/**

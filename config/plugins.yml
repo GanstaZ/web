@@ -1,9 +1,4 @@
 services:
-    dls.web.plugin.manager:
-        class: dls\web\core\plugins\manager
-        arguments:
-            - '@dls.web.plugin.collection'
-
     dls.web.plugin.collection:
         class: phpbb\di\service_collection
         arguments:
@@ -11,10 +6,52 @@ services:
         tags:
             - { name: service_collection, tag: dls.web.plugin }
 
-# ----- Plugins -----
-    dls.web.level.plugin:
-        class: dls\web\core\plugins\user\level
+    dls.web.plugin.manager:
+        class: dls\web\core\plugins\manager
+        arguments:
+            - '@dls.web.plugin.collection'
+
+    dls.web.zodiac.helper:
+        class: dls\web\core\plugins\astro\zodiac\helper
+        arguments:
+            - '@cache'
+            - '@dbal.conn'
+            - '%dls.web.tables.zodiac%'
+            - '%dls.web.tables.zodiac_dates%'
+
+# ----- Dls Web Plugins -----
+# Zodiac types
+    dls.web.plugin.zodiac:
+        class: dls\web\core\plugins\astro\zodiac\zodiac
+        arguments:
+            - '@dls.web.zodiac.helper'
         calls:
-            - [set_name, [level]]
+            - [set_format, [m-d]]
+        tags:
+            - { name: dls.web.plugin }
+
+    dls.web.plugin.zodiac.chinese:
+        class: dls\web\core\plugins\astro\zodiac\chinese
+        arguments:
+            - '@dbal.conn'
+            - '%dls.web.tables.zodiac_symbols%'
+            - '%dls.web.tables.heavenly_stems%'
+        calls:
+            - [set_format, [Y]]
+        tags:
+            - { name: dls.web.plugin }
+
+    dls.web.plugin.zodiac.myanmar:
+        class: dls\web\core\plugins\astro\zodiac\myanmar
+        arguments:
+            - '@dls.web.zodiac.helper'
+        calls:
+            - [set_format, [l]]
+        tags:
+            - { name: dls.web.plugin }
+
+# Achievements
+    dls.web.plugin.level:
+        class: dls\web\core\plugins\user\level
         tags:
             - { name: dls.web.plugin }

@@ -21,4 +21,11 @@ interface plugin_interface
 	* @return string Name of the plugin
 	*/
 	public function get_name();
+
+	/**
+	* Returns the type of the plugin
+	*
+	* @return string Type of the plugin
+	*/
+	public function get_type();
 }

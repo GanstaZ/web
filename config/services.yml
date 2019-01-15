@@ -1,8 +1,7 @@
 imports:
-    - { resource: tables.yml }
-    - { resource: astro.yml }
     - { resource: blocks.yml }
     - { resource: plugins.yml }
+    - { resource: tables.yml }
 
 services:
     dls.web.helper:

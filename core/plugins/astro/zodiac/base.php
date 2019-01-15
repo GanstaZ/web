@@ -10,12 +10,12 @@
 
 namespace dls\web\core\plugins\astro\zodiac;
 
-use dls\web\core\plugins\astro\astro_interface;
+use dls\web\core\plugins\plugin_interface;
 
 /**
 * DLS Web zodiac base class
 */
-abstract class base implements astro_interface, zodiac_interface
+abstract class base implements plugin_interface, zodiac_interface
 {
 	/** @var string zodiac date format */
 	protected $format;

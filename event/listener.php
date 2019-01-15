@@ -138,7 +138,7 @@ class listener implements EventSubscriberInterface
 	*/
 	public function prepare_profile_data($event): void
 	{
-		$user_xp = $this->plugin->get('level')->get_member_exp($event['data']['user_posts']);
+		$user_xp = $this->plugin->get('achievement')['level']->get_member_exp($event['data']['user_posts']);
 
 		$event['template_data'] = array_merge($event['template_data'], [
 			'S_LEVEL'		  => ($user_xp['level'] === 1) ? true : false, // Will be fixed later (refactoring)
@@ -161,13 +161,11 @@ class listener implements EventSubscriberInterface
 		{
 			$this->language->add_lang(['zodiac', 'astro'], 'dls/web');
 
-			$u_zodiac = $this->plugin->get('astro');
-
 			// Format date
 			$u_bday = str_replace(' ', '', $u_bday);
-			$e_date = \DateTime::createFromFormat('d-m-Y', $u_bday);
+			$format = \DateTime::createFromFormat('d-m-Y', $u_bday);
 
-			foreach ($u_zodiac->get_data('zodiac', $e_date) as $row)
+			foreach ($this->plugin->get_data($this->plugin->get('zodiac'), $format) as $row)
 			{
 				$this->template->assign_block_vars('zodiac_data', [
 					'stem'	  => $row['stem'],

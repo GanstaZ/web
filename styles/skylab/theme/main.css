@@ -257,6 +257,10 @@ dl.details dd.dls_dd {
 	width: 240px;
 }
 
+.dropdown div.zhead {
+	line-height: 2em;
+}
+
 .dropdown li.zrow {
 	padding: 5px;
 }

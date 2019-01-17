@@ -12,9 +12,6 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
 
-    dls.web.lunar:
-        class: dls\web\core\lunar
-
     dls.web.listener:
         class: dls\web\event\listener
         arguments:

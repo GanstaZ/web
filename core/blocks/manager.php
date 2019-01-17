@@ -140,8 +140,9 @@ class manager
 
 		$sql = 'SELECT *
 				FROM ' . $this->blocks_data . '
-				WHERE ' . $where . '
-				ORDER BY position';
+				WHERE ' . $where . "
+					AND cat_name <> '" . $this->db->sql_escape('special') . "'
+				ORDER BY position";
 		$result = $this->db->sql_query($sql, 86400);
 
 		$blocks = [];

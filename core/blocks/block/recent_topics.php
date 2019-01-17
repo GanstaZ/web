@@ -49,7 +49,7 @@ class recent_topics implements block_interface
 	{
 		return [
 			'block_name' => 'dls_recent_topics',
-			'cat_name' => 'side',
+			'cat_name' => 'right',
 			'ext_name' => 'dls_web',
 		];
 	}

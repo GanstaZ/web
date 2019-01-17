@@ -49,7 +49,7 @@ class top_posters implements block_interface
 	{
 		return [
 			'block_name' => 'dls_top_posters',
-			'cat_name' => 'side',
+			'cat_name' => 'right',
 			'ext_name' => 'dls_web',
 		];
 	}

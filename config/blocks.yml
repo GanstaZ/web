@@ -35,6 +35,21 @@ services:
             - { name: twig.extension }
 
 # ----- Blocks -----
+    dls.web.block.news:
+        class: dls\web\core\blocks\block\news
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@text_formatter.renderer'
+            - '@dls.web.helper'
+            - '@user'
+            - '@pagination'
+        tags:
+            - { name: dls.web.block }
+
     dls.web.block.mini.profile:
         class: dls\web\core\blocks\block\mini_profile
         tags:

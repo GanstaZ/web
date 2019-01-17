@@ -8,7 +8,7 @@
 *
 */
 
-namespace dls\web\core;
+namespace dls\web\core\blocks\block;
 
 use phpbb\auth\auth;
 use phpbb\config\config;
@@ -21,9 +21,9 @@ use phpbb\user;
 use phpbb\pagination;
 
 /**
-* DLS Web news class
+* DLS Web News block
 */
-class news
+class news implements block_interface
 {
 	/** @var auth */
 	protected $auth;
@@ -93,6 +93,25 @@ class news
 	}
 
 	/**
+	* {@inheritdoc}
+	*/
+	public function get_data(): array
+	{
+		return [
+			'block_name' => 'dls_news',
+			'cat_name' => 'special',
+			'ext_name' => 'dls_web',
+		];
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function load(): void
+	{
+	}
+
+	/**
 	* Set page start
 	*
 	* @param int $page
@@ -158,7 +177,7 @@ class news
 		}
 		$this->db->sql_freeresult($result);
 
-		if ($this->config['dls_show_pagination'])
+		if ($this->config['dls_pagination'])
 		{
 			// Get total posts
 			$sql_ary['SELECT'] = 'COUNT(p.post_id) AS num_posts';

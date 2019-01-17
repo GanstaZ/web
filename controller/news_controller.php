@@ -27,23 +27,22 @@ class news_controller
 	protected $language;
 
 	/** @var news */
-	protected $news;
+	protected $manager;
 
 	/**
 	* Constructor
 	*
 	* @param helper	  $helper	Controller helper object
 	* @param language $language Language object
-	* @param news	  $news		News object
 	* @param manager  $manager	Manager object
 	*/
-	public function __construct(helper $helper, language $language, news $news, manager $manager)
+	public function __construct(helper $helper, language $language, manager $manager)
 	{
 		$this->helper = $helper;
 		$this->language = $language;
-		$this->news = $news;
+		$this->manager = $manager;
 
-		$manager->load();
+		$this->manager->load();
 	}
 
 	/**
@@ -59,8 +58,10 @@ class news_controller
 	*/
 	public function handle(int $id, int $page)
 	{
-		$this->news->set_page($page);
-		$this->news->base($id);
+		$news = $this->manager->get('dls_news');
+		$news
+			->set_page($page)
+			->base($id);
 
 		$title = $this->language->lang('VIEW_NEWS', $id);
 
@@ -76,7 +77,8 @@ class news_controller
 	*/
 	public function handle2(int $aid)
 	{
-		$this->news->get_article($aid);
+		$news = $this->manager->get('dls_news');
+		$news->get_article($aid);
 
 		$title = $this->language->lang('VIEW_ARTICLE', $aid);
 

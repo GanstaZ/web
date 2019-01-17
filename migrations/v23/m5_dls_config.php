@@ -30,7 +30,7 @@ class m5_dls_config extends \phpbb\db\migration\migration
 	{
 		return [
 			// Add the config variables we want to be able to set
-			['config.add', ['dls_core_version', '2.3.0-a1']],
+			['config.add', ['dls_core_version', '2.4.0-a1']],
 			['config.add', ['dls_news_fid', 2]],
 			['config.add', ['dls_the_team_fid', 8]],
 			['config.add', ['dls_top_posters_fid', 0]],

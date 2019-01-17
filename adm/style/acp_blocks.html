@@ -5,30 +5,35 @@
 <form id="acp_board" method="post" action="{{ U_ACTION }}">
 
 {% if S_UPDATE %}
-<fieldset>
-	{{ U_UPDATE }}
-</fieldset>
+	<fieldset>
+		{{ U_UPDATE }}
+	</fieldset>
 {% endif %}
 
 {% for category in loops.category %}
 <fieldset>
-<legend>{{ category.cat_name }}</legend>
+<legend>{{ lang(category.cat_name)~' '~lang('BLOCKS') }}</legend>
 
-{% for block in category.block %}
-<dl>
-	<dt><label for="{{ block.name }}">{{ block.lang }}{{ lang('COLON') }}</label><br />
-	<span class="{% if block.duplicate %}error{% else %}success{% endif %}">{{ lang('BLOCKS_POSITION') ~ lang('COLON') }}
-{% if block.duplicate %}
-		{{ lang('DUPLICATE_POSITION') }} <i class="icon fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
-{% endif %}
-	</span>
-	</dt>
-	<dd><input type="radio" class="radio" name="{{ block.name }}" value="1" {% if block.active %}checked="checked" {% endif %}/> {{ lang('YES') }} &nbsp;
-		<input type="radio" class="radio" name="{{ block.name }}" value="0" {% if not block.active %} checked="checked" {% endif %}/> {{ lang('NO') }}
-	</dd>
-	<dd><select name="{{ block.position }}" id="{{ block.position }}">{{ block.s_block_options }}</select></dd>
-</dl>
-{% endfor %}
+	{% for block in category.block %}
+	<dl>
+		<dt><label for="{{ block.name }}">{{ lang('ENABLE')~' '~lang(block.lang) ~ lang('COLON') }}</label><br />
+		{% if category.cat_name !== 'SPECIAL' %}
+			<span class="{% if block.duplicate %}error{% else %}success{% endif %}">{{ lang('BLOCKS_POSITION') ~ lang('COLON') }}
+			{% if block.duplicate %}
+				{{ lang('DUPLICATE_POSITION') }} <i class="icon fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
+			{% endif %}
+			</span>
+		{% endif %}
+		</dt>
+
+		<dd><input type="radio" class="radio" name="{{ block.name }}" value="1" {% if block.active %}checked="checked" {% endif %}/> {{ lang('YES') }} &nbsp;
+			<input type="radio" class="radio" name="{{ block.name }}" value="0" {% if not block.active %} checked="checked" {% endif %}/> {{ lang('NO') }}
+		</dd>
+		{% if category.cat_name !== 'SPECIAL' %}
+			<dd><select name="{{ block.position }}" id="{{ block.position }}">{{ block.s_block_options }}</select></dd>
+		{% endif %}
+	</dl>
+	{% endfor %}
 
 </fieldset>
 {% endfor %}

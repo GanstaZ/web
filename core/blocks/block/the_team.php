@@ -49,7 +49,7 @@ class the_team implements block_interface
 	{
 		return [
 			'block_name' => 'dls_the_team',
-			'cat_name' => 'side',
+			'cat_name' => 'right',
 			'ext_name' => 'dls_web',
 		];
 	}

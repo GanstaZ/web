@@ -12,22 +12,6 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
 
-    dls.web.news:
-        class: dls\web\core\news
-        arguments:
-            - '@auth'
-            - '@config'
-            - '@dbal.conn'
-            - '@controller.helper'
-            - '@language'
-            - '@text_formatter.renderer'
-            - '@dls.web.helper'
-            - '@user'
-            - '@pagination'
-
-    dls.web.lunar:
-        class: dls\web\core\lunar
-
     dls.web.listener:
         class: dls\web\event\listener
         arguments:
@@ -44,7 +28,6 @@ services:
         class: dls\web\controller\admin_controller
         arguments:
             - '@config'
-            - '@config_text'
             - '@dbal.conn'
             - '@language'
             - '@request'
@@ -55,5 +38,4 @@ services:
         arguments:
             - '@controller.helper'
             - '@language'
-            - '@dls.web.news'
             - '@dls.web.block.manager'

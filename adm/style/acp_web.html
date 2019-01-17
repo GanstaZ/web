@@ -2,78 +2,62 @@
 
 <h1>{{ lang('ACP_DLS_WEB') }}</h1>
 
-<form id="acp_board" method="post" action="{{ U_ACTION }}">
-<fieldset>
-<legend>{{ lang('SETTINGS') }}</legend>
+<form id="acp_web_general" method="post" action="{{ U_ACTION }}">
+	<fieldset>
+		<legend>{{ lang('SETTINGS') }}</legend>
 
-<dl>
-	<dt><label>{{ lang('VERSION') }}{{ lang('COLON') }}</label></dt>
-	<dd><strong>{{ ZLAB_VERSION }}</strong></dd>
-</dl>
+		<dl>
+			<dt><label>{{ lang('DLS_VERSION') ~ lang('COLON') }}</label></dt>
+			<dd><strong>{{ DLS_VERSION }}</strong></dd>
+		</dl>
 
-<dl>
-	<dt><label>{{ lang('NAME') }}{{ lang('COLON') }}</label></dt>
-	<dd><strong>{{ ZLAB_NAME }}</strong></dd>
-</dl>
+		<dl>
+		<dt><label for="dls_pagination">{{ lang('SHOW_PAGINATION') ~ lang('COLON') }}</label></dt>
+			<dd>
+				<label>
+					<input type="radio" class="radio" name="dls_pagination" value="1" {% if S_PAGINATION %}checked="checked" {% endif %}/> {{ lang('YES') }}
+				</label>
+				<label>
+					<input type="radio" class="radio" name="dls_pagination" value="0" {% if not S_PAGINATION %}checked="checked" {% endif %}/> {{ lang('NO') }}
+				</label>
+			</dd>
+		</dl>
 
-<dl>
-	<dt><label for="dls_show_pagination">{{ lang('SHOW_PAGINATION') }}{{ lang('COLON') }}</label></dt>
-	<dd><input type="radio" class="radio" name="dls_show_pagination" value="1" {% if S_PAGINATION %}checked="checked" {% endif %}/> {{ lang('YES') }} &nbsp;
-		<input type="radio" class="radio" name="dls_show_pagination" value="0" {% if S_PAGINATION == false %}checked="checked" {% endif %}/> {{ lang('NO') }}
-	</dd>
-</dl>
+		<dl>
+			<dt><label for="dls_news_fid">{{ lang('NEWS_ID') ~ lang('COLON') }}</label></dt>
+			<dd><select name="dls_news_fid" id="dls_news_fid">{{ DLS_NEWS_ID }}</select></dd>
+		</dl>
 
-<dl>
-	<dt><label for="dls_show_news">{{ lang('SHOW_NEWS') }}{{ lang('COLON') }}</label></dt>
-	<dd><input type="radio" class="radio" name="dls_show_news" value="1" {% if S_SHOW_NEWS %}checked="checked" {% endif %}/> {{ lang('YES') }} &nbsp;
-		<input type="radio" class="radio" name="dls_show_news" value="0" {% if S_SHOW_NEWS == false %}checked="checked" {% endif %}/> {{ lang('NO') }}
-	</dd>
-</dl>
+		<dl>
+			<dt><label for="dls_limit">{{ lang('LIMIT') ~ lang('COLON') }}</label><br /><span>{{ lang('LIMIT_EXPLAIN') }}</span></dt>
+			<dd><input type="number" id="dls_limit" name="dls_limit" value="{{ DLS_LIMIT }}" min="0" max="10" /></dd>
+		</dl>
 
-<dl>
-	<dt><label for="dls_news_fid">{{ lang('NEWS_ID') }}{{ lang('COLON') }}</label></dt>
-	<dd><select name="dls_news_fid" id="dls_news_fid">{{ DLS_NEWS_ID }}</select></dd>
-</dl>
+		<dl>
+			<dt><label for="dls_title_length">{{ lang('TITLE_LENGTH') ~ lang('COLON') }}</label><br /><span>{{ lang('TITLE_LENGTH_EXPLAIN') }}</span></dt>
+			<dd><input type="number" id="dls_title_length" name="dls_title_length" value="{{ MIN_TITLE_LENGTH }}" min="0" max="50" /></dd>
+		</dl>
 
-<dl>
-	<dt><label for="dls_limit">{{ lang('LIMIT') }}{{ lang('COLON') }}</label><br /><span>{{ lang('LIMIT_EXPLAIN') }}</span></dt>
-	<dd><input type="number" id="dls_limit" name="dls_limit" value="{{ DLS_CORE_LIMIT }}" min="0" max="10" /></dd>
-</dl>
+		<dl>
+			<dt>
+				<label for="dls_content_length">{{ lang('CONTENT_LENGTH') ~ lang('COLON') }}</label><br /><span>{{ lang('CONTENT_LENGTH_EXPLAIN') }}</span>
+			</dt>
+			<dd><input type="number" id="dls_content_length" name="dls_content_length" value="{{ MIN_CONTENT_LENGTH }}" min="0" max="250" /></dd>
+		</dl>
 
-<dl>
-	<dt><label for="dls_title_length">{{ lang('TITLE_LENGTH') }}{{ lang('COLON') }}</label><br /><span>{{ lang('TITLE_LENGTH_EXPLAIN') }}</span></dt>
-	<dd><input type="number" id="dls_title_length" name="dls_title_length" value="{{ MIN_TITLE_LENGTH }}" min="0" max="50" /></dd>
-</dl>
+		<dl>
+			<dt><label for="dls_user_limit">{{ lang('USER_LIMIT') ~ lang('COLON') }}</label><br /><span>{{ lang('LIMIT_EXPLAIN') }}</span></dt>
+			<dd><input type="number" id="dls_user_limit" name="dls_user_limit" value="{{ DLS_USER_LIMIT }}" min="0" max="10" /></dd>
+		</dl>
+	</fieldset>
 
-<dl>
-	<dt><label for="dls_content_length">{{ lang('CONTENT_LENGTH') }}{{ lang('COLON') }}</label><br /><span>{{ lang('CONTENT_LENGTH_EXPLAIN') }}</span></dt>
-	<dd><input type="number" id="dls_content_length" name="dls_content_length" value="{{ MIN_CONTENT_LENGTH }}" min="0" max="250" /></dd>
-</dl>
-
-<dl>
-	<dt><label for="dls_user_limit">{{ lang('USER_LIMIT') }}{{ lang('COLON') }}</label><br /><span>{{ lang('USER_LIMIT_EXPLAIN') }}</span></dt>
-	<dd><input type="number" id="dls_user_limit" name="dls_user_limit" value="{{ DLS_USER_LIMIT }}" min="0" max="20" /></dd>
-</dl>
-</fieldset>
-
-<fieldset>
-<legend>{{ lang('SETTINGS') }}</legend>
-
-{% for pt in points %}
-<dl>
-	<dt><label for="{{ pt.name }}">{{ lang('SET_EXP') }} {{ loop.index }}{{ lang('COLON') }}</label>{% if pt.S_LAST_ROW %}<br /><span>{{ lang('GET_MAX') }}</span>{% endif %}</dt>
-	<dd><input type="number" id="{{ pt.name }}" name="{{ pt.name }}" value="{{ pt.value }}" min="1" max="1000" /></dd>
-</dl>
-{% endfor %}
-
-</fieldset>
-
-<p class="submit-buttons">
-	<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
-	<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
-</p>
+	<p class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
+	</p>
 
 	{{ S_FORM_TOKEN }}
 
 </form>
+
 {{ include('overall_footer.html') }}

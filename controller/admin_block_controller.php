@@ -191,11 +191,10 @@ class admin_block_controller
 	{
 		foreach ($rowset as $category => $data)
 		{
-			$l_category = $this->language->lang(strtoupper($category));
 			$count_blocks = $count[$category]['block'];
 
 			// Set categories
-			$this->helper->assign('block_vars', 'category', ['cat_name' => $l_category,]);
+			$this->helper->assign('block_vars', 'category', ['cat_name' => strtoupper($category),]);
 
 			// Add data to given categories
 			foreach ($data as $block)
@@ -207,7 +206,7 @@ class admin_block_controller
 					'name' => $block['block_name'],
 					'position' => $block['block_name'] . '_b',
 					'active' => $block['active'],
-					'lang' => $this->language->lang(strtoupper($block['block_name'])),
+					'lang' => strtoupper($block['block_name']),
 					'duplicate' => ($count_position > 1) ? true : false,
 					's_block_options' => $block_options,
 				]);

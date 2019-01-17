@@ -19,20 +19,24 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, [
-	'SIDE'	 => 'Side blocks',
-	'BOTTOM'	 => 'Bottom blocks',
-	'DEFAULT_BLOCKS' => 'Default blocks',
-	'UPDATE_BLOCKS'	 => 'Update available! Click submit to install: %s.',
-	'PURGE_BLOCKS'	 => 'Purge required! Click submit to remove: %s.',
+	'BLOCKS'  => 'blocks',
+	'ENABLE'  => 'Enable',
+	'RIGHT'	  => 'Right side',
+	'BOTTOM'  => 'Bottom',
+	'SPECIAL' => 'Special',
 
-	'DLS_MINI_PROFILE'	=> 'Enable mini profile',
-	'DLS_INFORMATION'	=> 'Enable information',
-	'DLS_THE_TEAM'		=> 'Enable the team',
-	'DLS_TOP_POSTERS'	=> 'Enable top posters',
-	'DLS_RECENT_POSTS'	=> 'Enable recent posts',
-	'DLS_RECENT_TOPICS' => 'Enable recent topics',
-	'DLS_WHOS_ONLINE'	=> 'Enable who is online',
+	'DLS_NEWS'			=> 'news',
+	'DLS_MINI_PROFILE'	=> 'mini profile',
+	'DLS_INFORMATION'	=> 'information',
+	'DLS_THE_TEAM'		=> 'the team',
+	'DLS_TOP_POSTERS'	=> 'top posters',
+	'DLS_RECENT_POSTS'	=> 'recent posts',
+	'DLS_RECENT_TOPICS' => 'recent topics',
+	'DLS_WHOS_ONLINE'	=> 'who is online',
 
-	'BLOCKS_POSITION'	 => 'Set block position',
+	'BLOCKS_POSITION'	 => 'Set position',
+	'BLOCKS_CATEGORY'	 => 'Change category',
 	'DUPLICATE_POSITION' => 'duplicate entry',
+	'UPDATE_BLOCKS'		 => 'Update available! Click submit to install: %s.',
+	'PURGE_BLOCKS'		 => 'Purge required! Click submit to remove: %s.',
 ]);

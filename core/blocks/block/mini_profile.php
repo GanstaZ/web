@@ -30,7 +30,7 @@ class mini_profile implements block_interface
 	{
 		return [
 			'block_name' => 'dls_mini_profile',
-			'cat_name' => 'side',
+			'cat_name' => 'right',
 			'ext_name' => 'dls_web',
 		];
 	}

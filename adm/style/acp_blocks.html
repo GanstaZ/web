@@ -2,43 +2,54 @@
 
 <h1>{{ lang('ACP_DLS_BLOCKS') }}</h1>
 
-<form id="acp_board" method="post" action="{{ U_ACTION }}">
+<form id="acp_web_block" method="post" action="{{ U_ACTION }}">
 
 {% if S_UPDATE %}
-<fieldset>
-	{{ U_UPDATE }}
-</fieldset>
+	<fieldset>
+		{{ U_UPDATE }}
+	</fieldset>
 {% endif %}
 
 {% for category in loops.category %}
-<fieldset>
-<legend>{{ category.cat_name }}</legend>
+	<fieldset>
+		<legend>{{ lang(category.cat_name)~' '~lang('BLOCKS') }}</legend>
 
-{% for block in category.block %}
-<dl>
-	<dt><label for="{{ block.name }}">{{ block.lang }}{{ lang('COLON') }}</label><br />
-	<span class="{% if block.duplicate %}error{% else %}success{% endif %}">{{ lang('BLOCKS_POSITION') ~ lang('COLON') }}
-{% if block.duplicate %}
-		{{ lang('DUPLICATE_POSITION') }} <i class="icon fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
-{% endif %}
-	</span>
-	</dt>
-	<dd><input type="radio" class="radio" name="{{ block.name }}" value="1" {% if block.active %}checked="checked" {% endif %}/> {{ lang('YES') }} &nbsp;
-		<input type="radio" class="radio" name="{{ block.name }}" value="0" {% if not block.active %} checked="checked" {% endif %}/> {{ lang('NO') }}
-	</dd>
-	<dd><select name="{{ block.position }}" id="{{ block.position }}">{{ block.s_block_options }}</select></dd>
-</dl>
+	{% for block in category.block %}
+		<dl>
+			<dt><label for="{{ block.name }}">{{ lang('ENABLE')~' '~lang(block.lang) ~ lang('COLON') }}</label><br />
+			{% if category.cat_name !== 'SPECIAL' %}
+				<span class="{% if block.duplicate %}error{% else %}success{% endif %}">{{ lang('BLOCKS_POSITION') ~ lang('COLON') }}
+				{% if block.duplicate %}
+					{{ lang('DUPLICATE_POSITION') }} <i class="icon fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
+				{% endif %}
+				</span>
+			{% endif %}
+			</dt>
+
+			<dd>
+				<label>
+					<input type="radio" class="radio" name="{{ block.name }}" value="1" {% if block.active %}checked="checked" {% endif %}/> {{ lang('YES') }}
+				</label>
+				<label>
+					<input type="radio" class="radio" name="{{ block.name }}" value="0" {% if not block.active %} checked="checked" {% endif %}/> {{ lang('NO') }}
+				</label>
+			</dd>
+			{% if category.cat_name !== 'SPECIAL' %}
+				<dd><select name="{{ block.position }}" id="{{ block.position }}">{{ block.s_block_options }}</select></dd>
+			{% endif %}
+		</dl>
+	{% endfor %}
+
+	</fieldset>
 {% endfor %}
 
-</fieldset>
-{% endfor %}
-
-<p class="submit-buttons">
-	<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
-	<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
-</p>
+	<p class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
+	</p>
 
 	{{ S_FORM_TOKEN }}
 
 </form>
+
 {{ include('overall_footer.html') }}

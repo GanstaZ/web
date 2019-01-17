@@ -49,7 +49,7 @@ class information implements block_interface
 	{
 		return [
 			'block_name' => 'dls_information',
-			'cat_name' => 'side',
+			'cat_name' => 'right',
 			'ext_name' => 'dls_web',
 		];
 	}

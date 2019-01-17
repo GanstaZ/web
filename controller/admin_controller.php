@@ -11,7 +11,6 @@
 namespace dls\web\controller;
 
 use phpbb\config\config;
-use phpbb\config\db_text;
 use phpbb\db\driver\driver_interface;
 use phpbb\language\language;
 use phpbb\request\request;
@@ -24,9 +23,6 @@ class admin_controller
 {
 	/** @var config */
 	protected $config;
-
-	/** @var db_text */
-	protected $db_text;
 
 	/** @var driver_interface */
 	protected $db;
@@ -47,16 +43,14 @@ class admin_controller
 	* Constructor
 	*
 	* @param config			  $config	Config object
-	* @param db_text		  $db_text	Config text object
 	* @param driver_interface $db		Database object
 	* @param language		  $language Language object
 	* @param request		  $request	Request object
 	* @param helper			  $helper	Helper object
 	*/
-	public function __construct(config $config, db_text $db_text, driver_interface $db, language $language, request $request, helper $helper)
+	public function __construct(config $config, driver_interface $db, language $language, request $request, helper $helper)
 	{
 		$this->config = $config;
-		$this->db_text = $db_text;
 		$this->db = $db;
 		$this->language = $language;
 		$this->request = $request;
@@ -101,8 +95,6 @@ class admin_controller
 
 		$this->language->add_lang('acp_web', 'dls/web');
 
-		$points = json_decode($this->db_text->get('dls_points'), true);
-
 		// Is the form submitted
 		if ($this->request->is_set_post('submit'))
 		{
@@ -114,30 +106,19 @@ class admin_controller
 			// If the form has been submitted, set all data and save it
 			$this->set_options();
 
-			foreach ($points as $key => $val)
-			{
-				$points[$key] = $this->request->variable('pts_' . $val, (int) 0);
-				$this->db_text->set('dls_points', json_encode($points));
-			}
-
 			// Show user confirmation of success and provide link back to the previous screen
 			trigger_error($this->language->lang('ACP_DLS_SETTINGS_SAVED') . adm_back_link($this->u_action));
 		}
 
-		// Set output vars for display in the template
-		$this->assign_template_data($points);
-
 		// Set template vars
 		$this->helper->assign('vars', [
-			'ZLAB_VERSION'	 => $this->config['dls_core_version'],
-			'ZLAB_NAME'		 => $this->config['dls_core_name'],
+			'DLS_VERSION'	 => $this->config['dls_core_version'],
 			'DLS_NEWS_ID'	 => $this->get_ids($this->config['dls_news_fid']),
-			'S_PAGINATION'	 => $this->config['dls_show_pagination'],
-			'S_SHOW_NEWS'	 => $this->config['dls_show_news'],
+			'S_PAGINATION'	 => $this->config['dls_pagination'],
+			'DLS_LIMIT'		 => $this->config['dls_limit'],
+			'DLS_USER_LIMIT' => $this->config['dls_user_limit'],
 			'MIN_TITLE_LENGTH'	 => $this->config['dls_title_length'],
 			'MIN_CONTENT_LENGTH' => $this->config['dls_content_length'],
-			'DLS_CORE_LIMIT'	 => $this->config['dls_limit'],
-			'DLS_USER_LIMIT'	 => $this->config['dls_user_limit'],
 			'U_ACTION'			 => $this->u_action,
 		]);
 	}
@@ -150,29 +131,11 @@ class admin_controller
 	protected function set_options(): void
 	{
 		$this->config->set('dls_news_fid', $this->request->variable('dls_news_fid', (int) 0));
-		$this->config->set('dls_show_pagination', $this->request->variable('dls_show_pagination', (bool) 0));
-		$this->config->set('dls_show_news', $this->request->variable('dls_show_news', (bool) 0));
+		$this->config->set('dls_pagination', $this->request->variable('dls_pagination', (bool) 0));
 		$this->config->set('dls_title_length', $this->request->variable('dls_title_length', (int) 0));
 		$this->config->set('dls_content_length', $this->request->variable('dls_content_length', (int) 0));
 		$this->config->set('dls_limit', $this->request->variable('dls_limit', (int) 0));
 		$this->config->set('dls_user_limit', $this->request->variable('dls_user_limit', (int) 0));
-	}
-
-	/**
-	* Assign template data (this method will be removed)
-	*
-	* @param array $data Points data
-	* @return void
-	*/
-	protected function assign_template_data(array $data): void
-	{
-		foreach ($data as $val)
-		{
-			$this->helper->assign('block_vars', 'points', [
-				'name'	=> 'pts_' . $val,
-				'value' => $val,
-			]);
-		}
 	}
 
 	/**

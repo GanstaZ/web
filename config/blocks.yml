@@ -7,16 +7,6 @@ services:
             - '@dls.web.block.event'
             - '%dls.web.tables.blocks%'
 
-    dls.web.admin.block.controller:
-        class: dls\web\controller\admin_block_controller
-        arguments:
-            - '@dbal.conn'
-            - '@language'
-            - '@request'
-            - '@dls.web.block.manager'
-            - '@dls.web.helper'
-            - '@cache'
-
     dls.web.block.collection:
         class: phpbb\di\service_collection
         arguments:
@@ -27,88 +17,94 @@ services:
     dls.web.block.event:
         class: dls\web\core\blocks\event
 
-    dls.web.block.extension:
-        class: dls\web\core\twig\extension
+    dls.web.block.base:
+        abstract: true
         arguments:
-            - '@dls.web.block.event'
-        tags:
-            - { name: twig.extension }
+            - '@config'
+            - '@dbal.conn'
+            - '@dls.web.helper'
+            - '@dispatcher'
 
 # ----- Blocks -----
     dls.web.block.news:
         class: dls\web\core\blocks\block\news
+        shared: false
+        parent: dls.web.block.base
         arguments:
             - '@auth'
-            - '@config'
-            - '@dbal.conn'
             - '@controller.helper'
             - '@language'
             - '@text_formatter.renderer'
-            - '@dls.web.helper'
             - '@user'
             - '@pagination'
+        calls:
+            - [loading, [false]]
         tags:
             - { name: dls.web.block }
 
     dls.web.block.mini.profile:
         class: dls\web\core\blocks\block\mini_profile
+        shared: false
+        parent: dls.web.block.base
+        calls:
+            - [loading, [false]]
         tags:
             - { name: dls.web.block }
 
     dls.web.block.information:
         class: dls\web\core\blocks\block\information
-        arguments:
-            - '@config'
-            - '@template'
-            - '@dispatcher'
+        shared: false
+        parent: dls.web.block.base
+        calls:
+            - [loading, [true]]
         tags:
             - { name: dls.web.block }
 
     dls.web.block.the.team:
         class: dls\web\core\blocks\block\the_team
-        arguments:
-            - '@config'
-            - '@dbal.conn'
-            - '@dls.web.helper'
+        shared: false
+        parent: dls.web.block.base
+        calls:
+            - [loading, [true]]
         tags:
             - { name: dls.web.block }
 
     dls.web.block.top.posters:
         class: dls\web\core\blocks\block\top_posters
-        arguments:
-            - '@config'
-            - '@dbal.conn'
-            - '@template'
+        shared: false
+        parent: dls.web.block.base
+        calls:
+            - [loading, [true]]
         tags:
             - { name: dls.web.block }
 
     dls.web.block.recent.posts:
         class: dls\web\core\blocks\block\recent_posts
-        arguments:
-            - '@config'
-            - '@dbal.conn'
-            - '@dls.web.helper'
+        shared: false
+        parent: dls.web.block.base
+        calls:
+            - [loading, [true]]
         tags:
             - { name: dls.web.block }
 
     dls.web.block.recent.topics:
         class: dls\web\core\blocks\block\recent_topics
-        arguments:
-            - '@config'
-            - '@dbal.conn'
-            - '@dls.web.helper'
+        shared: false
+        parent: dls.web.block.base
+        calls:
+            - [loading, [true]]
         tags:
             - { name: dls.web.block }
 
     dls.web.block.whos.online:
         class: dls\web\core\blocks\block\whos_online
+        shared: false
+        parent: dls.web.block.base
         arguments:
             - '@auth'
-            - '@config'
-            - '@dbal.conn'
             - '@language'
             - '@user'
-            - '@dls.web.helper'
-            - '@dispatcher'
+        calls:
+            - [loading, [true]]
         tags:
             - { name: dls.web.block }

@@ -24,6 +24,14 @@ services:
         tags:
             - { name: event.listener }
 
+    dls.web.extension:
+        class: dls\web\core\twig\extension
+        arguments:
+            - '@dls.web.block.event'
+        tags:
+            - { name: twig.extension }
+
+# ----- Controllers -----
     dls.web.admin.controller:
         class: dls\web\controller\admin_controller
         arguments:
@@ -31,6 +39,16 @@ services:
             - '@dbal.conn'
             - '@language'
             - '@request'
+            - '@dls.web.helper'
+
+    dls.web.admin.block.controller:
+        class: dls\web\controller\admin_block_controller
+        arguments:
+            - '@service_container'
+            - '@dbal.conn'
+            - '@language'
+            - '@request'
+            - '@dls.web.block.manager'
             - '@dls.web.helper'
 
     dls.web.news.controller:

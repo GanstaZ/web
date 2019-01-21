@@ -10,22 +10,22 @@
 
 namespace dls\web\controller;
 
-use phpbb\db\driver\driver_interface;
+use Symfony\Component\DependencyInjection\ContainerInterface as container;
+use phpbb\db\driver\driver_interface as driver;
 use phpbb\language\language;
 use phpbb\request\request;
 use dls\web\core\blocks\manager;
 use dls\web\core\helper;
-use phpbb\cache\service as cache;
 
 /**
 * DLS Web admin block controller
 */
 class admin_block_controller
 {
-	/** @var cache */
-	protected $cache;
+	/** @var container */
+	protected $container;
 
-	/** @var driver_interface */
+	/** @var driver */
 	protected $db;
 
 	/** @var language */
@@ -49,16 +49,16 @@ class admin_block_controller
 	/**
 	* Constructor
 	*
-	* @param driver_interface $db		Database object
-	* @param language		  $language Language object
-	* @param request		  $request	Request object
-	* @param manager		  $manager	Data manager object
-	* @param helper			  $helper	Data helper object
-	* @param cache			  $cache	A cache instance or null
+	* @param container $container A container
+	* @param driver	   $db		  Database object
+	* @param language  $language  Language object
+	* @param request   $request	  Request object
+	* @param manager   $manager	  Data manager object
+	* @param helper	   $helper	  Data helper object
 	*/
-	public function __construct(driver_interface $db, language $language, request $request, manager $manager, helper $helper, cache $cache = null)
+	public function __construct(container $container, driver $db, language $language, request $request, manager $manager, helper $helper)
 	{
-		$this->cache = $cache;
+		$this->container = $container;
 		$this->db = $db;
 		$this->language = $language;
 		$this->request = $request;
@@ -87,9 +87,6 @@ class admin_block_controller
 		$data_ary = $rowset = $count = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			// Check for unavailable data
-			$this->check($row['block_name']);
-
 			$count[$row['cat_name']]['block']++;
 			$count[$row['cat_name']]['position'][(int) $row['position']]++;
 			if ($count[$row['cat_name']]['position'][(int) $row['position']] > 1 && !$row['active'])
@@ -97,22 +94,23 @@ class admin_block_controller
 				$count[$row['cat_name']]['position'][(int) $row['position']]--;
 			}
 
-			$data_ary[] = $row['block_name'];
-			$rowset[$row['cat_name']][$row['block_name']] = [
+			$data_ary[$row['block_name']] = $row['ext_name'];
+			$rowset[$row['cat_name']][] = [
 				'cat_name'	 => $row['cat_name'],
 				'block_name' => $row['block_name'],
+				'ext_name'	 => $row['ext_name'],
 				'active'	 => $row['active'],
 				'position'	 => (int) $row['position'],
 			];
 		}
 		$this->db->sql_freeresult($result);
 
-		// Check for new blocks
+		// Run check for available/unavailable blocks
 		$this->check($data_ary, $count);
 
 		if ($s_status = $this->get_status())
 		{
-			$u_update = implode($this->language->lang('COMMA_SEPARATOR'), $this->status($s_status));
+			$u_update = $s_status === 'add' ? array_column($this->status('add'), 'block_name') : $this->status($s_status);
 		}
 
 		// Is the form submitted
@@ -126,6 +124,8 @@ class admin_block_controller
 			// If the form has been submitted, set all data and save it
 			$this->update_data($data_ary);
 
+			$this->container->get('cache')->purge();
+
 			// Show user confirmation of success and provide link back to the previous screen
 			trigger_error($this->language->lang('ACP_DLS_SETTINGS_SAVED') . adm_back_link($this->u_action));
 		}
@@ -137,8 +137,8 @@ class admin_block_controller
 
 		// Set template vars
 		$this->helper->assign('vars', [
-			'S_UPDATE' => ($s_status) ? true : false,
-			'U_UPDATE' => $this->language->lang(strtoupper("{$s_status}_BLOCKS"), $u_update),
+			'S_UPDATE' => $s_status,
+			'U_UPDATE' => $u_update,
 			'U_ACTION' => $this->u_action,
 		]);
 	}
@@ -146,16 +146,16 @@ class admin_block_controller
 	/**
 	* Update data
 	*
-	* @param array $data_ary Array of block names
+	* @param array $data_ary Array of blocks data
 	* @return void
 	*/
 	public function update_data(array $data_ary): void
 	{
-		foreach ($data_ary as $block_name)
+		foreach ($data_ary as $block_name => $ext_name)
 		{
 			$block_data = [
 				'active'   => $this->request->variable($block_name, (int) 0),
-				'position' => $this->request->variable($block_name . '_b', (int) 0),
+				'position' => $this->request->variable($block_name . '_' . $ext_name, (int) 0),
 			];
 
 			// Update selected/requested block data
@@ -171,17 +171,15 @@ class admin_block_controller
 			}
 		}
 
-		// Add new block
-		if ($add_new_block = $this->status('add'))
+		// Add new blocks
+		if ($add_blocks = $this->status('add'))
 		{
-			$this->db->sql_multi_insert($this->manager->blocks_data(), $add_new_block);
+			$this->db->sql_multi_insert($this->manager->blocks_data(), $add_blocks);
 		}
-
-		$this->cache->purge();
 	}
 
 	/**
-	* Assign template block data for blocks
+	* Assign template data for blocks
 	*
 	* @param array $rowset Block data is stored here
 	* @param array $count  Array of counted data [quantity of blocks and positions]
@@ -203,11 +201,11 @@ class admin_block_controller
 				$count_position = $count[$category]['position'][$block['position']];
 
 				$this->helper->assign('block_vars', 'category.block', [
-					'name' => $block['block_name'],
-					'position' => $block['block_name'] . '_b',
-					'active' => $block['active'],
-					'lang' => strtoupper($block['block_name']),
-					'duplicate' => ($count_position > 1) ? true : false,
+					'name'		=> $block['block_name'],
+					'position'	=> $block['block_name'] . '_' . $block['ext_name'],
+					'active'	=> $block['active'],
+					'lang'		=> strtoupper($block['block_name']),
+					'duplicate' => $count_position > 1 ?? false,
 					's_block_options' => $block_options,
 				]);
 			}
@@ -217,21 +215,35 @@ class admin_block_controller
 	/**
 	* Check conditioning
 	*
-	* @param string|array $block_data
-	* @param null|array $count
+	* @param array $block_data
+	* @param array $count
 	* @return void
 	*/
-	public function check($block_data, $count = null): void
+	public function check(array $block_data, array $count): void
 	{
+		$add_blocks = [];
+
+		/**
+		* Event to add blocks
+		*
+		* @event dls.web.admin_add_blocks
+		* @var array add_blocks Contains blocks data
+		* @since 2.4.0-RC1
+		*/
+		$vars = ['add_blocks'];
+		extract($this->container->get('dispatcher')->trigger_event('dls.web.admin_add_blocks', compact($vars)));
+
 		// Check for new blocks
-		if (is_array($block_data))
+		$this->prepare(array_diff_key($add_blocks, array_flip(array_keys($block_data))), $count);
+
+		// Check for unavailable blocks
+		foreach ($block_data as $service => $ext_name)
 		{
-			$this->prepare(array_diff_key($this->manager->get(), array_flip($block_data)), $count);
-		}
-		else if (is_string($block_data) && !$this->manager->get($block_data))
-		{
-			// Set our block/service as unavailable
-			$this->status['purge'][] = $block_data;
+			if (!$this->is_available(['block_name' => $service, 'ext_name' => $ext_name]))
+			{
+				// Set our block/service as unavailable
+				$this->status['purge'][] = $service;
+			}
 		}
 	}
 
@@ -246,14 +258,22 @@ class admin_block_controller
 	{
 		foreach ($block_data as $data)
 		{
+			if (!$this->is_valid($data))
+			{
+				continue;
+			}
+
 			$position = 1;
 			if ($count[$data['cat_name']])
 			{
 				$position = end(array_keys($count[$data['cat_name']]['position']));
 				$count[$data['cat_name']]['position'][] = $position++;
 			}
+			else if (in_array($data['cat_name'], array_column($this->status['add'], 'cat_name')))
+			{
+				$position++;
+			}
 
-			$this->status['update'][] = $data['block_name'];
 			$this->status['add'][] = [
 				'block_name' => $data['block_name'],
 				'ext_name'	 => $data['ext_name'],
@@ -262,6 +282,28 @@ class admin_block_controller
 				'cat_name'	 => $data['cat_name'],
 			];
 		}
+	}
+
+	/**
+	* Is valid data
+	*
+	* @param array $row
+	* @return bool
+	*/
+	protected function is_valid(array $row): bool
+	{
+		return $this->manager->is_valid_name($row) && $this->is_available($row);
+	}
+
+	/**
+	* Is service available
+	*
+	* @param array $row
+	* @return bool
+	*/
+	protected function is_available(array $row): bool
+	{
+		return $this->container->has($this->manager->get_service($row['block_name'], $row['ext_name']));
 	}
 
 	/**
@@ -278,7 +320,7 @@ class admin_block_controller
 	/**
 	* Check for update/purge status
 	*
-	* @return string $status
+	* @return string
 	*/
 	public function get_status(): ?string
 	{
@@ -286,9 +328,9 @@ class admin_block_controller
 		{
 			return null;
 		}
-		else if ($this->status('update'))
+		else if ($this->status('add'))
 		{
-			$status = 'update';
+			$status = 'add';
 		}
 		else if ($this->status('purge'))
 		{

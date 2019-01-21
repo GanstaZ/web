@@ -6,7 +6,7 @@
 
 {% if S_UPDATE %}
 	<fieldset>
-		{{ U_UPDATE }}
+		{{ lang(S_UPDATE|upper~'_BLOCK', U_UPDATE|join(lang('COMMA_SEPARATOR'))) }}
 	</fieldset>
 {% endif %}
 
@@ -18,7 +18,7 @@
 		<dl>
 			<dt><label for="{{ block.name }}">{{ lang('ENABLE')~' '~lang(block.lang) ~ lang('COLON') }}</label><br />
 			{% if category.cat_name !== 'SPECIAL' %}
-				<span class="{% if block.duplicate %}error{% else %}success{% endif %}">{{ lang('BLOCKS_POSITION') ~ lang('COLON') }}
+				<span class="{% if block.duplicate %}error{% else %}success{% endif %}">{{ lang('BLOCK_POSITION') ~ lang('COLON') }}
 				{% if block.duplicate %}
 					{{ lang('DUPLICATE_POSITION') }} <i class="icon fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
 				{% endif %}

@@ -10,50 +10,11 @@
 
 namespace dls\web\core\blocks\block;
 
-use phpbb\config\config;
-use phpbb\db\driver\driver_interface;
-use phpbb\template\template;
-
 /**
 * DLS Web Top Posters block
 */
-class top_posters implements block_interface
+class top_posters extends base
 {
-	/** @var config */
-	protected $config;
-
-	/** @var driver_interface */
-	protected $db;
-
-	/** @var template */
-	protected $template;
-
-	/**
-	* Constructor
-	*
-	* @param config			  $config	Config object
-	* @param driver_interface $db		Database object
-	* @param template		  $template Template object
-	*/
-	public function __construct(config $config, driver_interface $db, template $template)
-	{
-		$this->config = $config;
-		$this->db = $db;
-		$this->template = $template;
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function get_data(): array
-	{
-		return [
-			'block_name' => 'dls_top_posters',
-			'cat_name' => 'right',
-			'ext_name' => 'dls_web',
-		];
-	}
-
 	/**
 	* {@inheritdoc}
 	*/
@@ -69,7 +30,7 @@ class top_posters implements block_interface
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$this->template->assign_block_vars('top_posters', [
+			$this->helper->assign('block_vars', 'top_posters', [
 				'top' => get_username_string('full', (int) $row['user_id'], $row['username'], $row['user_colour']),
 				'posts' => (int) $row['user_posts'],
 			]);

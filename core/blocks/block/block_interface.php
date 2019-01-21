@@ -16,17 +16,24 @@ namespace dls\web\core\blocks\block;
 interface block_interface
 {
 	/**
-	* Load block
+	* Is load method required [Default is true]
 	*
-	* @return null
+	* @return bool
 	*/
-	public function load();
+	public function is_load_active();
 
 	/**
-	* Get block data
+	* Set load [Default should be true]
 	*
-	* @return array Block data, must have keys block_name, cat_name & vendor.
-	*		 ['block_name' => '', 'cat_name' => '', 'vendor' => '']
+	* @param bool $set to true or false
+	* @return void
 	*/
-	public function get_data();
+	public function loading(bool $set);
+
+	/**
+	* Load block
+	*
+	* @return void
+	*/
+	public function load();
 }

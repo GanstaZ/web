@@ -13,28 +13,8 @@ namespace dls\web\core\blocks\block;
 /**
 * DLS Web Mini Profile block
 */
-class mini_profile implements block_interface
+class mini_profile extends base
 {
-	/**
-	* Constructor
-	*
-	*/
-	public function __construct()
-	{
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function get_data(): array
-	{
-		return [
-			'block_name' => 'dls_mini_profile',
-			'cat_name' => 'right',
-			'ext_name' => 'dls_web',
-		];
-	}
-
 	/**
 	* {@inheritdoc}
 	*/

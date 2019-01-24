@@ -35,7 +35,14 @@
 				</label>
 			</dd>
 			{% if category.cat_name !== 'SPECIAL' %}
-				<dd><select name="{{ block.position }}" id="{{ block.position }}">{{ block.s_block_options }}</select></dd>
+				<dd>
+					<select name="{{ block.position }}" id="{{ block.position }}">
+					{% set options = block.s_block_options %}
+					{% if options %}
+						{{ include('@dls_web/options.html') }}
+					{% endif %}
+					</select>
+				</dd>
 			{% endif %}
 		</dl>
 	{% endfor %}

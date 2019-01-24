@@ -197,16 +197,13 @@ class admin_block_controller
 			// Add data to given categories
 			foreach ($data as $block)
 			{
-				$block_options = $this->helper->get_options(range(1, $count_blocks), $block['position']);
-				$count_position = $count[$category]['position'][$block['position']];
-
 				$this->helper->assign('block_vars', 'category.block', [
 					'name'		=> $block['block_name'],
 					'position'	=> $block['block_name'] . '_' . $block['ext_name'],
 					'active'	=> $block['active'],
 					'lang'		=> strtoupper($block['block_name']),
-					'duplicate' => $count_position > 1 ?? false,
-					's_block_options' => $block_options,
+					'duplicate' => $count[$category]['position'][$block['position']] > 1 ?? false,
+					's_block_options' => $this->helper->options(range(1, $count_blocks), $block['position']),
 				]);
 			}
 		}

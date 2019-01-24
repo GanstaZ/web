@@ -11,79 +11,31 @@
 namespace dls\web\core\blocks\block;
 
 use phpbb\auth\auth;
-use phpbb\config\config;
-use phpbb\db\driver\driver_interface;
-use phpbb\language\language;
 use phpbb\user;
-use dls\web\core\helper;
-use phpbb\event\dispatcher;
 
 /**
 * DLS Web Who's Online block
 */
-class whos_online implements block_interface
+class whos_online extends base
 {
 	/** @var auth */
 	protected $auth;
 
-	/** @var config */
-	protected $config;
-
-	/** @var driver_interface */
-	protected $db;
-
-	/** @var language */
-	protected $language;
-
 	/** @var user */
 	protected $user;
-
-	/** @var helper */
-	protected $helper;
-
-	/** @var dispatcher */
-	protected $dispatcher;
-
-	/** @var phpBB root path */
-	protected $root_path;
-
-	/** @var file extension */
-	protected $php_ext;
 
 	/**
 	* Constructor
 	*
-	* @param auth             $auth       Auth object
-	* @param config           $config     Config object
-	* @param driver_interface $db         Database object
-	* @param language         $language   Language object
-	* @param user             $user       User object
-	* @param helper           $helper     Data helper object
-	* @param dispatcher       $dispatcher Dispatcher object
+	* @param auth $auth Auth object
+	* @param user $user User object
 	*/
-	public function __construct(auth $auth, config $config, driver_interface $db, language $language, user $user, helper $helper, dispatcher $dispatcher)
+	public function __construct($config, $db, $helper, $dispatcher, auth $auth, user $user)
 	{
-		$this->auth = $auth;
-		$this->config = $config;
-		$this->db = $db;
-		$this->language = $language;
-		$this->user = $user;
-		$this->helper = $helper;
-		$this->dispatcher = $dispatcher;
-		$this->root_path = $this->helper->get('root_path');
-		$this->php_ext = $this->helper->get('php_ext');
-	}
+		parent::__construct($config, $db, $helper, $dispatcher);
 
-	/**
-	* {@inheritdoc}
-	*/
-	public function get_data(): array
-	{
-		return [
-			'block_name' => 'dls_whos_online',
-			'cat_name' => 'bottom',
-			'ext_name' => 'dls_web',
-		];
+		$this->auth = $auth;
+		$this->user = $user;
 	}
 
 	/**
@@ -110,16 +62,16 @@ class whos_online implements block_interface
 		}
 
 		$this->helper->assign('vars', [
-			'TOTAL_POSTS'  => $this->language->lang('TOTAL_POSTS_COUNT', $total_posts),
-			'TOTAL_TOPICS' => $this->language->lang('TOTAL_TOPICS', $total_topics),
-			'TOTAL_USERS'  => $this->language->lang('TOTAL_USERS', $total_users),
-			'NEWEST_USER'  => $this->language->lang('NEWEST_USER', get_username_string('full', (int) $this->config['newest_user_id'], $this->config['newest_username'], $this->config['newest_user_colour'])),
+			'TOTAL_POSTS'  => $total_posts,
+			'TOTAL_TOPICS' => $total_topics,
+			'TOTAL_USERS'  => $total_users,
+			'NEWEST_USER'  => get_username_string('full', (int) $this->config['newest_user_id'], $this->config['newest_username'], $this->config['newest_user_colour']),
 
 			'LEGEND' => $this->legend(),
 
-			'POSTS_PER_DAY'  => $this->language->lang('T_POST_DAY', (float) $posts_per_day),
-			'TOPICS_PER_DAY' => $this->language->lang('T_TOPICS_DAY', (float) $topics_per_day),
-			'USERS_PER_DAY'  => $this->language->lang('T_USERS_DAY', (float) $users_per_day),
+			'PP_DAY' => (float) $posts_per_day,
+			'TP_DAY' => (float) $topics_per_day,
+			'UP_DAY' => (float) $users_per_day,
 			'S_DISPLAY_BIRTHDAY_LIST' => $show_birthdays,
 		]);
 
@@ -191,9 +143,9 @@ class whos_online implements block_interface
 	/**
 	* Legend
 	*
-	* @return string
+	* @return array
 	*/
-	protected function legend(): string
+	protected function legend(): array
 	{
 		$order_legend = ($this->config['legend_sort_groupname']) ? 'group_name' : 'group_legend';
 
@@ -226,22 +178,22 @@ class whos_online implements block_interface
 			$group_name = $this->helper->get_name($row['group_name']);
 			$group_link = append_sid("{$this->helper->get('root_path')}memberlist.{$this->helper->get('php_ext')}", "mode=group&amp;g={$row['group_id']}");
 
+			$legend[] = '<a' . $colour_text . ' href="' . $group_link . '">' . $group_name . '</a>';
+
 			if ($this->not_authed($row))
 			{
 				$legend[] = '<span' . $colour_text . '>' . $group_name . '</span>';
 			}
-
-			$legend[] = '<a' . $colour_text . ' href="' . $group_link . '">' . $group_name . '</a>';
 		}
 		$this->db->sql_freeresult($result);
 
-		return implode($this->language->lang('COMMA_SEPARATOR'), $legend);
+		return $legend;
 	}
 
 	/**
 	* Is visitor a bot or does he/she have permissions
 	*
-	* @param  array $row Groups data
+	* @param array $row Groups data
 	* @return bool
 	*/
 	protected function not_authed($row): bool

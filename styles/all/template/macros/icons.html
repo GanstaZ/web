@@ -1,0 +1,11 @@
+{% macro icon(type, icon, class, title, hidden = false, attributes) %}
+	{% if type === 'font' %}
+		<i class="icon fa-{{ icon }} {{ class }}" aria-hidden="true"></i>
+	{% elseif type === 'svg' %}
+
+	{% elseif type === 'png' %}
+
+	{% else %}
+		testing
+	{% endif %}
+{% endmacro %}

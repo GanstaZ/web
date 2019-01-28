@@ -2,57 +2,49 @@
 
 <h1>{{ lang('ACP_DLS_BLOCKS') }}</h1>
 
+{% import '@dls_web/macros/forms.html' as form %}
+{% from '@dls_web/macros/icons.html' import icon %}
+
 <form id="acp_web_block" method="post" action="{{ U_ACTION }}">
 
-{% if S_UPDATE %}
-	<fieldset>
-		{{ lang(S_UPDATE|upper~'_BLOCK', U_UPDATE|join(lang('COMMA_SEPARATOR'))) }}
-	</fieldset>
-{% endif %}
+	{% if S_UPDATE %}
+		<fieldset>
+			{{ lang(S_UPDATE|upper~'_BLOCK', U_UPDATE|join(lang('COMMA_SEPARATOR'))) }}
+		</fieldset>
+	{% endif %}
 
-{% for category in loops.category %}
-	<fieldset>
-		<legend>{{ lang(category.cat_name)~' '~lang('BLOCKS') }}</legend>
+	{% for category in loops.category %}
+		<fieldset>
+			<legend>{{ lang(category.cat_name) ~ lang('BLOCKS') }}</legend>
 
-	{% for block in category.block %}
-		<dl>
-			<dt><label for="{{ block.name }}">{{ lang('ENABLE')~' '~lang(block.lang) ~ lang('COLON') }}</label><br />
-			{% if category.cat_name !== 'SPECIAL' %}
-				<span class="{% if block.duplicate %}error{% else %}success{% endif %}">{{ lang('BLOCK_POSITION') ~ lang('COLON') }}
-				{% if block.duplicate %}
-					{{ lang('DUPLICATE_POSITION') }} <i class="icon fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
-				{% endif %}
-				</span>
-			{% endif %}
-			</dt>
+			{% for block in category.block %}
+				<dl>
+					<dt>{{ form.label(block.name, lang('ENABLE') ~ lang(block.language) ~ lang('COLON')) }}<br>
+						{% if category.cat_name !== 'SPECIAL' %}
+							<span class="{% if block.s_duplicate %}error{% else %}success{% endif %}">
+								{% if block.s_duplicate %}
+									{{ lang('DUPLICATE_POSITION') ~ icon('font', 'exclamation-triangle', 'fa-fw') }}
+								{% else %}
+									{{ lang('BLOCK_POSITION') ~ lang('COLON') }}
+								{% endif %}
+							</span>
+						{% endif %}
+					</dt>
 
-			<dd>
-				<label>
-					<input type="radio" class="radio" name="{{ block.name }}" value="1" {% if block.active %}checked="checked" {% endif %}/> {{ lang('YES') }}
-				</label>
-				<label>
-					<input type="radio" class="radio" name="{{ block.name }}" value="0" {% if not block.active %} checked="checked" {% endif %}/> {{ lang('NO') }}
-				</label>
-			</dd>
-			{% if category.cat_name !== 'SPECIAL' %}
-				<dd>
-					<select name="{{ block.position }}" id="{{ block.position }}">
-					{% set options = block.s_block_options %}
-					{% if options %}
-						{{ include('@dls_web/options.html') }}
+					<dd>{{ form.radio(block.name, block.s_activate, {'yes': lang('YES'), 'no': lang('NO')}) }}</dd>
+
+					{% if category.cat_name !== 'SPECIAL' and block.s_options %}
+						<dd>{{ form.select(block.position, block.s_current, range(1, block.s_options)) }}</dd>
 					{% endif %}
-					</select>
-				</dd>
-			{% endif %}
-		</dl>
+				</dl>
+			{% endfor %}
+
+		</fieldset>
 	{% endfor %}
 
-	</fieldset>
-{% endfor %}
-
 	<p class="submit-buttons">
-		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
-		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
+		{{ form.input('submit', lang('SUBMIT'), 'button1', {'type': 'submit'}) }}
+		{{ form.input('reset', lang('RESET'), 'button2', {'type': 'reset'}) }}
 	</p>
 
 	{{ S_FORM_TOKEN }}

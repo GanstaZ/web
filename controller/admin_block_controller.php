@@ -11,11 +11,13 @@
 namespace dls\web\controller;
 
 use Symfony\Component\DependencyInjection\ContainerInterface as container;
-use phpbb\db\driver\driver_interface as driver;
-use phpbb\language\language;
-use phpbb\request\request;
+use phpbb\ {
+	db\driver\driver_interface as driver,
+	language\language,
+	request\request,
+	template\template
+};
 use dls\web\core\blocks\manager;
-use dls\web\core\helper;
 
 /**
 * DLS Web admin block controller
@@ -34,11 +36,11 @@ class admin_block_controller
 	/** @var request */
 	protected $request;
 
+	/** @var template */
+	protected $template;
+
 	/** @var manager */
 	protected $manager;
-
-	/** @var helper */
-	protected $helper;
 
 	/** @var array Contains info about current status */
 	protected $status;
@@ -53,17 +55,17 @@ class admin_block_controller
 	* @param driver	   $db		  Database object
 	* @param language  $language  Language object
 	* @param request   $request	  Request object
+	* @param template  $template  Template object
 	* @param manager   $manager	  Data manager object
-	* @param helper	   $helper	  Data helper object
 	*/
-	public function __construct(container $container, driver $db, language $language, request $request, manager $manager, helper $helper)
+	public function __construct(container $container, driver $db, language $language, request $request, template $template, manager $manager)
 	{
 		$this->container = $container;
 		$this->db = $db;
 		$this->language = $language;
 		$this->request = $request;
 		$this->manager = $manager;
-		$this->helper = $helper;
+		$this->template = $template;
 	}
 
 	/**
@@ -89,7 +91,7 @@ class admin_block_controller
 		{
 			$count[$row['cat_name']]['block']++;
 			$count[$row['cat_name']]['position'][(int) $row['position']]++;
-			if ($count[$row['cat_name']]['position'][(int) $row['position']] > 1 && !$row['active'])
+			if (!$row['active'])
 			{
 				$count[$row['cat_name']]['position'][(int) $row['position']]--;
 			}
@@ -136,7 +138,7 @@ class admin_block_controller
 		unset($data_ary, $rowset, $count);
 
 		// Set template vars
-		$this->helper->assign('vars', [
+		$this->template->assign_vars([
 			'S_UPDATE' => $s_status,
 			'U_UPDATE' => $u_update,
 			'U_ACTION' => $this->u_action,
@@ -189,21 +191,20 @@ class admin_block_controller
 	{
 		foreach ($rowset as $category => $data)
 		{
-			$count_blocks = $count[$category]['block'];
-
 			// Set categories
-			$this->helper->assign('block_vars', 'category', ['cat_name' => strtoupper($category),]);
+			$this->template->assign_block_vars('category', ['cat_name' => strtoupper($category),]);
 
 			// Add data to given categories
 			foreach ($data as $block)
 			{
-				$this->helper->assign('block_vars', 'category.block', [
-					'name'		=> $block['block_name'],
-					'position'	=> $block['block_name'] . '_' . $block['ext_name'],
-					'active'	=> $block['active'],
-					'lang'		=> strtoupper($block['block_name']),
-					'duplicate' => $count[$category]['position'][$block['position']] > 1 ?? false,
-					's_block_options' => $this->helper->options(range(1, $count_blocks), $block['position']),
+				$this->template->assign_block_vars('category.block', [
+					'name'		  => $block['block_name'],
+					'position'	  => $block['block_name'] . '_' . $block['ext_name'],
+					's_activate'  => $block['active'],
+					'language'	  => strtoupper($block['block_name']),
+					's_duplicate' => ($count[$category]['position'][$block['position']] > 1) && $block['active'] ?? false,
+					's_options'	  => $count[$category]['block'],
+					's_current'	  => $block['position'],
 				]);
 			}
 		}

@@ -48,8 +48,8 @@ services:
             - '@dbal.conn'
             - '@language'
             - '@request'
+            - '@template'
             - '@dls.web.block.manager'
-            - '@dls.web.helper'
 
     dls.web.news.controller:
         class: dls\web\controller\news_controller

@@ -19,8 +19,8 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, [
-	'BLOCKS'  => 'blocks',
-	'ENABLE'  => 'Enable',
+	'BLOCKS'  => ' blocks',
+	'ENABLE'  => 'Enable ',
 	'RIGHT'	  => 'Right side',
 	'BOTTOM'  => 'Bottom',
 	'SPECIAL' => 'Special',
@@ -34,9 +34,9 @@ $lang = array_merge($lang, [
 	'DLS_RECENT_TOPICS' => 'recent topics',
 	'DLS_WHOS_ONLINE'	=> 'who is online',
 
-	'BLOCK_POSITION'	 => 'Set position',
+	'BLOCK_POSITION'	 => 'Change position',
 	'BLOCK_CATEGORY'	 => 'Change category',
-	'DUPLICATE_POSITION' => 'duplicate entry',
-	'ADD_BLOCK'		     => 'Update available! Click submit to install: %s.',
+	'DUPLICATE_POSITION' => 'Duplicate positions',
+	'ADD_BLOCK'			 => 'Update available! Click submit to install: %s.',
 	'PURGE_BLOCK'		 => 'Purge required! Click submit to remove: %s.',
 ]);

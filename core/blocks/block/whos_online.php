@@ -62,17 +62,17 @@ class whos_online extends base
 		}
 
 		$this->helper->assign('vars', [
-			'TOTAL_POSTS'  => $total_posts,
-			'TOTAL_TOPICS' => $total_topics,
-			'TOTAL_USERS'  => $total_users,
-			'NEWEST_USER'  => get_username_string('full', (int) $this->config['newest_user_id'], $this->config['newest_username'], $this->config['newest_user_colour']),
+			'T_POSTS'  => $total_posts,
+			'T_TOPICS' => $total_topics,
+			'T_USERS'  => $total_users,
+			'NEW_USER' => get_username_string('full', (int) $this->config['newest_user_id'], $this->config['newest_username'], $this->config['newest_user_colour']),
 
-			'LEGEND' => $this->legend(),
+			'LEGEND'   => $this->legend(),
 
-			'PP_DAY' => (float) $posts_per_day,
-			'TP_DAY' => (float) $topics_per_day,
-			'UP_DAY' => (float) $users_per_day,
-			'S_DISPLAY_BIRTHDAY_LIST' => $show_birthdays,
+			'D_POSTS'  => (float) $posts_per_day,
+			'D_TOPICS' => (float) $topics_per_day,
+			'D_USERS'  => (float) $users_per_day,
+			'S_BIRTHDAY_LIST' => $show_birthdays,
 		]);
 
 		/**

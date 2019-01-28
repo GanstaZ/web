@@ -11,12 +11,10 @@
 namespace dls\web\controller;
 
 use Symfony\Component\DependencyInjection\ContainerInterface as container;
-use phpbb\ {
-	db\driver\driver_interface as driver,
-	language\language,
-	request\request,
-	template\template
-};
+use phpbb\db\driver\driver_interface as driver;
+use phpbb\language\language;
+use phpbb\request\request;
+use phpbb\template\template;
 use dls\web\core\blocks\manager;
 
 /**

@@ -8,7 +8,7 @@
 *
 */
 
-namespace dls\web\core\blocks\block;
+namespace dls\web\core\blocks\type;
 
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;

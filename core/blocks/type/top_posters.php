@@ -8,7 +8,7 @@
 *
 */
 
-namespace dls\web\core\blocks\block;
+namespace dls\web\core\blocks\type;
 
 /**
 * DLS Web Top Posters block
@@ -26,7 +26,7 @@ class top_posters extends base
 					AND user_type <> ' . (int) USER_IGNORE . '
 					AND user_posts > 0
 				ORDER BY user_posts DESC';
-		$result = $this->db->sql_query_limit($sql, (int) $this->config['dls_limit'], 0, 3600);
+		$result = $this->db->sql_query_limit($sql, (int) $this->config['dls_user_limit'], 0, 3600);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{

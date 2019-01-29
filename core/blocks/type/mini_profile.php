@@ -8,17 +8,12 @@
 *
 */
 
-namespace dls\web\core\blocks\block;
+namespace dls\web\core\blocks\type;
 
 /**
 * DLS Web Mini Profile block
 */
 class mini_profile extends base
 {
-	/**
-	* {@inheritdoc}
-	*/
-	public function load(): void
-	{
-	}
+
 }

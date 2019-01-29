@@ -8,7 +8,7 @@
 *
 */
 
-namespace dls\web\core\blocks\block;
+namespace dls\web\core\blocks\type;
 
 /**
 * DLS Web Recent Posts block
@@ -26,7 +26,7 @@ class recent_posts extends base
 					AND t.topic_status <> ' . ITEM_MOVED . '
 					AND t.topic_visibility = 1
 				ORDER BY p.post_id DESC';
-		$result = $this->db->sql_query_limit($sql, (int) $this->config['dls_user_limit'], 0, 3600);
+		$result = $this->db->sql_query_limit($sql, (int) $this->config['dls_limit'], 0, 3600);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{

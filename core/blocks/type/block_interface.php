@@ -8,7 +8,7 @@
 *
 */
 
-namespace dls\web\core\blocks\block;
+namespace dls\web\core\blocks\type;
 
 /**
 * DLS Web interface for blocks

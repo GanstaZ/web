@@ -8,7 +8,7 @@
 *
 */
 
-namespace dls\web\core\blocks\block;
+namespace dls\web\core\blocks\type;
 
 use phpbb\auth\auth;
 use phpbb\user;

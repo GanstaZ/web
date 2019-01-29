@@ -2,10 +2,11 @@
 	<input {% if class %}class="{{ class }}"{% endif %} id="{{ name }}" name="{{ name }}"{% for attr, value in attributes %} {{ attr }}="{{ value }}"{% endfor %} value="{{ value }}">
 {% endmacro %}
 
-{% macro select(name, options, attributes) %}
+{% macro select(name, current, values, keys = false, attributes) %}
 	<select id="{{ name }}" name="{{ name }}"{% for attr, value in attributes %} {{ attr }}="{{ value }}"{% endfor %}>
-		{% for option in options %}
-			<option value="{{ option.value }}"{{ option.selected ? ' selected' : '' }}>{{ option.value }}</option>
+		{% for key, value in values %}
+			{% set option = keys ? key : value %}
+			<option value="{{ option }}"{{ current == option ? ' selected' }}>{{ value }}</option>
 		{% endfor %}
 	</select>
 {% endmacro %}

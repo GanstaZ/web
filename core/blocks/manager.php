@@ -196,7 +196,7 @@ class manager
 	* Check if our cat name is special
 	*
 	* @param array $row block data
-	* @return bool Depending on whether or not the block is valid
+	* @return bool Depending on whether or not the category is special
 	*/
 	public function is_special(array $row): bool
 	{

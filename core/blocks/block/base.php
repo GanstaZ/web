@@ -54,6 +54,13 @@ abstract class base implements block_interface
 	/**
 	* {@inheritdoc}
 	*/
+	public function load(): void
+	{
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function is_load_active(): bool
 	{
 		return $this->loading;

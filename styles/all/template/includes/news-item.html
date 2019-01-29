@@ -1,4 +1,6 @@
-<article id="{{ news.id }}" class="post news {% if news.S_ROW_COUNT is odd %}bg2{% else %}bg1{% endif %}">
+{% from '@dls_web/macros/icons.html' import icon %}
+
+<article id="{{ news.id }}" class="post news {{ loop.index0 is odd ? 'bg2' : 'bg1' }}">
 	<div class="inner">
 
 	<dl class="postprofile">
@@ -15,32 +17,32 @@
 		<ul class="post-buttons">
 			<li>
 				<span class="button button-icon-only" title="{{ news.views }} {{ lang('VIEWS') }}">
-					<i class="icon fa-eye fa-fw" aria-hidden="true"></i><span class="sr-only">{{ lang('VIEWS') }}</span>
+					{{ icon('font', 'eye', 'fa-fw') }}<span class="sr-only">{{ lang('VIEWS') }}</span>
 				</span>
 			</li>
 			<li>
 				<span class="button button-icon-only" title="{{ news.replies }} {{ lang('REPLIES') }}">
-					<i class="icon fa-commenting fa-fw" aria-hidden="true"></i><span class="sr-only">{{ lang('REPLIES') }}</span>
+					{{ icon('font', 'commenting', 'fa-fw') }}<span class="sr-only">{{ lang('REPLIES') }}</span>
 				</span>
 			</li>
 		</ul>
 
 		<p class="author">
 			<a href="{{ news.link }}" title="{{ lang('POST') }}">
-				<i class="fa fa-file-o fa-fw" aria-hidden="true"></i>
+				{{ icon('font', 'file-o', 'fa-fw') }}
 			</a>
 			{{ lang('POST_BY_AUTHOR') }} {{ news.author }} &raquo; {{ news.date }}
 		</p>
 
 		<article class="content">
-			{{ news.text }}{% if news.is_trimmed %} <a href="{{ news.link }}">{{ lang('READ_FULL') }}</a>{% endif %}
+			{{ news.text }}{% if news.is_trimmed %}{{ lang('ELLIPSIS') }} <a href="{{ news.link }}">{{ lang('READ_FULL') }}</a>{% endif %}
 		</article>
 
 	</section>
 
 	<div class="back2top">
 		<a href="#top" class="top" title="{{ lang('BACK_TO_TOP') }}">
-			<i class="icon fa-chevron-circle-up fa-fw icon-gray" aria-hidden="true"></i>
+			{{ icon('font', 'chevron-circle-up icon-gray', 'fa-fw') }}
 			<span class="sr-only">{{ lang('BACK_TO_TOP') }}</span>
 		</a>
 	</div>

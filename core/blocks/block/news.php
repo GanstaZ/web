@@ -11,40 +11,28 @@
 namespace dls\web\core\blocks\block;
 
 use phpbb\auth\auth;
-use phpbb\config\config;
-use phpbb\db\driver\driver_interface;
-use phpbb\controller\helper as controller_helper;
+use phpbb\controller\helper as controller;
 use phpbb\language\language;
 use phpbb\textformatter\s9e\renderer;
-use dls\web\core\helper;
 use phpbb\user;
 use phpbb\pagination;
 
 /**
 * DLS Web News block
 */
-class news implements block_interface
+class news extends base
 {
 	/** @var auth */
 	protected $auth;
 
-	/** @var config */
-	protected $config;
-
-	/** @var driver_interface */
-	protected $db;
-
-	/** @var helper */
-	protected $controller_helper;
+	/** @var controller helper */
+	protected $controller;
 
 	/** @var language */
 	protected $language;
 
 	/** @var s9e renderer */
 	protected $renderer;
-
-	/** @var helper */
-	protected $helper;
 
 	/** @var user */
 	protected $user;
@@ -55,7 +43,10 @@ class news implements block_interface
 	/** @var int Page offset for pagination */
 	protected $page;
 
-	/** @var bool is trim set */
+	/** @var bool enable trim */
+	protected $trim_news = false;
+
+	/** @var bool is trimmed */
 	protected $is_trimmed;
 
 	/** @var string news order */
@@ -64,25 +55,21 @@ class news implements block_interface
 	/**
 	* Constructor
 	*
-	* @param auth			   $auth			  Auth object
-	* @param config			   $config			  Config object
-	* @param driver_interface  $db				  Database object
-	* @param controller_helper $controller_helper Controller helper object
-	* @param language		   $language		  Language object
-	* @param renderer		   $renderer		  s9e renderer object
-	* @param helper			   $helper			  Helper object
-	* @param user			   $user			  User object
-	* @param pagination		   $pagination		  Pagination object
+	* @param auth		$auth		Auth object
+	* @param controller $controller Controller helper object
+	* @param language	$language	Language object
+	* @param renderer	$renderer	s9e renderer object
+	* @param user		$user		User object
+	* @param pagination $pagination Pagination object
 	*/
-	public function __construct(auth $auth, config $config, driver_interface $db, controller_helper $controller_helper, language $language, renderer $renderer, helper $helper, user $user, pagination $pagination)
+	public function __construct($config, $db, $helper, $dispatcher, auth $auth, controller $controller, language $language, renderer $renderer, user $user, pagination $pagination)
 	{
+		parent::__construct($config, $db, $helper, $dispatcher);
+
 		$this->auth = $auth;
-		$this->config = $config;
-		$this->db = $db;
-		$this->controller_helper = $controller_helper;
+		$this->controller = $controller;
 		$this->language = $language;
 		$this->renderer = $renderer;
-		$this->helper = $helper;
 		$this->user = $user;
 		$this->pagination = $pagination;
 
@@ -93,30 +80,12 @@ class news implements block_interface
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
-	public function get_data(): array
-	{
-		return [
-			'block_name' => 'dls_news',
-			'cat_name' => 'special',
-			'ext_name' => 'dls_web',
-		];
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function load(): void
-	{
-	}
-
-	/**
 	* Set page start
 	*
 	* @param int $page
+	* @return \dls\web\core\blocks\block\news News object
 	*/
-	public function set_page($page)
+	public function set_page(int $page)
 	{
 		$this->page = ($page - 1) * (int) $this->config['dls_limit'];
 
@@ -124,13 +93,44 @@ class news implements block_interface
 	}
 
 	/**
-	* Is the message trimmed?
+	* Trim news [Set to true if you want news to be trimmed]
 	*
-	* @return bool
+	* @param bool $bool
+	* @return \dls\web\core\blocks\block\news News object
 	*/
-	public function is_trimmed(): bool
+	public function trim_news(bool $bool)
 	{
-		return (bool) $this->is_trimmed;
+		$this->trim_news = $bool;
+
+		return $this;
+	}
+
+	/**
+	* News categories
+	*
+	* @return array
+	*/
+	public function categories(): array
+	{
+		return $this->helper->get_categories($this->db);
+	}
+
+	/**
+	* Assign breadcrumb
+	*
+	* @param string $name   Name of the breadcrumb
+	* @param string $route	Name of the route
+	* @param array	$params Additional params
+	* @return \dls\web\core\blocks\block\news News object
+	*/
+	public function assign_breadcrumb(string $name, string $route, array $params)
+	{
+		$this->helper->assign('block_vars', 'navlinks', [
+			'FORUM_NAME'   => $name,
+			'U_VIEW_FORUM' => $this->controller->route($route, $params),
+		]);
+
+		return $this;
 	}
 
 	/**
@@ -139,12 +139,10 @@ class news implements block_interface
 	* @param int $forum_id Forum id to fetch news data
 	* @return void
 	*/
-	public function base($forum_id): void
+	public function base(int $forum_id): void
 	{
-		$category = $this->get_categories();
-
 		// Check news id
-		if (!$category[$forum_id])
+		if (!$this->categories()[$forum_id])
 		{
 			throw new \phpbb\exception\http_exception(404, 'NO_FORUM', [$forum_id]);
 		}
@@ -160,14 +158,11 @@ class news implements block_interface
 			login_box('', $this->language->lang('LOGIN_VIEWFORUM'));
 		}
 
-		$this->helper->assign('vars', [
-			'cat_name' => $category[$forum_id],
-			'cat_link' => $this->controller_helper->route('dls_web_news_base', ['id' => $forum_id]),
-		]);
+		// Assign breadcrumb
+		$this->assign_breadcrumb($this->categories()[$forum_id], 'dls_web_news_base', ['id' => $forum_id]);
 
 		// Do the sql thang
 		$sql_ary = $this->get_sql_data($forum_id);
-
 		$sql = $this->db->sql_build_query('SELECT', $sql_ary);
 		$result = $this->db->sql_query_limit($sql, (int) $this->config['dls_limit'], $this->page, 60);
 
@@ -196,7 +191,7 @@ class news implements block_interface
 
 			$this->pagination->generate_template_pagination($base, 'pagination', 'page', $total, (int) $this->config['dls_limit'], $this->page);
 
-			$this->helper->assign('var', 'total_news', $this->language->lang('TOTAL_POSTS_COUNT', $total));
+			$this->helper->assign('var', 'total_news', $total);
 		}
 
 		return;
@@ -248,10 +243,9 @@ class news implements block_interface
 	* Get template data
 	*
 	* @param array $row data array
-	* @param bool $trim Trim text [default is true]
 	* @return array
 	*/
-	public function get_template_data(array $row, bool $trim = true): array
+	public function get_template_data(array $row): array
 	{
 		$poster = [
 			'user_rank'		=> $row['user_rank'],
@@ -266,7 +260,7 @@ class news implements block_interface
 
 		return [
 			'id'	  => $row['post_id'],
-			'link'	  => $this->controller_helper->route('dls_web_article', ['aid' => $row['topic_id']]),
+			'link'	  => $this->controller->route('dls_web_article', ['aid' => $row['topic_id']]),
 			'title'	  => $this->helper->truncate($row['topic_title'], $this->config['dls_title_length']),
 			'date'	  => $this->user->format_date($row['topic_time']),
 			'author'  => get_username_string('full', (int) $row['user_id'], $row['username'], $row['user_colour']),
@@ -274,9 +268,9 @@ class news implements block_interface
 			'rank'	  => $rank_title['title'],
 			'views'	  => $row['topic_views'],
 			'replies' => $row['topic_posts_approved'] - 1,
-			'text'	  => $trim ? $this->trim_message($text) : $text,
+			'text'	  => $this->trim_news ? $this->trim_message($text) : $text,
 			'topic_link' => append_sid("{$this->helper->get('root_path')}viewtopic.{$this->helper->get('php_ext')}", "f={$row['forum_id']}&amp;t={$row['topic_id']}"),
-			'is_trimmed' => $this->is_trimmed(),
+			'is_trimmed' => $this->is_trimmed,
 		];
 	}
 
@@ -295,32 +289,10 @@ class news implements block_interface
 			$this->is_trimmed = true;
 
 			$offset = ((int) $this->config['dls_content_length'] - 3) - utf8_strlen($text);
-			$text	= utf8_substr($text, 0, utf8_strrpos($text, ' ', $offset)) . $this->language->lang('ELLIPSIS');
+			$text	= utf8_substr($text, 0, utf8_strrpos($text, ' ', $offset));
 		}
 
 		return $text;
-	}
-
-	/**
-	* Get news categories
-	*
-	* @return array
-	*/
-	public function get_categories(): array
-	{
-		$sql = 'SELECT forum_id, forum_name
-				FROM ' . FORUMS_TABLE . '
-				WHERE forum_type = ' . FORUM_POST . '
-					AND news_fid_enable = 1';
-		$result = $this->db->sql_query($sql, 86400);
-
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$forum_ary[(int) $row['forum_id']] = (string) $row['forum_name'];
-		}
-		$this->db->sql_freeresult($result);
-
-		return $forum_ary ?? [];
 	}
 
 	/**
@@ -342,7 +314,10 @@ class news implements block_interface
 			throw new \phpbb\exception\http_exception(403, 'NO_TOPICS', [$row]);
 		}
 
-		$this->helper->assign('vars', $this->get_template_data($row, false));
+		// Assign breadcrumb
+		$this->assign_breadcrumb($this->get_template_data($row)['title'], 'dls_web_article', ['aid' => $topic_id]);
+
+		$this->helper->assign('block_vars', 'article', $this->get_template_data($row));
 
 		$this->db->sql_freeresult($result);
 

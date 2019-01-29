@@ -46,7 +46,7 @@ class helper
 	* Assign key variable pairs from an array to a specified block
 	*
 	* @param string $type Template function [var, vars, block_vars, block_vars_array]
-	* @param mixed $data Template data
+	* @param mixed	$data Template data
 	* @return void
 	*/
 	public function assign(string $type, ...$data): void
@@ -68,7 +68,7 @@ class helper
 	* Get group name
 	*
 	* @param string $group_name name of the group
-	* @return string group_name
+	* @return string
 	*/
 	public function get_name(string $group_name): string
 	{
@@ -78,21 +78,45 @@ class helper
 	/**
 	* Truncate title
 	*
-	* @param string $title Truncate title
-	* @param int $length Max length of the string
+	* @param string		 $title	 Truncate title
+	* @param int		 $length Max length of the string
+	* @param null|string $ellips Language ellips
 	* @return string
 	*/
-	public function truncate(string $title, int $length): string
+	public function truncate(string $title, int $length, $ellips = null): string
 	{
-		return truncate_string(censor_text($title), (int) $length, 255, false, '...');
+		return truncate_string(censor_text($title), $length, 255, false, $ellips ?? '...');
+	}
+
+	/**
+	* Get categories
+	*
+	* @param object $db Database object
+	* @return array
+	*/
+	public function get_categories($db): array
+	{
+		$sql = 'SELECT forum_id, forum_name
+				FROM ' . FORUMS_TABLE . '
+				WHERE forum_type = ' . FORUM_POST . '
+					AND news_fid_enable = 1';
+		$result = $db->sql_query($sql, 86400);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$forum_ary[(int) $row['forum_id']] = (string) $row['forum_name'];
+		}
+		$db->sql_freeresult($result);
+
+		return $forum_ary ?? [];
 	}
 
 	/**
 	* Get position options
 	*
 	* @param array $values Array of values
-	* @param int $active Currently active value
-	* @return string $options
+	* @param int   $active Currently active value
+	* @return string
 	*/
 	public function get_options(array $values, int $active): string
 	{

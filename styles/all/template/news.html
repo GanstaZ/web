@@ -1,46 +1,16 @@
-{{ include('overall_header.html') }}
+{% extends 'layout/news-base.html' %}
 
-<p class="{{ S_CONTENT_FLOW_END }} responsive-center time{% if S_USER_LOGGED_IN %} rightside{% endif %}">
-	{% if S_USER_LOGGED_IN %}{{ LAST_VISIT_DATE }}{% else %}{CURRENT_TIME}{% endif %}
-</p>
-{% if S_USER_LOGGED_IN %}<p class="responsive-center time">{{ CURRENT_TIME }}</p>{% endif %}
-
-<div class="inner dls_wrap">
-
-	<div class="main_section">
-
-	{% if S_TOP_MID_CONTENT %}
-		<div class="block mid-top-content">
-			<h3>{{ lang('LATEST_NEWS') }}<i class="fa fa-angle-right fa-fw" aria-hidden="true"></i><a href="{{ cat_link }}" title="{{ cat_name }}"><strong>{{ cat_name }}</strong></a></h3>
-		</div>
-	{# End Top Content #}
-	{% endif %}
-
-		<div class="inner mid-content">
-
+	{% block main %}
 		{% if news %}
 			{% for news in loops.news %}
-				{{ include('news-item.html') }}
+				{{ include('includes/news-item.html') }}
 			{% endfor %}
 		{% endif %}
 		{# End News #}
 
 		{% if pagination %}
 			<div class="dls_pagination">
-				<div class="pagination">{{ total_news }} &bull; {{ PAGE_NUMBER }} &bull;{{ include('pagination.html') }}</div>
+				<div class="pagination">{{ lang('TOTAL_POSTS_COUNT', total_news) }} &bull; {{ PAGE_NUMBER }} &bull;{{ include('pagination.html') }}</div>
 			</div>
 		{% endif %}
-
-		</div>
-		{# End Middle Content #}
-
-		{% BLOCKS bottom %}
-
-	</div>
-	{# End Main Section #}
-
-	{{ include('side_section.html') }}
-	{# End Right Section #}
-</div>
-
-{{ include('overall_footer.html') }}
+	{% endblock %}

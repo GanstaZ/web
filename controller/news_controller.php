@@ -12,7 +12,6 @@ namespace dls\web\controller;
 
 use phpbb\controller\helper;
 use phpbb\language\language;
-use dls\web\core\news;
 use dls\web\core\blocks\manager;
 
 /**
@@ -26,7 +25,7 @@ class news_controller
 	/** @var language */
 	protected $language;
 
-	/** @var news */
+	/** @var manager */
 	protected $manager;
 
 	/**
@@ -46,7 +45,7 @@ class news_controller
 	}
 
 	/**
-	* News controller to display news for routes:
+	* News controller for routes:
 	*
 	*	 /news/{id}
 	*	 /news/{id}/page/{page}
@@ -58,14 +57,18 @@ class news_controller
 	*/
 	public function handle(int $id, int $page)
 	{
-		$news = $this->manager->get('dls_news');
-		$news
+		// Check if news is disabled
+		if (!$this->manager->get('dls_news'))
+		{
+			throw new \phpbb\exception\http_exception(404, 'DISABLED');
+		}
+
+		$this->manager->get('dls_news')
 			->set_page($page)
+			->trim_news(true)
 			->base($id);
 
-		$title = $this->language->lang('VIEW_NEWS', $id);
-
-		return $this->helper->render('news.html', $title, 200, true);
+		return $this->helper->render('news.html', $this->language->lang('VIEW_NEWS', $id), 200, true);
 	}
 
 	/**
@@ -77,11 +80,15 @@ class news_controller
 	*/
 	public function handle2(int $aid)
 	{
-		$news = $this->manager->get('dls_news');
-		$news->get_article($aid);
+		// Check if news is disabled
+		if (!$this->manager->get('dls_news'))
+		{
+			throw new \phpbb\exception\http_exception(404, 'DISABLED');
+		}
 
-		$title = $this->language->lang('VIEW_ARTICLE', $aid);
+		$this->manager->get('dls_news')
+			->get_article($aid);
 
-		return $this->helper->render('article.html', $title, 200, true);
+		return $this->helper->render('article.html', $this->language->lang('VIEW_ARTICLE', $aid), 200, true);
 	}
 }

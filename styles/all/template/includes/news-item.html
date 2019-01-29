@@ -1,51 +1,49 @@
-{% from '@dls_web/macros/icons.html' import icon %}
+{% from '@dls_web/macros/tags.html' import icon, url %}
 
 <article id="{{ news.id }}" class="post news {{ loop.index0 is odd ? 'bg2' : 'bg1' }}">
 	<div class="inner">
+		<dl class="postprofile">
+			<dt class="has-profile-rank has-avatar">
+				<div class="avatar-container">{{ news.avatar }}</div>
+				{{ news.author }}
+			</dt>
+			<dd class="profile-rank">{{ news.rank }}</dd>
+		</dl>
 
-	<dl class="postprofile">
-		<dt class="has-profile-rank has-avatar">
-			<div class="avatar-container">{{ news.avatar }}</div>
-			{{ news.author }}
-		</dt>
-		<dd class="profile-rank">{{ news.rank }}</dd>
-	</dl>
+		<section class="postbody">
+			<h3><a href="{{ news.link }}"><strong>{{ news.title }}</strong></a></h3>
 
-	<section class="postbody">
-		<h3><a href="{{ news.link }}"><strong>{{ news.title }}</strong></a></h3>
+			<ul class="post-buttons">
+				<li>
+					<span class="button button-icon-only" title="{{ news.views }} {{ lang('VIEWS') }}">
+						{{ icon('font', 'eye', 'fa-fw') }}<span class="sr-only">{{ lang('VIEWS') }}</span>
+					</span>
+				</li>
+				<li>
+					<span class="button button-icon-only" title="{{ news.replies }} {{ lang('REPLIES') }}">
+						{{ icon('font', 'commenting', 'fa-fw') }}<span class="sr-only">{{ lang('REPLIES') }}</span>
+					</span>
+				</li>
+			</ul>
 
-		<ul class="post-buttons">
-			<li>
-				<span class="button button-icon-only" title="{{ news.views }} {{ lang('VIEWS') }}">
-					{{ icon('font', 'eye', 'fa-fw') }}<span class="sr-only">{{ lang('VIEWS') }}</span>
-				</span>
-			</li>
-			<li>
-				<span class="button button-icon-only" title="{{ news.replies }} {{ lang('REPLIES') }}">
-					{{ icon('font', 'commenting', 'fa-fw') }}<span class="sr-only">{{ lang('REPLIES') }}</span>
-				</span>
-			</li>
-		</ul>
+			<p class="author">
+				<a href="{{ news.link }}" title="{{ lang('POST') }}">
+					{{ icon('font', 'file-o', 'fa-fw icon-md') }}
+				</a>
+				{{ lang('POST_BY_AUTHOR') }} {{ news.author }} &raquo; {{ news.date }}
+			</p>
 
-		<p class="author">
-			<a href="{{ news.link }}" title="{{ lang('POST') }}">
-				{{ icon('font', 'file-o', 'fa-fw') }}
+			<article class="content">
+				{{ news.text }}{% if news.is_trimmed %}{{ lang('ELLIPSIS') }} {{ url({'href': news.link}, lang('READ_FULL')) }}{% endif %}
+			</article>
+
+		</section>
+
+		<div class="back2top">
+			<a href="#top" class="top" title="{{ lang('BACK_TO_TOP') }}">
+				{{ icon('font', 'chevron-circle-up icon-gray', 'fa-fw') }}
+				<span class="sr-only">{{ lang('BACK_TO_TOP') }}</span>
 			</a>
-			{{ lang('POST_BY_AUTHOR') }} {{ news.author }} &raquo; {{ news.date }}
-		</p>
-
-		<article class="content">
-			{{ news.text }}{% if news.is_trimmed %}{{ lang('ELLIPSIS') }} <a href="{{ news.link }}">{{ lang('READ_FULL') }}</a>{% endif %}
-		</article>
-
-	</section>
-
-	<div class="back2top">
-		<a href="#top" class="top" title="{{ lang('BACK_TO_TOP') }}">
-			{{ icon('font', 'chevron-circle-up icon-gray', 'fa-fw') }}
-			<span class="sr-only">{{ lang('BACK_TO_TOP') }}</span>
-		</a>
-	</div>
-
+		</div>
 	</div>
 </article>

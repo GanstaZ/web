@@ -1,16 +1,16 @@
 {% extends 'layout/news-base.html' %}
 
-	{% block main %}
-		{% if news %}
-			{% for news in loops.news %}
-				{{ include('includes/news-item.html') }}
-			{% endfor %}
-		{% endif %}
-		{# End News #}
+{% block mid_content %}
+	{% if news %}
+		{% for news in loops.news %}
+			{{ include('includes/news-item.html') }}
+		{% endfor %}
 
 		{% if pagination %}
 			<div class="dls_pagination">
 				<div class="pagination">{{ lang('TOTAL_POSTS_COUNT', total_news) }} &bull; {{ PAGE_NUMBER }} &bull;{{ include('pagination.html') }}</div>
 			</div>
 		{% endif %}
-	{% endblock %}
+
+	{% endif %}
+{% endblock %}

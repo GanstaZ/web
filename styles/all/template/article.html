@@ -1,10 +1,10 @@
 {% extends 'layout/news-base.html' %}
 
-	{% block main %}
-		{% if article %}
-			{% for news in article %}
-				{{ include('includes/news-item.html') }}
-			{% endfor %}
-		{% endif %}
-		{# End News Article #}
-	{% endblock %}
+{% block mid_content %}
+	{% if article %}
+		{% for news in article %}
+			{{ include('includes/news-item.html') }}
+		{% endfor %}
+	{% endif %}
+{% endblock %}
+

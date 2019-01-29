@@ -3,7 +3,7 @@
 <h1>{{ lang('ACP_DLS_BLOCKS') }}</h1>
 
 {% import '@dls_web/macros/forms.html' as form %}
-{% from '@dls_web/macros/icons.html' import icon %}
+{% from '@dls_web/macros/tags.html' import icon %}
 
 <form id="acp_web_block" method="post" action="{{ U_ACTION }}">
 
@@ -21,7 +21,7 @@
 				<dl>
 					<dt>{{ form.label(block.name, lang('ENABLE') ~ lang(block.language) ~ lang('COLON')) }}<br>
 						{% if category.cat_name !== 'SPECIAL' %}
-							<span class="{% if block.s_duplicate %}error{% else %}success{% endif %}">
+							<span class="{{ block.s_duplicate ? 'error' : 'success' }}">
 								{% if block.s_duplicate %}
 									{{ lang('DUPLICATE_POSITION') ~ icon('font', 'exclamation-triangle', 'fa-fw') }}
 								{% else %}

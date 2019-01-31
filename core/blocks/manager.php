@@ -66,18 +66,18 @@ class manager
 	/**
 	* Load blocks
 	*
-	* @param mixed $data
+	* @param mixed	$name [string, array or null]
 	* @param string $type [default: cat, block]
 	* @return ?void
 	*/
-	public function load($data = null, string $type = 'cat'): void
+	public function load($name = null, string $type = 'cat'): void
 	{
 		if (!in_array($type, $this->type))
 		{
 			return;
 		}
 
-		if ($blocks = $this->get_blocks($data, $type))
+		if ($blocks = $this->get_blocks($name, $type))
 		{
 			$this->loading($blocks);
 		}
@@ -86,13 +86,13 @@ class manager
 	/**
 	* Get requested blocks
 	*
-	* @param mixed $data
+	* @param mixed	$name
 	* @param string $type
 	* @return array
 	*/
-	protected function get_blocks($data, $type): array
+	protected function get_blocks($name, $type): array
 	{
-		$where = (null !== $data) ? $this->where_clause($data, $type) : 'active = 1';
+		$where = (null !== $name) ? $this->where_clause($name, $type) : 'active = 1';
 
 		$sql = 'SELECT block_name, ext_name, active, cat_name
 				FROM ' . $this->blocks_data . '
@@ -100,10 +100,15 @@ class manager
 				ORDER BY position';
 		$result = $this->db->sql_query($sql, 86400);
 
-		self::$blocks = $blocks = [];
+		self::$blocks = $blocks_data = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$block = $this->collection[$this->get_service($row['block_name'], $row['ext_name'])];
+
+			if (!$block)
+			{
+				continue;
+			}
 
 			if ($this->is_special($row))
 			{
@@ -111,41 +116,51 @@ class manager
 			}
 			else if ($block->is_load_active())
 			{
-				$blocks[$row['block_name']] = $block;
+				$blocks_data[$row['block_name']] = $block;
 			}
 
 			if (!$this->is_special($row))
 			{
-				$block_data = [
+				$data = [
 					'block_name' => (string) $row['block_name'],
 					'ext_name'	 => (string) $row['ext_name'],
 				];
 
-				$block_data['block_name'] = $this->is_dls($block_data);
-				$this->event->set_data($row['cat_name'], [$block_data['block_name'] => $block_data['ext_name']]);
+				$is_dls = function($data)
+				{
+					if ($this->get_vendor($data['ext_name']) === 'dls')
+					{
+						$data['block_name'] = str_replace('dls_', '', $data['block_name']);
+					}
+
+					return $data['block_name'];
+				};
+
+				$data['block_name'] = $is_dls($data);
+				$this->event->set_data($row['cat_name'], [$data['block_name'] => $data['ext_name']]);
 			}
 		}
 		$this->db->sql_freeresult($result);
 
-		return $blocks;
+		return $blocks_data;
 	}
 
 	/**
 	* Where clause
 	*
-	* @param array|string $data
-	* @param string $type
+	* @param array|string $name
+	* @param string		  $type
 	* @return string
 	*/
-	protected function where_clause($data, $type): string
+	protected function where_clause($name, $type): string
 	{
-		if (is_array($data))
+		if (is_array($name))
 		{
-			return $this->db->sql_in_set("{$type}_name", $data) . ' AND active = 1';
+			return $this->db->sql_in_set("{$type}_name", $name) . ' AND active = 1';
 		}
-		else if (is_string($data))
+		else if (is_string($name))
 		{
-			return "{$type}_name = '" . $this->db->sql_escape($data) . "' AND active = 1";
+			return "{$type}_name = '" . $this->db->sql_escape($name) . "' AND active = 1";
 		}
 	}
 
@@ -223,21 +238,5 @@ class manager
 	public function is_valid_name(array $data): bool
 	{
 		return utf8_strpos($data['block_name'], $this->get_vendor($data['ext_name'])) !== false ?? false;
-	}
-
-	/**
-	* If extension name is dls, remove prefix
-	*
-	* @param array $data Data array
-	* @return string
-	*/
-	public function is_dls(array $data): string
-	{
-		if ($this->get_vendor($data['ext_name']) === 'dls')
-		{
-			$data['block_name'] = str_replace('dls_', '', $data['block_name']);
-		}
-
-		return $data['block_name'];
 	}
 }

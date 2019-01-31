@@ -8,52 +8,13 @@
 *
 */
 
-namespace dls\web\core\blocks\block;
-
-use phpbb\config\config;
-use phpbb\db\driver\driver_interface;
-use dls\web\core\helper;
+namespace dls\web\core\blocks\type;
 
 /**
 * DLS Web Recent Posts block
 */
-class recent_posts implements block_interface
+class recent_posts extends base
 {
-	/** @var config */
-	protected $config;
-
-	/** @var driver_interface */
-	protected $db;
-
-	/** @var helper */
-	protected $helper;
-
-	/**
-	* Constructor
-	*
-	* @param config			  $config Config object
-	* @param driver_interface $db	  Database object
-	* @param helper			  $helper dls helper object
-	*/
-	public function __construct(config $config, driver_interface $db, helper $helper)
-	{
-		$this->config = $config;
-		$this->db = $db;
-		$this->helper = $helper;
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function get_data(): array
-	{
-		return [
-			'block_name' => 'dls_recent_posts',
-			'cat_name' => 'right',
-			'ext_name' => 'dls_web',
-		];
-	}
-
 	/**
 	* {@inheritdoc}
 	*/
@@ -65,7 +26,7 @@ class recent_posts implements block_interface
 					AND t.topic_status <> ' . ITEM_MOVED . '
 					AND t.topic_visibility = 1
 				ORDER BY p.post_id DESC';
-		$result = $this->db->sql_query_limit($sql, (int) $this->config['dls_user_limit'], 0, 3600);
+		$result = $this->db->sql_query_limit($sql, (int) $this->config['dls_limit'], 0, 3600);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{

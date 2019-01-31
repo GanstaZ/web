@@ -1,0 +1,13 @@
+{{ include('overall_header.html') }}
+
+{% block top_content %}{% endblock %}
+
+<div class="inner dls_wrap">
+	{% block content %}{% endblock %}
+
+	{% block side_section %}
+		{{ include('side_section.html') }}
+	{% endblock %}
+</div>
+
+{{ include('overall_footer.html') }}

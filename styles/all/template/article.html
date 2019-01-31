@@ -1,83 +1,10 @@
-{{ include('overall_header.html') }}
+{% extends 'layout/news-base.html' %}
 
-<p class="{{ S_CONTENT_FLOW_END }} responsive-center time{% if S_USER_LOGGED_IN %} rightside{% endif %}">
-	{% if S_USER_LOGGED_IN %}{{ LAST_VISIT_DATE }}{% else %}{CURRENT_TIME}{% endif %}
-</p>
-{% if S_USER_LOGGED_IN %}<p class="responsive-center time">{{ CURRENT_TIME }}</p>{% endif %}
+{% block mid_content %}
+	{% if article %}
+		{% for news in article %}
+			{{ include('includes/news-item.html') }}
+		{% endfor %}
+	{% endif %}
+{% endblock %}
 
-<div class="inner dls_wrap">
-<div class="main_section">
-
-{% if S_TOP_MID_CONTENT %}
-	<div class="block mid-top-content">
-		<h3>{{ lang('ARTICLE') }}<i class="fa fa-angle-right fa-fw" aria-hidden="true"></i><strong>{{ title }}</strong></h3>
-	</div>
-	{# End Top Content #}
-{% endif %}
-
-	<div class="inner mid-content">
-
-	<article class="post news bg1">
-		<div class="inner">
-
-		<dl class="postprofile">
-			<dt class="has-profile-rank has-avatar">
-				<div class="avatar-container">{{ avatar }}</div>
-				{{ author }}
-			</dt>
-			<dd class="profile-rank">{{ rank }}</dd>
-		</dl>
-
-		<section class="postbody">
-			<h3><strong>{{ title }}</strong></h3>
-
-			<ul class="post-buttons">
-				<li>
-					<span class="button button-icon-only" title="{{ views }} {{ lang('VIEWS') }}">
-						<i class="icon fa-eye fa-fw" aria-hidden="true"></i><span class="sr-only">{{ lang('VIEWS') }}</span>
-					</span>
-				</li>
-				<li>
-					<span class="button button-icon-only" title="{{ replies }} {{ lang('REPLIES') }}">
-						<i class="icon fa-commenting fa-fw" aria-hidden="true"></i><span class="sr-only">{{ lang('REPLIES') }}</span>
-					</span>
-				</li>
-			</ul>
-
-			<p class="author">
-				<a href="{{ topic_link }}" title="{{ lang('POST') }}">
-					<i class="fa fa-file-o fa-fw" aria-hidden="true"></i>
-				</a>
-				{{ lang('POST_BY_AUTHOR') }} {{ author }} &raquo; {{ date }}
-			</p>
-
-			<article class="content">
-				{{ text }}
-			</article>
-
-		</section>
-
-		<div class="back2top">
-			<a href="#top" class="top" title="{{ lang('BACK_TO_TOP') }}">
-				<i class="icon fa-chevron-circle-up fa-fw icon-gray" aria-hidden="true"></i>
-				<span class="sr-only">{{ lang('BACK_TO_TOP') }}</span>
-			</a>
-		</div>
-
-		</div>
-	</article>
-{# End News Article #}
-	</div>
-{# End Middle Content #}
-
-{% BLOCKS bottom %}
-{# End Bottom Content #}
-
-</div>
-{# End Main Section #}
-
-{{ include('side_section.html') }}
-{# End Right Section #}
-</div>
-
-{{ include('overall_footer.html') }}

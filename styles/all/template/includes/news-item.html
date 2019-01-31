@@ -11,8 +11,7 @@
 		</dl>
 
 		<section class="postbody">
-			<h3><a href="{{ news.link }}"><strong>{{ news.title }}</strong></a></h3>
-
+			<h3>{{ url({'href': news.link}, news.title) }}</h3>
 			<ul class="post-buttons">
 				<li>
 					<span class="button button-icon-only" title="{{ news.views }} {{ lang('VIEWS') }}">
@@ -27,9 +26,7 @@
 			</ul>
 
 			<p class="author">
-				<a href="{{ news.link }}" title="{{ lang('POST') }}">
-					{{ icon('font', 'file-o', 'fa-fw icon-md') }}
-				</a>
+				{{ url({'href': news.link, 'title': lang('POST')}, icon('font', 'file-o', 'fa-fw icon-md')) }}
 				{{ lang('POST_BY_AUTHOR') }} {{ news.author }} &raquo; {{ news.date }}
 			</p>
 
@@ -40,10 +37,8 @@
 		</section>
 
 		<div class="back2top">
-			<a href="#top" class="top" title="{{ lang('BACK_TO_TOP') }}">
-				{{ icon('font', 'chevron-circle-up icon-gray', 'fa-fw') }}
-				<span class="sr-only">{{ lang('BACK_TO_TOP') }}</span>
-			</a>
+			{{ url({'class': 'top', 'href': '#top', 'title': lang('BACK_TO_TOP')}, icon('font', 'chevron-circle-up', 'fa-fw icon-gray')) }}
+			<span class="sr-only">{{ lang('BACK_TO_TOP') }}</span>
 		</div>
 	</div>
 </article>

@@ -1,6 +1,6 @@
-{% macro icon(type, icon, class, title, hidden = false, attributes) %}
+{% macro icon(type, icon, class, attributes = null, extra) %}
 	{% if type === 'font' %}
-		<i class="icon fa-{{ icon }} {{ class }}" aria-hidden="true"></i>
+		<i class="icon fa-{{ icon }} {{ class }}" aria-hidden="true"></i>{{ extra ? extra }}
 	{% elseif type === 'svg' %}
 
 	{% elseif type === 'png' %}
@@ -11,5 +11,5 @@
 {% endmacro %}
 
 {% macro url(attributes, text) %}
-	<a {% for attr, value in attributes %}{{ attr }}="{{ value }}"{% endfor %}>{{ text }}</a>
+	<a{% for attr, value in attributes %} {{ attr }}="{{ value }}"{% endfor %}>{{ text }}</a>
 {% endmacro %}

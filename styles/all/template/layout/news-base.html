@@ -9,17 +9,15 @@
 
 {% block content %}
 	<div class="main_section">
-		{% block top_mid %}{% endblock %}
+		{% block mid_top %}{% endblock %}
 
 		<div class="inner mid-content">
 			{% block mid_content %}{% endblock %}
 		</div>
-		{# End Middle Content #}
 
-		{% block bottom %}
+		{% block mid_bottom %}
 			{% BLOCKS bottom %}
 		{% endblock %}
 	</div>
-	{# End Main Section #}
 
 {% endblock %}

@@ -163,22 +163,25 @@ class listener implements EventSubscriberInterface
 
 			// Format date
 			$u_bday = str_replace(' ', '', $u_bday);
-			$format = \DateTime::createFromFormat('d-m-Y', $u_bday);
+			$date = \DateTime::createFromFormat('d-m-Y', $u_bday);
 
-			foreach ($this->plugin->get_data($this->plugin->get('zodiac'), $format) as $row)
+			foreach ($this->plugin->get('zodiac') as $service)
 			{
-				$this->template->assign_block_vars('zodiac_data', [
-					'stem'	  => $row['stem'],
-					'sign'	  => $row['sign'],
-					'symbol'  => $row['symbol'],
-					'plant'	  => $row['plant'],
-					'gem'	  => $row['gem'],
-					'ruler'	  => $row['ruler'],
-					'extra'	  => $row['extra'],
-					'dir'	  => $row['dir'],
-					'element' => $row['element'],
-					'name'	  => $row['name'],
-				]);
+				foreach ($service->load($date->format($service->get_format())) as $row)
+				{
+					$this->template->assign_block_vars('zodiac_data', [
+						'stem'	  => $row['stem'],
+						'sign'	  => $row['sign'],
+						'symbol'  => $row['symbol'],
+						'plant'	  => $row['plant'],
+						'gem'	  => $row['gem'],
+						'ruler'	  => $row['ruler'],
+						'extra'	  => $row['extra'],
+						'dir'	  => $row['dir'],
+						'element' => $row['element'],
+						'name'	  => $row['name'],
+					]);
+				}
 			}
 		}
 

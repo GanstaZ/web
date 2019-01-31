@@ -7,7 +7,7 @@ checks:
       threshold: 10
   method-lines:
     config:
-      threshold: 50
+      threshold: 65
 plugins:
   # ... CONFIG CONTENT ...
   phpmd:

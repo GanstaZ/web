@@ -13,6 +13,6 @@ dls_web_news_page:
 
 dls_web_article:
     path: /article/{aid}
-    defaults: { _controller: dls.web.news.controller:handle2 }
+    defaults: { _controller: dls.web.news.controller:article }
     requirements:
         aid: \d+

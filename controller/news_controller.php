@@ -78,7 +78,7 @@ class news_controller
 	* @throws \phpbb\exception\http_exception
 	* @return \Symfony\Component\HttpFoundation\Response A Symfony Response object
 	*/
-	public function handle2(int $aid)
+	public function article(int $aid)
 	{
 		// Check if news is disabled
 		if (!$this->manager->get('dls_news'))

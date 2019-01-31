@@ -126,17 +126,7 @@ class manager
 					'ext_name'	 => (string) $row['ext_name'],
 				];
 
-				$is_dls = function($data)
-				{
-					if ($this->get_vendor($data['ext_name']) === 'dls')
-					{
-						$data['block_name'] = str_replace('dls_', '', $data['block_name']);
-					}
-
-					return $data['block_name'];
-				};
-
-				$data['block_name'] = $is_dls($data);
+				$data['block_name'] = $this->is_dls($data);
 				$this->event->set_data($row['cat_name'], [$data['block_name'] => $data['ext_name']]);
 			}
 		}
@@ -238,5 +228,21 @@ class manager
 	public function is_valid_name(array $data): bool
 	{
 		return utf8_strpos($data['block_name'], $this->get_vendor($data['ext_name'])) !== false ?? false;
+	}
+
+	/**
+	* If extension name is dls, remove prefix
+	*
+	* @param array $data Data array
+	* @return string
+	*/
+	public function is_dls(array $data): string
+	{
+		if ($this->get_vendor($data['ext_name']) === 'dls')
+		{
+			$data['block_name'] = str_replace('dls_', '', $data['block_name']);
+		}
+
+		return $data['block_name'];
 	}
 }

@@ -70,40 +70,6 @@ class manager
 	}
 
 	/**
-	* Get plugin type data
-	*
-	* @param array		 $services array of specific type
-	* @param null|object $date Format date string to (m-d, Y & so on)
-	* @return array
-	*/
-	public function get_data(array $services, $date = null): ?array
-	{
-		if (!$this->is_valid_input($date))
-		{
-			return null;
-		}
-
-		$array = [];
-		foreach ($services as $service)
-		{
-			$array = array_merge($array, $service->load($date->format($service->get_format())));
-		}
-
-		return $array;
-	}
-
-	/**
-	* Check if our input data is valid
-	*
-	* @param null|object $date Format date string to (m-d, Y & so on)
-	* @return bool
-	*/
-	protected function is_valid_input($date): bool
-	{
-		return null !== $date && is_object($date);
-	}
-
-	/**
 	* Remove plugin
 	*
 	* @param string $name Name of the plugin we want to remove

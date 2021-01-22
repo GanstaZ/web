@@ -13,18 +13,23 @@ namespace dls\web\core\twig;
 /**
 * DLS Web template loader extension for blocks
 */
-class extension extends \Twig_Extension
+class extension extends \Twig\Extension\AbstractExtension
 {
+	/** @var \phpbb\template\twig\environment */
+	protected $environment;
+
 	/** @var \dls\web\core\blocks\event */
 	protected $event;
 
 	/**
 	* Constructor
 	*
+	* @param \phpbb\template\twig\environment $environment
 	* @param \dls\web\core\blocks\event $event Block helper object
 	*/
-	public function __construct(\dls\web\core\blocks\event $event)
+	public function __construct(\phpbb\template\twig\environment $environment, \dls\web\core\blocks\event $event)
 	{
+		$this->environment = $environment;
 		$this->event = $event;
 	}
 
@@ -57,7 +62,7 @@ class extension extends \Twig_Extension
 	public function getTokenParsers()
 	{
 		return [
-			new \dls\web\core\twig\tokenparser\blocks(),
+			new \dls\web\core\twig\tokenparser\blocks($this->environment),
 		];
 	}
 

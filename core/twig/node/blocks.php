@@ -10,12 +10,12 @@
 
 namespace dls\web\core\twig\node;
 
-class blocks extends \Twig_Node
+class blocks extends \Twig\Node\Node
 {
 	/** @var \Twig_Environment */
 	protected $environment;
 
-	public function __construct(\Twig_Node_Expression $expr, \phpbb\template\twig\environment $environment, $lineno, $tag = null)
+	public function __construct(\Twig\Node\Expression\AbstractExpression $expr, \phpbb\template\twig\environment $environment, $lineno, $tag = null)
 	{
 		$this->environment = $environment;
 
@@ -25,7 +25,7 @@ class blocks extends \Twig_Node
 	/**
 	* Compiles the node to PHP.
 	*
-	* @param \Twig_Compiler A Twig_Compiler instance
+	* @param \Twig\Compiler A Twig\Compiler instance
 	*/
 	public function compile(\Twig_Compiler $compiler)
 	{

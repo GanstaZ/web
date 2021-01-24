@@ -2,6 +2,8 @@
 
 <h1>{{ lang('ACP_DLS_WEB') }}</h1>
 
+{% import '@dls_web/macros/forms.html' as form %}
+
 <form id="acp_web_general" method="post" action="{{ U_ACTION }}">
 	<fieldset>
 		<legend>{{ lang('SETTINGS') }}</legend>
@@ -12,48 +14,49 @@
 		</dl>
 
 		<dl>
-		<dt><label for="dls_pagination">{{ lang('SHOW_PAGINATION') ~ lang('COLON') }}</label></dt>
-			<dd>
-				<label>
-					<input type="radio" class="radio" name="dls_pagination" value="1" {% if S_PAGINATION %}checked="checked" {% endif %}/> {{ lang('YES') }}
-				</label>
-				<label>
-					<input type="radio" class="radio" name="dls_pagination" value="0" {% if not S_PAGINATION %}checked="checked" {% endif %}/> {{ lang('NO') }}
-				</label>
-			</dd>
+			<dt>{{ form.label('dls_pagination', lang('SHOW_PAGINATION') ~ lang('COLON')) }}</dt>
+			<dd>{{ form.radio('dls_pagination', S_PAGINATION, {'yes': lang('YES'), 'no': lang('NO')}) }}</dd>
 		</dl>
 
 		<dl>
-			<dt><label for="dls_news_fid">{{ lang('NEWS_ID') ~ lang('COLON') }}</label></dt>
-			<dd><select name="dls_news_fid" id="dls_news_fid">{{ DLS_NEWS_ID }}</select></dd>
+			<dt>{{ form.label('dls_news_fid', lang('NEWS_ID') ~ lang('COLON')) }}</dt>
+			{% if S_NEWS_CURRENT %}
+				<dd>{{ form.select('dls_news_fid', S_NEWS_CURRENT, DLS_NEWS_ID) }}</dd>
+			{% endif %}
 		</dl>
 
 		<dl>
-			<dt><label for="dls_limit">{{ lang('LIMIT') ~ lang('COLON') }}</label><br /><span>{{ lang('LIMIT_EXPLAIN') }}</span></dt>
-			<dd><input type="number" id="dls_limit" name="dls_limit" value="{{ DLS_LIMIT }}" min="0" max="10" /></dd>
-		</dl>
-
-		<dl>
-			<dt><label for="dls_title_length">{{ lang('TITLE_LENGTH') ~ lang('COLON') }}</label><br /><span>{{ lang('TITLE_LENGTH_EXPLAIN') }}</span></dt>
-			<dd><input type="number" id="dls_title_length" name="dls_title_length" value="{{ MIN_TITLE_LENGTH }}" min="0" max="50" /></dd>
-		</dl>
-
-		<dl>
-			<dt>
-				<label for="dls_content_length">{{ lang('CONTENT_LENGTH') ~ lang('COLON') }}</label><br /><span>{{ lang('CONTENT_LENGTH_EXPLAIN') }}</span>
+			<dt>{{ form.label('dls_limit', lang('LIMIT') ~ lang('COLON')) }}<br>
+				<span>{{ lang('LIMIT_EXPLAIN') }}</span>
 			</dt>
-			<dd><input type="number" id="dls_content_length" name="dls_content_length" value="{{ MIN_CONTENT_LENGTH }}" min="0" max="250" /></dd>
+			<dd>{{ form.input('dls_limit', DLS_LIMIT, '', {'type': 'number', 'min': 0, 'max': 10}) }}</dd>
 		</dl>
 
 		<dl>
-			<dt><label for="dls_user_limit">{{ lang('USER_LIMIT') ~ lang('COLON') }}</label><br /><span>{{ lang('LIMIT_EXPLAIN') }}</span></dt>
-			<dd><input type="number" id="dls_user_limit" name="dls_user_limit" value="{{ DLS_USER_LIMIT }}" min="0" max="10" /></dd>
+			<dt>{{ form.label('dls_title_length', lang('TITLE_LENGTH') ~ lang('COLON')) }}<br>
+				<span>{{ lang('TITLE_LENGTH_EXPLAIN') }}</span>
+			</dt>
+			<dd>{{ form.input('dls_title_length', MIN_TITLE_LENGTH, '', {'type': 'number', 'min': 0, 'max': 50}) }}</dd>
+		</dl>
+
+		<dl>
+			<dt>{{ form.label('dls_content_length', lang('CONTENT_LENGTH') ~ lang('COLON')) }}<br>
+				<span>{{ lang('CONTENT_LENGTH_EXPLAIN') }}</span>
+			</dt>
+			<dd>{{ form.input('dls_content_length', MIN_CONTENT_LENGTH, '', {'type': 'number', 'min': 0, 'max': 250}) }}</dd>
+		</dl>
+
+		<dl>
+			<dt>{{ form.label('dls_user_limit', lang('USER_LIMIT') ~ lang('COLON')) }}<br>
+				<span>{{ lang('LIMIT_EXPLAIN') }}</span>
+			</dt>
+			<dd>{{ form.input('dls_user_limit', DLS_USER_LIMIT, '', {'type': 'number', 'min': 0, 'max': 10}) }}</dd>
 		</dl>
 	</fieldset>
 
 	<p class="submit-buttons">
-		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
-		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
+		{{ form.input('submit', lang('SUBMIT'), 'button1', {'type': 'submit'}) }}
+		{{ form.input('reset', lang('RESET'), 'button2', {'type': 'reset'}) }}
 	</p>
 
 	{{ S_FORM_TOKEN }}

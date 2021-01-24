@@ -60,10 +60,9 @@ class admin_controller
 	/**
 	* Get options as forum_ids (Will be replaced)
 	*
-	* @param int $fid Current forum_id
-	* @return string
+	* @return array
 	*/
-	protected function get_ids($fid): string
+	protected function get_ids(): array
 	{
 		$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TABLE . '
@@ -77,10 +76,7 @@ class admin_controller
 		}
 		$this->db->sql_freeresult($result);
 
-		// Merge default value 0 with forum_ids
-		$forum_ids = array_merge([0], $forum_ids);
-
-		return $this->helper->get_options($forum_ids, (int) $fid);
+		return $forum_ids ?? [];
 	}
 
 	/**
@@ -113,7 +109,8 @@ class admin_controller
 		// Set template vars
 		$this->helper->assign('vars', [
 			'DLS_VERSION'	 => $this->config['dls_core_version'],
-			'DLS_NEWS_ID'	 => $this->get_ids($this->config['dls_news_fid']),
+			'DLS_NEWS_ID'	 => $this->get_ids(),
+			'S_NEWS_CURRENT' => $this->config['dls_news_fid'],
 			'S_PAGINATION'	 => $this->config['dls_pagination'],
 			'DLS_LIMIT'		 => $this->config['dls_limit'],
 			'DLS_USER_LIMIT' => $this->config['dls_user_limit'],

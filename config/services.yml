@@ -27,6 +27,7 @@ services:
     dls.web.extension:
         class: dls\web\core\twig\extension
         arguments:
+            - '@template.twig.environment'
             - '@dls.web.block.event'
         tags:
             - { name: twig.extension }

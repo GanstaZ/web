@@ -9,3 +9,5 @@ Go to admin panel -> tab customise -> Manage extensions -> enable DLS Web (CMS)
 
 ### Disable
 Go to admin panel -> tab customise -> Manage extensions -> disable DLS Web (CMS)
+
+[![Build Status](https://github.com/GanstaZ/web/workflows/Tests/badge.svg)](https://github.com/GanstaZ/web)

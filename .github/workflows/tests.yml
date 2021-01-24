@@ -119,10 +119,10 @@ jobs:
                       db: "mysql:5.7"
                     - php: '7.4'
                       db: "mysql:8.0"
-                    - php: '8.0'
-                      db: "mysql:5.7"
-                    - php: '8.1'
-                      db: "mysql:5.7"
+                    # - php: '8.0'
+                     # db: "mysql:5.7"
+                    # - php: '8.1'
+                     # db: "mysql:5.7"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -199,7 +199,7 @@ jobs:
             - name: Run unit tests
               env:
                   DB: ${{steps.database-type.outputs.db}}
-              run: phpBB/vendor/bin/phpunit --configuration phpBB/ext/$EXTNAME/.github/phpunit-$DB-github.xml --bootstrap ./tests/bootstrap.php --testsuite 'phpBB Test Suite'
+              run: phpBB/vendor/bin/phpunit --configuration phpBB/ext/$EXTNAME/.github/phpunit-$DB-github.xml --bootstrap ./tests/bootstrap.php
               working-directory: ./phpBB3
     # END MySQL and MariaDB Job
 

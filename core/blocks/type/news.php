@@ -108,17 +108,30 @@ class news extends base
 	/**
 	* News categories
 	*
-	* @return array
+	* @param int $fid
+	* @return string
 	*/
-	public function categories(): array
+	public function categories(int $fid): string
 	{
-		return $this->helper->get_categories($this->db);
+		$sql = 'SELECT forum_id, forum_name
+				FROM ' . FORUMS_TABLE . '
+				WHERE forum_type = ' . FORUM_POST . '
+					AND news_fid_enable = 1';
+		$result = $this->db->sql_query($sql, 86400);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$forum_ary[(int) $row['forum_id']] = (string) $row['forum_name'];
+		}
+		$this->db->sql_freeresult($result);
+
+		return $forum_ary[$fid];
 	}
 
 	/**
 	* Assign breadcrumb
 	*
-	* @param string $name   Name of the breadcrumb
+	* @param string $name	Name of the breadcrumb
 	* @param string $route	Name of the route
 	* @param array	$params Additional params
 	* @return \dls\web\core\blocks\block\news News object
@@ -142,7 +155,7 @@ class news extends base
 	public function base(int $forum_id): void
 	{
 		// Check news id
-		if (!$this->categories()[$forum_id])
+		if (!$this->categories($forum_id))
 		{
 			throw new \phpbb\exception\http_exception(404, 'NO_FORUM', [$forum_id]);
 		}
@@ -159,7 +172,7 @@ class news extends base
 		}
 
 		// Assign breadcrumb
-		$this->assign_breadcrumb($this->categories()[$forum_id], 'dls_web_news_base', ['id' => $forum_id]);
+		$this->assign_breadcrumb($this->categories($forum_id), 'dls_web_news_base', ['id' => $forum_id]);
 
 		// Do the sql thang
 		$sql_ary = $this->get_sql_data($forum_id);

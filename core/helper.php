@@ -87,27 +87,4 @@ class helper
 	{
 		return truncate_string(censor_text($title), $length, 255, false, $ellips ?? '...');
 	}
-
-	/**
-	* Get categories
-	*
-	* @param object $db Database object
-	* @return array
-	*/
-	public function get_categories($db): array
-	{
-		$sql = 'SELECT forum_id, forum_name
-				FROM ' . FORUMS_TABLE . '
-				WHERE forum_type = ' . FORUM_POST . '
-					AND news_fid_enable = 1';
-		$result = $db->sql_query($sql, 86400);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$forum_ary[(int) $row['forum_id']] = (string) $row['forum_name'];
-		}
-		$db->sql_freeresult($result);
-
-		return $forum_ary ?? [];
-	}
 }

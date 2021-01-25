@@ -1,5 +1,5 @@
 {% macro input(name, value, class, attributes) %}
-	<input {% if class %}class="{{ class }}"{% endif %} id="{{ name }}" name="{{ name }}"{% for attr, value in attributes %} {{ attr }}="{{ value }}"{% endfor %} value="{{ value }}">
+	<input{% if class %}class="{{ class }}"{% endif %} id="{{ name }}" name="{{ name }}"{% for attr, value in attributes %} {{ attr }}="{{ value }}"{% endfor %} value="{{ value }}">
 {% endmacro %}
 
 {% macro select(name, current, values, keys = false, attributes) %}

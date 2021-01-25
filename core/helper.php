@@ -110,23 +110,4 @@ class helper
 
 		return $forum_ary ?? [];
 	}
-
-	/**
-	* Get position options
-	*
-	* @param array $values Array of values
-	* @param int   $active Currently active value
-	* @return string
-	*/
-	public function get_options(array $values, int $active): string
-	{
-		$options = '';
-		foreach ($values as $value)
-		{
-			$s_selected = ($value == $active) ? ' selected="selected"' : '';
-			$options .= '<option value="' . $value . '"' . $s_selected . '>' . $value . '</option>';
-		}
-
-		return $options;
-	}
 }

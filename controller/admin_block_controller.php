@@ -3,7 +3,7 @@
 *
 * DLS Web. An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2018, GanstaZ, http://www.dlsz.eu/
+* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
@@ -87,11 +87,16 @@ class admin_block_controller
 		$data_ary = $rowset = $count = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$count[$row['cat_name']]['block']++;
-			$count[$row['cat_name']]['position'][(int) $row['position']]++;
-			if (!$row['active'])
+			$count[$row['cat_name']]['block'] = (int) $row['position'];
+			$count[$row['cat_name']]['position'][(int) $row['position']] = 0;
+			if (!$count[$row['cat_name']]['block'])
 			{
-				$count[$row['cat_name']]['position'][(int) $row['position']]--;
+				$count[$row['cat_name']]['block']++;
+			}
+
+			if (!$count[$row['cat_name']]['position'][(int) $row['position']] && $row['active'])
+			{
+				$count[$row['cat_name']]['position'][(int) $row['position']]++;
 			}
 
 			$data_ary[$row['block_name']] = $row['ext_name'];
@@ -108,6 +113,7 @@ class admin_block_controller
 		// Run check for available/unavailable blocks
 		$this->check($data_ary, $count);
 
+		$u_update = '';
 		if ($s_status = $this->get_status())
 		{
 			$u_update = $s_status === 'add' ? array_column($this->status('add'), 'block_name') : $this->status($s_status);
@@ -171,7 +177,7 @@ class admin_block_controller
 			}
 		}
 
-		// Add new blocks
+		// Add new blocks.. Will be removed
 		if ($add_blocks = $this->status('add'))
 		{
 			$this->db->sql_multi_insert($this->manager->blocks_data(), $add_blocks);
@@ -217,22 +223,10 @@ class admin_block_controller
 	*/
 	public function check(array $block_data, array $count): void
 	{
-		$add_blocks = [];
+		// Check for new blocks & prepare for installation
+		$this->prepare($this->manager->get_new_blocks(), $count);
 
-		/**
-		* Event to add blocks
-		*
-		* @event dls.web.admin_add_blocks
-		* @var array add_blocks Contains blocks data
-		* @since 2.4.0-RC1
-		*/
-		$vars = ['add_blocks'];
-		extract($this->container->get('dispatcher')->trigger_event('dls.web.admin_add_blocks', compact($vars)));
-
-		// Check for new blocks
-		$this->prepare(array_diff_key($add_blocks, array_flip(array_keys($block_data))), $count);
-
-		// Check for unavailable blocks
+		// Check for unavailable blocks & prepare for purge
 		foreach ($block_data as $service => $ext_name)
 		{
 			if (!$this->is_available(['block_name' => $service, 'ext_name' => $ext_name]))
@@ -246,21 +240,21 @@ class admin_block_controller
 	/**
 	* Prepare data for installation
 	*
-	* @param array $block_data
+	* @param array new_blocks
 	* @param array $count
 	* @return void
 	*/
-	protected function prepare(array $block_data, array $count): void
+	protected function prepare(array $new_blocks, array $count): void
 	{
-		foreach ($block_data as $data)
+		if (!$new_blocks)
 		{
-			if (!$this->is_valid($data))
-			{
-				continue;
-			}
+			return;
+		}
 
+		foreach ($new_blocks as $data)
+		{
 			$position = 1;
-			if ($count[$data['cat_name']])
+			if (array_key_exists($data['cat_name'], $count))
 			{
 				$position = end(array_keys($count[$data['cat_name']]['position']));
 				$count[$data['cat_name']]['position'][] = $position++;
@@ -278,17 +272,6 @@ class admin_block_controller
 				'cat_name'	 => $data['cat_name'],
 			];
 		}
-	}
-
-	/**
-	* Is valid data
-	*
-	* @param array $row
-	* @return bool
-	*/
-	protected function is_valid(array $row): bool
-	{
-		return $this->manager->is_valid_name($row) && $this->is_available($row);
 	}
 
 	/**

@@ -3,7 +3,7 @@
 *
 * DLS Web. An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2018, GanstaZ, http://www.dls.org/
+* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
@@ -29,6 +29,20 @@ interface block_interface
 	* @return void
 	*/
 	public function loading(bool $set);
+
+	/**
+	* Set block data
+	*
+	* @return array
+	*/
+	public function set_data(array $data);
+
+	/**
+	* Get block data
+	*
+	* @return array
+	*/
+	public function get_data();
 
 	/**
 	* Load block

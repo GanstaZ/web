@@ -21,6 +21,9 @@ class manager
 	/** @var driver_interface */
 	protected $db;
 
+	/** @var array Contains all available blocks */
+	protected $collection;
+
 	/** @var event */
 	protected $event;
 
@@ -29,12 +32,6 @@ class manager
 
 	/** @var array type */
 	protected $type = ['page', 'cat', 'block'];
-
-	/** @var array Contains validated data for installation */
-	protected $install;
-
-	/** @var string active */
-	protected $active;
 
 	/** @var array Contains validated block services */
 	protected static $blocks = false;
@@ -50,83 +47,32 @@ class manager
 	public function __construct(driver_interface $db, service_collection $collection, event $event, $blocks_data)
 	{
 		$this->db = $db;
+		$this->collection = $collection;
 		$this->blocks_data = $blocks_data;
 		$this->event = $event;
-
-		$this->register($collection);
-	}
-
-	/**
-	* Register all available blocks
-	*
-	* @param Service collection of blocks
-	*/
-	protected function register($collection): void
-	{
-		// Get all blocks
-		$sql = 'SELECT block_name, ext_name
-				FROM ' . $this->blocks_data . '
-				ORDER BY block_id';
-		$result = $this->db->sql_query($sql, 86400);
-
-		self::$blocks = [];
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$block = $collection[$this->get_service($row['block_name'], $row['ext_name'])];
-
-			if ($block)
-			{
-				self::$blocks[$row['block_name']] = $block;
-			}
-		}
-		$this->db->sql_freeresult($result);
-
-		$this->check_for_new_blocks($collection);
 	}
 
 	/**
 	* Check for new block/s
 	*
-	* @param Service collection of blocks
-	* @return void
+	* @param array $block_ary
+	* @return array
 	*/
-	public function check_for_new_blocks($collection)
+	public function check_for_new_blocks($block_ary): array
 	{
-		$this->install = [];
-		foreach ($collection as $service)
+		$return = [];
+		foreach ($this->collection as $service)
 		{
-			$data = $service->get_data();
+			$data = $service->get_block_data();
 
 			// Validate data and set it for installation
-			if ($this->is_valid($data) && !array_key_exists($data['block_name'], self::$blocks))
+			if ($this->is_valid($data) && !array_key_exists($data['block_name'], $block_ary))
 			{
-				$this->install[$data['block_name']] = $data;
+				$return[$data['block_name']] = $data;
 			}
 		}
-	}
 
-	/**
-	* Is valid data
-	*
-	* @param array $row
-	* @return bool
-	*/
-	protected function is_valid($row)
-	{
-		return is_array($row) && !empty($row['block_name']) && !empty($row['ext_name']) && $this->is_valid_name($row) && !empty($row['cat_name']);
-	}
-
-	/**
-	* Set active service
-	*
-	* @param string $service
-	* @return manager object
-	*/
-	public function active(string $service): object
-	{
-		$this->active = $special;
-
-		return $this;
+		return $return ?? [];
 	}
 
 	/**
@@ -138,16 +84,6 @@ class manager
 	public function get(string $service): object
 	{
 		return self::$blocks[$service];
-	}
-
-	/**
-	* Get new blocks for installation
-	*
-	* @return array
-	*/
-	public function get_new_blocks(): array
-	{
-		return $this->install ?? [];
 	}
 
 	/**
@@ -164,7 +100,10 @@ class manager
 			return;
 		}
 
-		$this->get_blocks($name, $type);
+		if ($blocks = $this->get_blocks($name, $type))
+		{
+			$this->loading($blocks);
+		}
 	}
 
 	/**
@@ -172,9 +111,9 @@ class manager
 	*
 	* @param mixed	$name
 	* @param string $type
-	* @return void
+	* @return array
 	*/
-	protected function get_blocks($name, $type): void
+	protected function get_blocks($name, $type): array
 	{
 		$where = (null !== $name) ? $this->where_clause($name, $type) : 'active = 1';
 
@@ -184,17 +123,19 @@ class manager
 				ORDER BY position';
 		$result = $this->db->sql_query($sql, 86400);
 
-		$blocks_data = [];
+		self::$blocks = $blocks_data = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$block = $this->get($row['block_name']);
+			$block = $this->collection[$this->get_service($row['block_name'], $row['ext_name'])];
 
 			if (!$block)
 			{
 				continue;
 			}
 
-			if ($block->is_load_active() && $this->active !== $row['block_name'])
+			self::$blocks[$row['block_name']] = $block;
+
+			if ($block->is_load_active())
 			{
 				$blocks_data[$row['block_name']] = $block;
 			}
@@ -212,7 +153,7 @@ class manager
 		}
 		$this->db->sql_freeresult($result);
 
-		$this->loading($blocks_data);
+		return $blocks_data;
 	}
 
 	/**
@@ -240,12 +181,35 @@ class manager
 	* @param array $blocks Array of requested blocks
 	* @return void
 	*/
-	protected function loading(array $blocks): void
+	protected function loading($blocks): void
 	{
 		foreach ($blocks as $block)
 		{
 			$block->load();
 		}
+	}
+
+	/**
+	* Get block name from service
+	*	 For example dls.web.block.some.name => dls_some_name
+	*
+	* @param string $service  Name of the service
+	* @param string $ext_name Name of the extension
+	* @param string $remove	  Remove part of the string
+	* @param mixed	$replace  Default is underscore
+	* @return ?string
+	*/
+	public function get_block_name($service, $ext_name, $remove = '.block.', $replace = '_'): ?string
+	{
+		$start = utf8_strpos($ext_name, $replace);
+		if (is_bool($start))
+		{
+			return null;
+		}
+
+		$string = str_replace(utf8_substr($ext_name, $start + utf8_strlen($replace)) . $remove, '', $service);
+
+		return str_replace('.', $replace, $string);
 	}
 
 	/**
@@ -286,6 +250,17 @@ class manager
 	public function is_special(array $row): bool
 	{
 		return $row['cat_name'] === 'special';
+	}
+
+	/**
+	* Is valid data
+	*
+	* @param array $row
+	* @return bool
+	*/
+	protected function is_valid($row)
+	{
+		return is_array($row) && !empty($row['block_name']) && !empty($row['ext_name']) && $this->is_valid_name($row) && !empty($row['cat_name']);
 	}
 
 	/**

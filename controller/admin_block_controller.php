@@ -224,7 +224,7 @@ class admin_block_controller
 	public function check(array $block_data, array $count): void
 	{
 		// Check for new blocks & prepare for installation
-		$this->prepare($this->manager->get_new_blocks(), $count);
+		$this->prepare($this->manager->check_for_new_blocks($block_data), $count);
 
 		// Check for unavailable blocks & prepare for purge
 		foreach ($block_data as $service => $ext_name)

@@ -31,18 +31,11 @@ interface block_interface
 	public function loading(bool $set);
 
 	/**
-	* Set block data
-	*
-	* @return array
-	*/
-	public function set_data(array $data);
-
-	/**
 	* Get block data
 	*
 	* @return array
 	*/
-	public function get_data();
+	public function get_block_data();
 
 	/**
 	* Load block

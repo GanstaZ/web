@@ -33,9 +33,6 @@ abstract class base implements block_interface
 	protected $dispatcher;
 
 	/** @var bool loading */
-	protected $data_array;
-
-	/** @var bool loading */
 	protected $loading;
 
 	/**
@@ -67,22 +64,6 @@ abstract class base implements block_interface
 	public function is_load_active(): bool
 	{
 		return $this->loading;
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function set_data(array $data)
-	{
-		$this->data_array = $data;
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function get_data()
-	{
-		return $this->data_array;
 	}
 
 	/**

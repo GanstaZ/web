@@ -12,7 +12,7 @@ namespace dls\web\core\blocks\type;
 
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
-use dls\web\core\helper;
+use phpbb\template\template;
 use phpbb\event\dispatcher;
 
 /**
@@ -26,8 +26,8 @@ abstract class base implements block_interface
 	/** @var driver_interface */
 	protected $db;
 
-	/** @var helper */
-	protected $helper;
+	/** @var template */
+	protected $template;
 
 	/** @var dispatcher */
 	protected $dispatcher;
@@ -35,20 +35,26 @@ abstract class base implements block_interface
 	/** @var bool loading */
 	protected $loading;
 
+	/** @var array Contains phpBB vars */
+	protected $phpbb_vars;
+
 	/**
 	* Constructor
 	*
 	* @param config			  $config	  Config object
 	* @param driver_interface $db		  Database object
-	* @param helper			  $helper	  Helper object
+	* @param template		  $template	  Template object
 	* @param dispatcher		  $dispatcher Dispatcher object
+	* @param string			  $root_path  Path to the phpbb includes directory
+	* @param string			  $php_ext	  PHP file extension
 	*/
-	public function __construct(config $config, driver_interface $db, helper $helper, dispatcher $dispatcher)
+	public function __construct(config $config, driver_interface $db, template $template, dispatcher $dispatcher, $root_path, $php_ext)
 	{
 		$this->config = $config;
 		$this->db = $db;
 		$this->dispatcher = $dispatcher;
-		$this->helper = $helper;
+		$this->template = $template;
+		$this->phpbb_vars = ['root_path' => $root_path, 'php_ext' => $php_ext];
 	}
 
 	/**
@@ -72,5 +78,28 @@ abstract class base implements block_interface
 	public function loading(bool $set): void
 	{
 		$this->loading = $set;
+	}
+
+	/**
+	* Get $phpbb_root_path or php_ext
+	*
+	* @return string
+	*/
+	public function get(string $var): ?string
+	{
+		return $this->phpbb_vars[$var] ?? null;
+	}
+
+	/**
+	* Truncate title
+	*
+	* @param string		 $title	 Truncate title
+	* @param int		 $length Max length of the string
+	* @param null|string $ellips Language ellips
+	* @return string
+	*/
+	public function truncate(string $title, int $length, $ellips = null): string
+	{
+		return truncate_string(censor_text($title), $length, 255, false, $ellips ?? '...');
 	}
 }

@@ -22,8 +22,10 @@ services:
         arguments:
             - '@config'
             - '@dbal.conn'
-            - '@dls.web.helper'
+            - '@template'
             - '@dispatcher'
+            - '%core.root_path%'
+            - '%core.php_ext%'
 
 # ----- Blocks -----
     dls.web.block.news:

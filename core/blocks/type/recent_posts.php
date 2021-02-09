@@ -3,7 +3,7 @@
 *
 * DLS Web. An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2018, GanstaZ, http://www.dlsz.eu/
+* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
@@ -30,9 +30,9 @@ class recent_posts extends base
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$this->helper->assign('block_vars', 'recent_posts', [
-				'link'	=> append_sid("{$this->helper->get('root_path')}viewtopic.{$this->helper->get('php_ext')}", "t={$row['topic_id']}#p{$row['post_id']}"),
-				'title' => $this->helper->truncate($row['topic_title'], $this->config['dls_title_length']),
+			$this->template->assign_block_vars('recent_posts', [
+				'link'	=> append_sid("{$this->get('root_path')}viewtopic.{$this->get('php_ext')}", "t={$row['topic_id']}#p{$row['post_id']}"),
+				'title' => $this->truncate($row['topic_title'], $this->config['dls_title_length']),
 			]);
 		}
 		$this->db->sql_freeresult($result);

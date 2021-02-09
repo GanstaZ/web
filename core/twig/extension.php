@@ -3,12 +3,16 @@
 *
 * DLS Web. An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2018, GanstaZ, http://www.dlsz.eu/
+* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
 
 namespace dls\web\core\twig;
+
+use phpbb\template\twig\environment;
+use dls\web\core\blocks\event;
+use phpbb\group\helper as group_helper;
 
 /**
 * DLS Web template loader extension for blocks
@@ -21,26 +25,21 @@ class extension extends \Twig\Extension\AbstractExtension
 	/** @var \dls\web\core\blocks\event */
 	protected $event;
 
+	/** @var helper */
+	protected $group_helper;
+
 	/**
 	* Constructor
 	*
-	* @param \phpbb\template\twig\environment $environment
-	* @param \dls\web\core\blocks\event $event Block helper object
+	* @param environment  $environment
+	* @param event		  $event Block helper object
+	* @param group_helper $group_helper Group helper object
 	*/
-	public function __construct(\phpbb\template\twig\environment $environment, \dls\web\core\blocks\event $event)
+	public function __construct(environment $environment, event $event, group_helper $group_helper)
 	{
 		$this->environment = $environment;
 		$this->event = $event;
-	}
-
-	/**
-	* Get the name of this extension
-	*
-	* @return string
-	*/
-	public function getName()
-	{
-		return 'dls';
+		$this->group_helper = $group_helper;
 	}
 
 	/**
@@ -75,6 +74,7 @@ class extension extends \Twig\Extension\AbstractExtension
 	{
 		return [
 			new \Twig_SimpleFunction('blocks', [$this, 'blocks'], ['needs_environment' => true, 'needs_context' => true]),
+			new \Twig_SimpleFunction('get_group_name', [$this, 'get_group_name']),
 		];
 	}
 
@@ -98,5 +98,16 @@ class extension extends \Twig\Extension\AbstractExtension
 				$env->loadTemplate("@{$path}/{$name}.html")->display($context);
 			}
 		}
+	}
+
+	/**
+	* Get group name
+	*
+	* @param string $group_name name of the group
+	* @return string
+	*/
+	public function get_group_name($group_name)
+	{
+		return $this->group_helper->get_name($group_name);
 	}
 }

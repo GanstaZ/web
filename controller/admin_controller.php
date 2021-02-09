@@ -3,7 +3,7 @@
 *
 * DLS Web. An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2018, GanstaZ, http://www.dlsz.eu/
+* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
@@ -14,7 +14,7 @@ use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\language\language;
 use phpbb\request\request;
-use dls\web\core\helper;
+use phpbb\template\template;
 
 /**
 * DLS Web admin controller
@@ -33,8 +33,8 @@ class admin_controller
 	/** @var request */
 	protected $request;
 
-	/** @var helper */
-	protected $helper;
+	/** @var template */
+	protected $template;
 
 	/** @var string Custom form action */
 	protected $u_action;
@@ -46,15 +46,15 @@ class admin_controller
 	* @param driver_interface $db		Database object
 	* @param language		  $language Language object
 	* @param request		  $request	Request object
-	* @param helper			  $helper	Helper object
+	* @param template	      $template Template object
 	*/
-	public function __construct(config $config, driver_interface $db, language $language, request $request, helper $helper)
+	public function __construct(config $config, driver_interface $db, language $language, request $request, template $template)
 	{
 		$this->config = $config;
 		$this->db = $db;
 		$this->language = $language;
 		$this->request = $request;
-		$this->helper = $helper;
+		$this->template = $template;
 	}
 
 	/**
@@ -107,7 +107,7 @@ class admin_controller
 		}
 
 		// Set template vars
-		$this->helper->assign('vars', [
+		$this->template->assign_vars([
 			'DLS_VERSION'	 => $this->config['dls_core_version'],
 			'DLS_NEWS_ID'	 => $this->get_ids(),
 			'S_NEWS_CURRENT' => $this->config['dls_news_fid'],

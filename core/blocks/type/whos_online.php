@@ -30,9 +30,9 @@ class whos_online extends base
 	* @param auth $auth Auth object
 	* @param user $user User object
 	*/
-	public function __construct($config, $db, $template, $dispatcher, $root_path, $php_ext, auth $auth, user $user)
+	public function __construct($config, $db, $controller, $template, $dispatcher, $root_path, $php_ext, auth $auth, user $user)
 	{
-		parent::__construct($config, $db, $template, $dispatcher, $root_path, $php_ext);
+		parent::__construct($config, $db, $controller, $template, $dispatcher, $root_path, $php_ext);
 
 		$this->auth = $auth;
 		$this->user = $user;

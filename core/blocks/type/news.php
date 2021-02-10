@@ -11,7 +11,6 @@
 namespace dls\web\core\blocks\type;
 
 use phpbb\auth\auth;
-use phpbb\controller\helper as controller;
 use phpbb\language\language;
 use phpbb\textformatter\s9e\renderer;
 use phpbb\user;
@@ -24,9 +23,6 @@ class news extends base
 {
 	/** @var auth */
 	protected $auth;
-
-	/** @var controller helper */
-	protected $controller;
 
 	/** @var language */
 	protected $language;
@@ -56,18 +52,16 @@ class news extends base
 	* Constructor
 	*
 	* @param auth		$auth		Auth object
-	* @param controller $controller Controller helper object
 	* @param language	$language	Language object
 	* @param renderer	$renderer	s9e renderer object
 	* @param user		$user		User object
 	* @param pagination $pagination Pagination object
 	*/
-	public function __construct($config, $db, $template, $dispatcher, $root_path, $php_ext, auth $auth, controller $controller, language $language, renderer $renderer, user $user, pagination $pagination)
+	public function __construct($config, $db, $controller, $template, $dispatcher, $root_path, $php_ext, auth $auth, language $language, renderer $renderer, user $user, pagination $pagination)
 	{
-		parent::__construct($config, $db, $template, $dispatcher, $root_path, $php_ext);
+		parent::__construct($config, $db, $controller, $template, $dispatcher, $root_path, $php_ext);
 
 		$this->auth = $auth;
-		$this->controller = $controller;
 		$this->language = $language;
 		$this->renderer = $renderer;
 		$this->user = $user;

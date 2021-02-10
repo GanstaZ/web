@@ -12,6 +12,7 @@ namespace dls\web\core\blocks\type;
 
 use phpbb\auth\auth;
 use phpbb\user;
+use phpbb\language\language;
 
 /**
 * DLS Web Who's Online block
@@ -24,18 +25,23 @@ class whos_online extends base
 	/** @var user */
 	protected $user;
 
+	/** @var language */
+	protected $language;
+
 	/**
 	* Constructor
 	*
-	* @param auth $auth Auth object
-	* @param user $user User object
+	* @param auth	  $auth		Auth object
+	* @param user	  $user		User object
+	* @param language $language Language object
 	*/
-	public function __construct($config, $db, $controller, $template, $dispatcher, $root_path, $php_ext, auth $auth, user $user)
+	public function __construct($config, $db, $controller, $template, $dispatcher, $root_path, $php_ext, auth $auth, user $user, language $language)
 	{
 		parent::__construct($config, $db, $controller, $template, $dispatcher, $root_path, $php_ext);
 
 		$this->auth = $auth;
 		$this->user = $user;
+		$this->language = $language;
 	}
 
 	/**
@@ -61,9 +67,9 @@ class whos_online extends base
 
 		$boarddays = (time() - $this->config['board_startdate']) / 86400;
 
-		$posts_per_day = $total_posts / $boarddays;
-		$topics_per_day = $total_topics / $boarddays;
-		$users_per_day = $total_users / $boarddays;
+		$posts_per_day	= sprintf('%.2f', $total_posts / $boarddays);
+		$topics_per_day = sprintf('%.2f', $total_topics / $boarddays);
+		$users_per_day	= sprintf('%.2f', $total_users / $boarddays);
 
 		// Generate birthday list if required...
 		$show_birthdays = ($this->config['load_birthdays'] && $this->config['allow_birthdays'] && $this->auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'));
@@ -75,16 +81,17 @@ class whos_online extends base
 
 		$this->legend();
 
+		$this->language->lang('LOGIN_VIEWFORUM');
 		$this->template->assign_vars([
-			'T_POSTS'  => $total_posts,
-			'T_TOPICS' => $total_topics,
-			'T_USERS'  => $total_users,
-			'NEW_USER' => get_username_string('full', (int) $this->config['newest_user_id'], $this->config['newest_username'], $this->config['newest_user_colour']),
+			'dls_posts'	 => $total_posts,
+			'dls_topics' => $total_topics,
+			'dls_users'	 => $total_users,
+			'new_user'	 => get_username_string('full', (int) $this->config['newest_user_id'], $this->config['newest_username'], $this->config['newest_user_colour']),
 
-			'D_POSTS'  => (float) $posts_per_day,
-			'D_TOPICS' => (float) $topics_per_day,
-			'D_USERS'  => (float) $users_per_day,
-			'S_BIRTHDAY_LIST' => $show_birthdays,
+			'ppd' => $posts_per_day,
+			'tpd' => $topics_per_day,
+			'upd' => $users_per_day,
+			's_birthday_list' => $show_birthdays,
 		]);
 
 		/**
@@ -144,8 +151,8 @@ class whos_online extends base
 			$birthday_age = ($birthday_year) ? max(0, $now['year'] - $birthday_year) : '';
 
 			$birthdays[] = [
-				'USERNAME' => $birthday_username,
-				'AGE' => $birthday_age,
+				'member' => $birthday_username,
+				'age'	 => $birthday_age,
 			];
 		}
 
@@ -155,7 +162,6 @@ class whos_online extends base
 	/**
 	* Legend
 	*
-	* @return array
 	* @return void
 	*/
 	protected function legend(): void
@@ -184,7 +190,6 @@ class whos_online extends base
 		}
 		$result = $this->db->sql_query($sql);
 
-		$legend = $legend2 = [];
 		$legend = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{

@@ -23,7 +23,7 @@ interface block_interface
 	public function is_load_active();
 
 	/**
-	* Set load [Default should be true]
+	* Set load to true/false [Default should be true]
 	*
 	* @param bool $set to true or false
 	* @return void
@@ -32,6 +32,7 @@ interface block_interface
 
 	/**
 	* Get block data
+	*	['block_name' => '','cat_name' => '','ext_name' => '',]
 	*
 	* @return array
 	*/

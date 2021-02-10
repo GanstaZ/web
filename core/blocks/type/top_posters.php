@@ -18,6 +18,18 @@ class top_posters extends base
 	/**
 	* {@inheritdoc}
 	*/
+	public function get_block_data(): array
+	{
+		return [
+			'block_name' => 'dls_top_posters',
+			'cat_name' => 'right',
+			'ext_name' => 'dls_web',
+		];
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function load(): void
 	{
 		$sql = 'SELECT user_id, user_type, user_posts, username, user_colour

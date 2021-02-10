@@ -18,6 +18,18 @@ class recent_posts extends base
 	/**
 	* {@inheritdoc}
 	*/
+	public function get_block_data(): array
+	{
+		return [
+			'block_name' => 'dls_recent_posts',
+			'cat_name' => 'right',
+			'ext_name' => 'dls_web',
+		];
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function load(): void
 	{
 		$sql = 'SELECT p.post_id, t.topic_id, t.topic_visibility, t.topic_title, t.topic_time, t.topic_status, t.topic_last_post_id

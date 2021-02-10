@@ -18,6 +18,18 @@ class recent_topics extends base
 	/**
 	* {@inheritdoc}
 	*/
+	public function get_block_data(): array
+	{
+		return [
+			'block_name' => 'dls_recent_topics',
+			'cat_name' => 'right',
+			'ext_name' => 'dls_web',
+		];
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function load(): void
 	{
 		$sql = 'SELECT topic_id, topic_visibility, topic_title, topic_time, topic_status

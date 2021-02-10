@@ -15,5 +15,15 @@ namespace dls\web\core\blocks\type;
 */
 class mini_profile extends base
 {
-
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_block_data(): array
+	{
+		return [
+			'block_name' => 'dls_mini_profile',
+			'cat_name' => 'right',
+			'ext_name' => 'dls_web',
+		];
+	}
 }

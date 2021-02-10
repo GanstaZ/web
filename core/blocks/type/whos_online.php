@@ -156,6 +156,7 @@ class whos_online extends base
 	* Legend
 	*
 	* @return array
+	* @return void
 	*/
 	protected function legend(): void
 	{
@@ -184,6 +185,7 @@ class whos_online extends base
 		$result = $this->db->sql_query($sql);
 
 		$legend = $legend2 = [];
+		$legend = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$this->template->assign_block_vars('legend', [

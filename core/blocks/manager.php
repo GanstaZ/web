@@ -133,13 +133,19 @@ class manager
 				continue;
 			}
 
-			self::$blocks[$row['block_name']] = $block;
+			// If is set as special, then we can call it with get method
+			if ($block->is_load_special())
+			{
+				self::$blocks[$row['block_name']] = $block;
+			}
 
+			// If is set as active, then load method will handle it
 			if ($block->is_load_active())
 			{
 				$blocks_data[$row['block_name']] = $block;
 			}
 
+			// This is for twig blocks tag
 			if (!$this->is_special($row))
 			{
 				$data = [

@@ -19,10 +19,10 @@ use phpbb\group\helper as group_helper;
 */
 class extension extends \Twig\Extension\AbstractExtension
 {
-	/** @var \phpbb\template\twig\environment */
+	/** @var environment */
 	protected $environment;
 
-	/** @var \dls\web\core\blocks\event */
+	/** @var event */
 	protected $event;
 
 	/** @var helper */

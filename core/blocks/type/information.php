@@ -21,7 +21,6 @@ class information extends base
 	public function get_block_data(): array
 	{
 		return [
-			'block_name' => 'dls_information',
 			'cat_name' => 'right',
 			'ext_name' => 'dls_web',
 		];

@@ -21,7 +21,6 @@ class top_posters extends base
 	public function get_block_data(): array
 	{
 		return [
-			'block_name' => 'dls_top_posters',
 			'cat_name' => 'right',
 			'ext_name' => 'dls_web',
 		];

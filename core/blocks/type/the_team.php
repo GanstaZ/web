@@ -21,7 +21,6 @@ class the_team extends base
 	public function get_block_data(): array
 	{
 		return [
-			'block_name' => 'dls_the_team',
 			'cat_name' => 'right',
 			'ext_name' => 'dls_web',
 		];

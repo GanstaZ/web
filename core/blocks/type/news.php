@@ -79,7 +79,6 @@ class news extends base
 	public function get_block_data(): array
 	{
 		return [
-			'block_name' => 'dls_news',
 			'cat_name' => 'special',
 			'ext_name' => 'dls_web',
 		];

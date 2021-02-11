@@ -61,9 +61,10 @@ class manager
 	public function check_for_new_blocks($block_ary): array
 	{
 		$return = [];
-		foreach ($this->collection as $service)
+		foreach ($this->collection as $name => $service)
 		{
 			$data = $service->get_block_data();
+			$data['block_name'] = $this->get_block_name($name, $data['ext_name']);
 
 			// Validate data and set it for installation
 			if ($this->is_valid($data) && !array_key_exists($data['block_name'], $block_ary))
@@ -127,11 +128,6 @@ class manager
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$block = $this->collection[$this->get_service($row['block_name'], $row['ext_name'])];
-
-			if (!$block)
-			{
-				continue;
-			}
 
 			// If is set as special, then we can call it with get method
 			if ($block->is_load_special())
@@ -197,25 +193,21 @@ class manager
 
 	/**
 	* Get block name from service
-	*	 For example dls.web.block.some.name => dls_some_name
+	*	 For example acme.demo.block.some.name => acme_some_name
 	*
 	* @param string $service  Name of the service
 	* @param string $ext_name Name of the extension
-	* @param string $remove	  Remove part of the string
-	* @param mixed	$replace  Default is underscore
-	* @return ?string
+	* @return string
 	*/
-	public function get_block_name($service, $ext_name, $remove = '.block.', $replace = '_'): ?string
+	public function get_block_name(string $service, string $ext_name): string
 	{
-		$start = utf8_strpos($ext_name, $replace);
-		if (is_bool($start))
-		{
-			return null;
-		}
+		$replace  = '_';
+		$string	  = str_replace('.', $replace, $service);
+		$ext_name = $this->is_valid_ext_name($string, $ext_name, $replace) ? $ext_name : 'acme_demo';
+		$start	  = utf8_strpos($ext_name, $replace);
+		$clean	  = str_replace(utf8_substr($ext_name, $start + utf8_strlen($replace)) . '_block_', '', $string);
 
-		$string = str_replace(utf8_substr($ext_name, $start + utf8_strlen($replace)) . $remove, '', $service);
-
-		return str_replace('.', $replace, $string);
+		return $this->is_valid_name(['block_name' => $clean, 'ext_name' => $ext_name]) ? $clean : '';
 	}
 
 	/**
@@ -223,16 +215,12 @@ class manager
 	*
 	* @param string $service  Name of the service
 	* @param string $ext_name Name of the extension
-	* @param string $search	  Default is underscore
-	* @return ?string
+	* @return string
 	*/
-	public function get_service(string $service, string $ext_name, string $search = '_'): ?string
+	public function get_service(string $service, string $ext_name): string
 	{
+		$search = '_';
 		$start = utf8_strpos($service, $search);
-		if (is_bool($start))
-		{
-			return null;
-		}
 
 		return str_replace($search, '.', "{$ext_name}.block." . utf8_substr($service, $start + utf8_strlen($search)));
 	}
@@ -253,7 +241,7 @@ class manager
 	* @param array $row block data
 	* @return bool Depending on whether or not the category is special
 	*/
-	public function is_special(array $row): bool
+	protected function is_special(array $row): bool
 	{
 		return $row['cat_name'] === 'special';
 	}
@@ -266,7 +254,7 @@ class manager
 	*/
 	protected function is_valid($row)
 	{
-		return is_array($row) && !empty($row['block_name']) && !empty($row['ext_name']) && $this->is_valid_name($row) && !empty($row['cat_name']);
+		return is_array($row) && !empty($row['block_name']) && !empty($row['ext_name']) && !empty($row['cat_name']);
 	}
 
 	/**
@@ -281,12 +269,27 @@ class manager
 	}
 
 	/**
+	* Check if our ext_name is valid
+	*
+	* @param string $string	  Name of the service
+	* @param string $ext_name Name of the extension
+	* @param string $replace  Default is underscore
+	* @return bool
+	*/
+	protected function is_valid_ext_name(string $string, string $ext_name, string $replace): bool
+	{
+		$compare = "{$ext_name}{$replace}" . utf8_substr($string, utf8_strlen($ext_name) + utf8_strlen($replace));
+
+		return strcmp($string, $compare) === 0;
+	}
+
+	/**
 	* Check if our block name is valid
 	*
 	* @param array $data Stores data that we need to validate
 	* @return bool Depending on whether or not the block is valid
 	*/
-	public function is_valid_name(array $data): bool
+	protected function is_valid_name(array $data): bool
 	{
 		return utf8_strpos($data['block_name'], $this->get_vendor($data['ext_name'])) !== false;
 	}

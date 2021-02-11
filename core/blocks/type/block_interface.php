@@ -17,7 +17,7 @@ interface block_interface
 {
 	/**
 	* Get block data
-	*	['block_name' => '','cat_name' => '','ext_name' => '',]
+	*	['cat_name' => '','ext_name' => '',]
 	*
 	* @return array
 	*/

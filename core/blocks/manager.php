@@ -67,7 +67,7 @@ class manager
 			$data['block_name'] = $this->get_block_name($name, $data['ext_name']);
 
 			// Validate data and set it for installation
-			if ($this->is_valid($data) && !array_key_exists($data['block_name'], $block_ary))
+			if ($this->is_valid($data) && !in_array($data['block_name'], array_column($block_ary, 'block_name')))
 			{
 				$return[$data['block_name']] = $data;
 			}

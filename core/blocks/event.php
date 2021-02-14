@@ -3,7 +3,7 @@
 *
 * DLS Web. An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2018, GanstaZ, http://www.dlsz.eu/
+* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
@@ -21,18 +21,13 @@ class event
 	/**
 	* Set template data
 	*
-	* @param string $name Name of the category
-	* @param array	$data Block data
+	* @param string $category Name of the category
+	* @param array	$data	  Block data
 	* @return void
 	*/
-	public function set_data(string $name, array $data): void
+	public function set_data(string $category, array $data): void
 	{
-		if (!$this->get($name))
-		{
-			self::$data[$name] = $data;
-		}
-
-		self::$data[$name] = array_merge(self::$data[$name], $data);
+		$this->get($category) ? self::$data[$category] = array_merge(self::$data[$category], $data) : self::$data[$category] = $data;
 	}
 
 	/**

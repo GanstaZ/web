@@ -84,22 +84,22 @@ class admin_block_controller
 				ORDER BY block_id';
 		$result = $this->db->sql_query($sql);
 
-		$data_ary = $rowset = $count = [];
+		$rowset = $count = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$count[$row['cat_name']]['block'] = (int) $row['position'];
-			$count[$row['cat_name']]['position'][(int) $row['position']] = 0;
 			if (!$count[$row['cat_name']]['block'])
 			{
 				$count[$row['cat_name']]['block']++;
 			}
 
-			if (!$count[$row['cat_name']]['position'][(int) $row['position']] && $row['active'])
+			$count[$row['cat_name']]['position'][(int) $row['position']] = 0;
+
+			if ($row['active'])
 			{
 				$count[$row['cat_name']]['position'][(int) $row['position']]++;
 			}
 
-			$data_ary[$row['block_name']] = $row['ext_name'];
 			$rowset[$row['cat_name']][] = [
 				'cat_name'	 => $row['cat_name'],
 				'block_name' => $row['block_name'],
@@ -109,6 +109,8 @@ class admin_block_controller
 			];
 		}
 		$this->db->sql_freeresult($result);
+
+		$data_ary = array_reduce($rowset, 'array_merge', []);
 
 		// Run check for available/unavailable blocks
 		$this->check($data_ary, $count);
@@ -137,6 +139,7 @@ class admin_block_controller
 		}
 
 		// Set output vars for display in the template
+		$this->template->assign_block_vars_array('install', $this->status('add'));
 		$this->assign_template_block_data($rowset, $count);
 
 		unset($data_ary, $rowset, $count);
@@ -157,7 +160,7 @@ class admin_block_controller
 	*/
 	public function update_data(array $data_ary): void
 	{
-		foreach ($data_ary as $block_name => $ext_name)
+		foreach ($data_ary as $data)
 		{
 			$block_data = [
 				'active'   => $this->request->variable($block_name, (int) 0),
@@ -169,18 +172,21 @@ class admin_block_controller
 				WHERE block_name = '" . $this->db->sql_escape($block_name) . "'"
 			);
 
+			// Add new block/service data into db.
+			if ($new_block && in_array($data['block_name'], array_column($this->status('add'), 'block_name')))
+			{
+				$this->db->sql_query('INSERT INTO ' . $this->manager->blocks_data() . ' ' .
+					$this->db->sql_build_array('INSERT', $data)
+				);
+			}
+
 			// Purge removed block/service data from db. No confirm_box is needed! It is just a cleanup process :)
-			if (in_array($block_name, $this->status('purge')))
+			if (in_array($data['block_name'], $this->status('purge')))
 			{
 				$this->db->sql_query('DELETE FROM ' . $this->manager->blocks_data() . "
-				WHERE block_name = '" . $this->db->sql_escape($block_name) . "'");
+					WHERE block_name = '" . $this->db->sql_escape($data['block_name']) . "'"
+				);
 			}
-		}
-
-		// Add new blocks.. Will be removed
-		if ($add_blocks = $this->status('add'))
-		{
-			$this->db->sql_multi_insert($this->manager->blocks_data(), $add_blocks);
 		}
 	}
 
@@ -203,7 +209,8 @@ class admin_block_controller
 			{
 				$this->template->assign_block_vars('category.block', [
 					'name'		  => $block['block_name'],
-					'position'	  => $block['block_name'] . '_' . $block['ext_name'],
+					'position'	  => $block['block_name'] . '_' . $block['position'],
+					'u_active'	  => $block['block_name'] . '_' . $block['ext_name'],
 					's_activate'  => $block['active'],
 					'language'	  => strtoupper($block['block_name']),
 					's_duplicate' => ($count[$category]['position'][$block['position']] > 1) && $block['active'] ?? false,
@@ -227,12 +234,12 @@ class admin_block_controller
 		$this->prepare($this->manager->check_for_new_blocks($block_data), $count);
 
 		// Check for unavailable blocks & prepare for purge
-		foreach ($block_data as $service => $ext_name)
+		foreach ($block_data as $service)
 		{
-			if (!$this->is_available(['block_name' => $service, 'ext_name' => $ext_name]))
+			if (!$this->is_available($service))
 			{
 				// Set our block/service as unavailable
-				$this->status['purge'][] = $service;
+				$this->status['purge'][] = $service['block_name'];
 			}
 		}
 	}
@@ -251,6 +258,7 @@ class admin_block_controller
 			return;
 		}
 
+		$this->status['add'] = [];
 		foreach ($new_blocks as $data)
 		{
 			$position = 1;

@@ -106,6 +106,24 @@ abstract class base implements block_interface
 	}
 
 	/**
+	* Assign breadcrumb
+	*
+	* @param string $name	Name of the breadcrumb
+	* @param string $route	Name of the route
+	* @param array	$params Additional params
+	* @return \dls\web\core\blocks\type\base object
+	*/
+	public function assign_breadcrumb(string $name, string $route, array $params)
+	{
+		$this->template->assign_block_vars('navlinks', [
+			'FORUM_NAME'   => $name,
+			'U_VIEW_FORUM' => $this->controller->route($route, $params),
+		]);
+
+		return $this;
+	}
+
+	/**
 	* Get $phpbb_root_path or php_ext
 	*
 	* @return string

@@ -134,24 +134,6 @@ class news extends base
 	}
 
 	/**
-	* Assign breadcrumb
-	*
-	* @param string $name	Name of the breadcrumb
-	* @param string $route	Name of the route
-	* @param array	$params Additional params
-	* @return \dls\web\core\blocks\block\news News object
-	*/
-	public function assign_breadcrumb(string $name, string $route, array $params)
-	{
-		$this->template->assign_block_vars('navlinks', [
-			'FORUM_NAME'   => $name,
-			'U_VIEW_FORUM' => $this->controller->route($route, $params),
-		]);
-
-		return $this;
-	}
-
-	/**
 	* News base
 	*
 	* @param int $forum_id Forum id to fetch news data

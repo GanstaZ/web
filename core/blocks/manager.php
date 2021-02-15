@@ -33,6 +33,9 @@ class manager
 	/** @var array type */
 	protected $type = ['page', 'cat', 'block'];
 
+	/** @var array error */
+	protected $error = [];
+
 	/** @var array Contains validated block services */
 	protected static $blocks = false;
 
@@ -55,16 +58,17 @@ class manager
 	/**
 	* Check for new block/s
 	*
-	* @param array $block_ary
+	* @param array	$block_ary
+	* @param object $container
 	* @return array
 	*/
-	public function check_for_new_blocks($block_ary): array
+	public function check_for_new_blocks(array $block_ary, object $container): array
 	{
 		$return = [];
-		foreach ($this->collection as $name => $service)
+		foreach ($this->collection as $service => $service_data)
 		{
-			$data = $service->get_block_data();
-			$data['block_name'] = $this->get_block_name($name, $data['ext_name']);
+			$data = $service_data->get_block_data();
+			$data['block_name'] = $this->get_block_name($service, $data['ext_name'], $container);
 
 			// Validate data and set it for installation
 			if ($this->is_valid($data) && !in_array($data['block_name'], array_column($block_ary, 'block_name')))
@@ -74,6 +78,16 @@ class manager
 		}
 
 		return $return ?? [];
+	}
+
+	/**
+	* Get error log for invalid block names
+	*
+	* @return array
+	*/
+	public function get_error_log(): array
+	{
+		return $this->error ?? [];
 	}
 
 	/**
@@ -197,15 +211,21 @@ class manager
 	*
 	* @param string $service  Name of the service
 	* @param string $ext_name Name of the extension
+	* @param object $container
 	* @return string
 	*/
-	public function get_block_name(string $service, string $ext_name): string
+	public function get_block_name(string $service, string $ext_name, object $container): string
 	{
-		$replace  = '_';
-		$string	  = str_replace('.', $replace, $service);
-		$ext_name = $this->is_valid_ext_name($string, $ext_name, $replace) ? $ext_name : 'acme_demo';
-		$start	  = utf8_strpos($ext_name, $replace);
-		$clean	  = str_replace(utf8_substr($ext_name, $start + utf8_strlen($replace)) . '_block_', '', $string);
+		$string	  = str_replace('.', '_', $service);
+		$ext_name = $this->is_valid_ext_name($string, $ext_name) ? $ext_name : 'acme_demo';
+		$clean	  = str_replace(utf8_substr($ext_name, utf8_strpos($ext_name, '_') + 1) . '_block_', '', $string);
+
+		if (!$container->has($this->get_service($clean, $ext_name)))
+		{
+			$this->error[$clean] = 'Service name is not valid';
+
+			return '';
+		}
 
 		return $this->is_valid_name(['block_name' => $clean, 'ext_name' => $ext_name]) ? $clean : '';
 	}
@@ -219,10 +239,7 @@ class manager
 	*/
 	public function get_service(string $service, string $ext_name): string
 	{
-		$search = '_';
-		$start = utf8_strpos($service, $search);
-
-		return str_replace($search, '.', "{$ext_name}.block." . utf8_substr($service, $start + utf8_strlen($search)));
+		return str_replace('_', '.', "{$ext_name}.block." . utf8_substr($service, utf8_strpos($service, '_') + 1));
 	}
 
 	/**
@@ -273,14 +290,11 @@ class manager
 	*
 	* @param string $string	  Name of the service
 	* @param string $ext_name Name of the extension
-	* @param string $replace  Default is underscore
 	* @return bool
 	*/
-	protected function is_valid_ext_name(string $string, string $ext_name, string $replace): bool
+	protected function is_valid_ext_name(string $string, string $ext_name): bool
 	{
-		$compare = "{$ext_name}{$replace}" . utf8_substr($string, utf8_strlen($ext_name) + utf8_strlen($replace));
-
-		return strcmp($string, $compare) === 0;
+		return strcmp($string, $ext_name . '_' . utf8_substr($string, utf8_strlen($ext_name) + 1)) === 0;
 	}
 
 	/**

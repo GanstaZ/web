@@ -87,11 +87,11 @@ class admin_block_controller
 		$rowset = $count = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$count[$row['cat_name']]['block'] = (int) $row['position'];
-			if (!$count[$row['cat_name']]['block'])
+			if (!isset($count[$row['cat_name']]['block']))
 			{
-				$count[$row['cat_name']]['block']++;
+				$count[$row['cat_name']]['block'] = 0;
 			}
+			$count[$row['cat_name']]['block']++;
 
 			if (!isset($count[$row['cat_name']]['position'][(int) $row['position']]))
 			{

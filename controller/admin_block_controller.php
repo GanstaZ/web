@@ -118,7 +118,6 @@ class admin_block_controller
 		// Run check for available/unavailable blocks
 		$this->check($data_ary, $count);
 
-
 		$data_ary = array_merge($data_ary, $this->status('add'));
 
 		// Is the form submitted

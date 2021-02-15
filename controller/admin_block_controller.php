@@ -93,7 +93,10 @@ class admin_block_controller
 				$count[$row['cat_name']]['block']++;
 			}
 
-			$count[$row['cat_name']]['position'][(int) $row['position']] = 0;
+			if (!isset($count[$row['cat_name']]['position'][(int) $row['position']]))
+			{
+				$count[$row['cat_name']]['position'][(int) $row['position']] = 0;
+			}
 
 			if ($row['active'])
 			{
@@ -120,6 +123,8 @@ class admin_block_controller
 		{
 			$u_update = $s_status === 'add' ? array_column($this->status('add'), 'block_name') : $this->status($s_status);
 		}
+
+		$data_ary = array_merge($data_ary, $this->status('add'));
 
 		// Is the form submitted
 		if ($this->request->is_set_post('submit'))
@@ -162,6 +167,7 @@ class admin_block_controller
 	{
 		foreach ($data_ary as $data)
 		{
+			$new_block = $this->request->variable($data['block_name'], (int) 0);
 			$block_data = [
 				'active'   => $this->request->variable($block_name, (int) 0),
 				'position' => $this->request->variable($block_name . '_' . $ext_name, (int) 0),
@@ -213,7 +219,7 @@ class admin_block_controller
 					'u_active'	  => $block['block_name'] . '_' . $block['ext_name'],
 					's_activate'  => $block['active'],
 					'language'	  => strtoupper($block['block_name']),
-					's_duplicate' => ($count[$category]['position'][$block['position']] > 1) && $block['active'] ?? false,
+					's_duplicate' => ($count[$category]['position'][$block['position']] > 1) && $block['active'],
 					's_options'	  => $count[$category]['block'],
 					's_current'	  => $block['position'],
 				]);
@@ -236,7 +242,7 @@ class admin_block_controller
 		// Check for unavailable blocks & prepare for purge
 		foreach ($block_data as $service)
 		{
-			if (!$this->is_available($service))
+			if (!$this->container->has($this->manager->get_service($service['block_name'], $service['ext_name'])))
 			{
 				// Set our block/service as unavailable
 				$this->status['purge'][] = $service['block_name'];
@@ -280,17 +286,6 @@ class admin_block_controller
 				'cat_name'	 => $data['cat_name'],
 			];
 		}
-	}
-
-	/**
-	* Is service available
-	*
-	* @param array $row
-	* @return bool
-	*/
-	protected function is_available(array $row): bool
-	{
-		return $this->container->has($this->manager->get_service($row['block_name'], $row['ext_name']));
 	}
 
 	/**

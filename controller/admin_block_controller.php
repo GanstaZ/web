@@ -118,11 +118,6 @@ class admin_block_controller
 		// Run check for available/unavailable blocks
 		$this->check($data_ary, $count);
 
-		$u_update = '';
-		if ($s_status = $this->get_status())
-		{
-			$u_update = $s_status === 'add' ? array_column($this->status('add'), 'block_name') : $this->status($s_status);
-		}
 
 		$data_ary = array_merge($data_ary, $this->status('add'));
 
@@ -151,8 +146,8 @@ class admin_block_controller
 
 		// Set template vars
 		$this->template->assign_vars([
-			'S_UPDATE' => $s_status,
-			'U_UPDATE' => $u_update,
+			'U_ADD'    => count($this->status('add')),
+			'U_PURGE'  => $this->status('purge') ?? false,
 			'U_ACTION' => $this->u_action,
 		]);
 	}

@@ -12,7 +12,6 @@ namespace dls\web\core\blocks\type;
 
 use phpbb\auth\auth;
 use phpbb\user;
-use phpbb\language\language;
 
 /**
 * DLS Web Who's Online block
@@ -25,23 +24,18 @@ class whos_online extends base
 	/** @var user */
 	protected $user;
 
-	/** @var language */
-	protected $language;
-
 	/**
 	* Constructor
 	*
-	* @param auth	  $auth		Auth object
-	* @param user	  $user		User object
-	* @param language $language Language object
+	* @param auth $auth Auth object
+	* @param user $user User object
 	*/
-	public function __construct($config, $db, $controller, $template, $dispatcher, $root_path, $php_ext, auth $auth, user $user, language $language)
+	public function __construct($config, $db, $controller, $template, $dispatcher, $root_path, $php_ext, auth $auth, user $user)
 	{
 		parent::__construct($config, $db, $controller, $template, $dispatcher, $root_path, $php_ext);
 
 		$this->auth = $auth;
 		$this->user = $user;
-		$this->language = $language;
 	}
 
 	/**
@@ -60,9 +54,9 @@ class whos_online extends base
 	*/
 	public function load(): void
 	{
-		$total_posts = (int) $this->config['num_posts'];
+		$total_posts  = (int) $this->config['num_posts'];
 		$total_topics = (int) $this->config['num_topics'];
-		$total_users = (int) $this->config['num_users'];
+		$total_users  = (int) $this->config['num_users'];
 
 		$boarddays = (time() - $this->config['board_startdate']) / 86400;
 
@@ -80,7 +74,6 @@ class whos_online extends base
 
 		$this->legend();
 
-		$this->language->lang('LOGIN_VIEWFORUM');
 		$this->template->assign_vars([
 			'dls_posts'	 => $total_posts,
 			'dls_topics' => $total_topics,

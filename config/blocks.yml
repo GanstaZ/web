@@ -112,7 +112,6 @@ services:
         arguments:
             - '@auth'
             - '@user'
-            - '@language'
         calls:
             - [set_active, [true]]
             - [set_special, [false]]

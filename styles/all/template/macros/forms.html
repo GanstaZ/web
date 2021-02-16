@@ -24,6 +24,10 @@
 	</label>
 {% endmacro %}
 
+{% macro checkbox(name, value) %}
+	<input class="checkbox" name="{{ name }}" type="checkbox" value="1"{{ value ? ' checked' : '' }}>
+{% endmacro %}
+
 {% macro button(name, value, class, attributes) %}
 	{% from _self import input %}
 
@@ -31,4 +35,3 @@
 		{{ input(name, value, class, attributes) }}
 	</label>
 {% endmacro %}
-

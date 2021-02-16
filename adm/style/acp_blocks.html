@@ -7,59 +7,56 @@
 
 <form id="acp_web_block" method="post" action="{{ U_ACTION }}">
 
-	{% if U_PURGE %}
-		<fieldset>
-			{{ lang('PURGE_BLOCK', U_PURGE|join(lang('COMMA_SEPARATOR'))) }}
-		</fieldset>
-	{% endif %}
+{% if U_PURGE %}
+	<fieldset>
+		{{ lang('PURGE_BLOCK', U_PURGE|join(lang('COMMA_SEPARATOR'))) }}
+	</fieldset>
+{% endif %}
 
-	{% if install %}
-		<fieldset>
-			<legend>{{ lang('ADD_BLOCK', U_ADD > 1 ? 's') }}</legend>
+{% if install %}
+	<fieldset>
+		<legend>{{ lang('ADD_BLOCK', '[' ~ U_ADD ~ ']', U_ADD > 1 ? 's') }}</legend>
 
-			{% for add in install %}
-				<dl>
-					<dt>{{ form.label(add.block_name ~ '_new', lang(add.block_name) ~ lang('COLON')) }}</dt>
-					<dd>{{ form.radio(add.block_name ~ '_new', '0', {'yes': lang('YES'), 'no': lang('NO')}) }}</dd>
-				</dl>
-			{% endfor %}
+		{% for add in install %}
+			<dl>
+				<dt>{{ form.label(add.block_name, lang('CHECK_TO') ~ '[' ~ lang(add.block_name) ~ ']') }}</dt>
+				<dd>{{ form.checkbox(add.block_name ~ '_new', '0') }}</dd>
+			</dl>
+		{% endfor %}
 
-			<p class="submit-buttons">
-				{{ form.input('submit', lang('SUBMIT'), 'button1', {'type': 'submit'}) }}
-			</p>
+	</fieldset>
+	<p class="submit-buttons">
+		{{ form.input('submit', lang('SUBMIT'), 'button1', {'type': 'submit'}) }}
+	</p>
+{% endif %}
 
-		</fieldset>
+{% for category in loops.category %}
+	<fieldset>
+		<legend>{{'[' ~ category.in_category ~ '] ' ~ lang(category.cat_name) ~ lang('BLOCKS', category.in_category > 1 ? 's') }}</legend>
 
-	{% endif %}
-
-	{% for category in loops.category %}
-		<fieldset>
-			<legend>{{ lang(category.cat_name) ~ lang('BLOCKS') }}</legend>
-
-			{% for block in category.block %}
-				<dl>
-					<dt>{{ form.label(block.name, lang('ENABLE') ~ lang(block.language) ~ lang('COLON')) }}<br>
-						{% if category.cat_name !== 'SPECIAL' and block.s_options > 1 %}
-							<span class="{{ block.s_duplicate ? 'error' : 'success' }}">
-								{% if block.s_duplicate %}
-									{{ lang('DUPLICATE_POSITION') ~ icon('font', 'exclamation-triangle', 'fa-fw') }}
-								{% else %}
-									{{ lang('BLOCK_POSITION') ~ lang('COLON') }}
-								{% endif %}
-							</span>
-						{% endif %}
-					</dt>
-
-					<dd>{{ form.radio(block.name, block.s_activate, {'yes': lang('YES'), 'no': lang('NO')}) }}</dd>
-
-					{% if category.cat_name !== 'SPECIAL' and block.s_options %}
-						<dd>{{ form.select(block.position, block.s_current, range(1, block.s_options)) }}</dd>
+		{% for block in category.block %}
+			<dl>
+				<dt>{{ form.checkbox(block.name, '0') ~ form.label(block.name, lang(block.language) ~ lang('COLON')) }}<br>
+					{% if category.cat_name !== 'SPECIAL' and block.s_options > 1 %}
+						<span class="{{ block.s_duplicate ? 'error' : 'success' }}">
+							{% if block.s_duplicate %}
+								{{ lang('DUPLICATE_POSITION') ~ icon('font', 'exclamation-triangle', 'fa-fw') }}
+							{% else %}
+								{{ lang('BLOCK_POSITION') ~ lang('COLON') }}
+							{% endif %}
+						</span>
 					{% endif %}
-				</dl>
-			{% endfor %}
+				</dt>
 
-		</fieldset>
-	{% endfor %}
+				<dd>{{ form.radio(block.active, block.s_activate, {'yes': lang('ENABLED'), 'no': lang('DISABLED')}) }}</dd>
+
+				{% if category.cat_name !== 'SPECIAL' and block.s_options %}
+					<dd>{{ form.select(block.position, block.s_current, range(1, block.s_options)) }}</dd>
+				{% endif %}
+			</dl>
+		{% endfor %}
+	</fieldset>
+{% endfor %}
 
 	<p class="submit-buttons">
 		{{ form.input('submit', lang('SUBMIT'), 'button1', {'type': 'submit'}) }}

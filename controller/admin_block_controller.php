@@ -161,15 +161,21 @@ class admin_block_controller
 	{
 		foreach ($data_ary as $data)
 		{
+			$block = $this->request->variable($data['block_name'], (int) 0);
+
 			$block_data = [
-				'active'   => $this->request->variable($data['block_name'], (int) 0),
+				'active'   => $this->request->variable($data['block_name'] . '_active', (int) 0),
 				'position' => $this->request->variable($data['block_name'] . '_position', (int) 0),
 			];
 
-			// Update selected/requested block data
-			$this->db->sql_query('UPDATE ' . $this->manager->blocks_data() . ' SET ' . $this->db->sql_build_array('UPDATE', $block_data) . "
-				WHERE block_name = '" . $this->db->sql_escape($data['block_name']) . "'"
-			);
+			if ($block)
+			{
+				// Update selected/requested block data
+				$this->db->sql_query('UPDATE ' . $this->manager->blocks_data() . ' SET ' .
+					$this->db->sql_build_array('UPDATE', $block_data) . "
+					WHERE block_name = '" . $this->db->sql_escape($data['block_name']) . "'"
+				);
+			}
 
 			$new_block = $this->request->variable($data['block_name'] . '_new', (int) 0);
 
@@ -203,13 +209,17 @@ class admin_block_controller
 		foreach ($rowset as $category => $data)
 		{
 			// Set categories
-			$this->template->assign_block_vars('category', ['cat_name' => strtoupper($category),]);
+			$this->template->assign_block_vars('category', [
+				'cat_name'    => strtoupper($category),
+				'in_category' => count($data),
+			]);
 
 			// Add data to given categories
 			foreach ($data as $block)
 			{
 				$this->template->assign_block_vars('category.block', [
 					'name'		  => $block['block_name'],
+					'active'	  => $block['block_name'] . '_active',
 					'position'	  => $block['block_name'] . '_position',
 					's_activate'  => $block['active'],
 					'language'	  => strtoupper($block['block_name']),

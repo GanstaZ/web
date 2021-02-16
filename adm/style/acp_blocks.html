@@ -50,7 +50,7 @@
 
 				<dd>{{ form.radio(block.active, block.s_activate, {'yes': lang('ENABLED'), 'no': lang('DISABLED')}) }}</dd>
 
-				{% if category.cat_name !== 'SPECIAL' and block.s_options %}
+				{% if category.cat_name !== 'SPECIAL' and block.s_options > 1 %}
 					<dd>{{ form.select(block.position, block.s_current, range(1, block.s_options)) }}</dd>
 				{% endif %}
 			</dl>

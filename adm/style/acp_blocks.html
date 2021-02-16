@@ -19,8 +19,8 @@
 
 			{% for add in install %}
 				<dl>
-					<dt>{{ form.label(add.block_name, lang(add.block_name) ~ lang('COLON')) }}</dt>
-					<dd>{{ form.radio(add.block_name, '0', {'yes': lang('YES'), 'no': lang('NO')}) }}</dd>
+					<dt>{{ form.label(add.block_name ~ '_new', lang(add.block_name) ~ lang('COLON')) }}</dt>
+					<dd>{{ form.radio(add.block_name ~ '_new', '0', {'yes': lang('YES'), 'no': lang('NO')}) }}</dd>
 				</dl>
 			{% endfor %}
 
@@ -50,7 +50,7 @@
 						{% endif %}
 					</dt>
 
-					<dd>{{ form.radio(block.u_active, block.s_activate, {'yes': lang('YES'), 'no': lang('NO')}) }}</dd>
+					<dd>{{ form.radio(block.name, block.s_activate, {'yes': lang('YES'), 'no': lang('NO')}) }}</dd>
 
 					{% if category.cat_name !== 'SPECIAL' and block.s_options %}
 						<dd>{{ form.select(block.position, block.s_current, range(1, block.s_options)) }}</dd>

@@ -145,7 +145,7 @@ class admin_block_controller
 
 		// Set template vars
 		$this->template->assign_vars([
-			'U_ADD'    => count($this->status('add')),
+			'U_ADD'	   => count($this->status('add')),
 			'U_PURGE'  => $this->status('purge') ?? false,
 			'U_ACTION' => $this->u_action,
 		]);
@@ -161,16 +161,17 @@ class admin_block_controller
 	{
 		foreach ($data_ary as $data)
 		{
-			$new_block = $this->request->variable($data['block_name'], (int) 0);
 			$block_data = [
-				'active'   => $this->request->variable($block_name, (int) 0),
-				'position' => $this->request->variable($block_name . '_' . $ext_name, (int) 0),
+				'active'   => $this->request->variable($data['block_name'], (int) 0),
+				'position' => $this->request->variable($data['block_name'] . '_position', (int) 0),
 			];
 
 			// Update selected/requested block data
 			$this->db->sql_query('UPDATE ' . $this->manager->blocks_data() . ' SET ' . $this->db->sql_build_array('UPDATE', $block_data) . "
-				WHERE block_name = '" . $this->db->sql_escape($block_name) . "'"
+				WHERE block_name = '" . $this->db->sql_escape($data['block_name']) . "'"
 			);
+
+			$new_block = $this->request->variable($data['block_name'] . '_new', (int) 0);
 
 			// Add new block/service data into db.
 			if ($new_block && in_array($data['block_name'], array_column($this->status('add'), 'block_name')))
@@ -209,8 +210,7 @@ class admin_block_controller
 			{
 				$this->template->assign_block_vars('category.block', [
 					'name'		  => $block['block_name'],
-					'position'	  => $block['block_name'] . '_' . $block['position'],
-					'u_active'	  => $block['block_name'] . '_' . $block['ext_name'],
+					'position'	  => $block['block_name'] . '_position',
 					's_activate'  => $block['active'],
 					'language'	  => strtoupper($block['block_name']),
 					's_duplicate' => ($count[$category]['position'][$block['position']] > 1) && $block['active'],
@@ -294,36 +294,15 @@ class admin_block_controller
 	}
 
 	/**
-	* Check for update/purge status
-	*
-	* @return string
-	*/
-	public function get_status(): ?string
-	{
-		if (!$this->status)
-		{
-			return null;
-		}
-		else if ($this->status('add'))
-		{
-			$status = 'add';
-		}
-		else if ($this->status('purge'))
-		{
-			$status = 'purge';
-		}
-
-		return $status;
-	}
-
-	/**
 	* Set page url
 	*
 	* @param string $u_action Custom form action
-	* @return void
+	* @return self
 	*/
-	public function set_page_url(string $u_action): void
+	public function set_page_url(string $u_action): self
 	{
 		$this->u_action = $u_action;
+
+		return $this;
 	}
 }

@@ -246,7 +246,7 @@ class admin_block_controller
 		// Check for unavailable blocks & prepare for purge
 		foreach ($block_data as $service)
 		{
-			if (!$this->container->has($this->manager->get_service($service['block_name'], $service['ext_name'])))
+			if (!$this->container->has($this->manager->get_service_name($service['block_name'], $service['ext_name'])))
 			{
 				// Set our block/service as unavailable
 				$this->status['purge'][] = $service['block_name'];

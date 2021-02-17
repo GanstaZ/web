@@ -210,8 +210,8 @@ class admin_block_controller
 		{
 			// Set categories
 			$this->template->assign_block_vars('category', [
-				'cat_name'    => strtoupper($category),
-				'in_category' => count($data),
+				'cat_name' => strtoupper($category),
+				'in_count' => count($data),
 			]);
 
 			// Add data to given categories

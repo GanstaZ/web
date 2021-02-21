@@ -81,10 +81,10 @@ class admin_block_controller
 		/**
 		* Add language
 		*
-		* @event dls.web.admin_add_language
+		* @event dls.web.admin_block_add_language
 		* @since 2.4.0-dev
 		*/
-		$this->container->get('dispatcher')->dispatch('dls.web.admin_add_language');
+		$this->container->get('dispatcher')->dispatch('dls.web.admin_block_add_language');
 
 		// Get all blocks
 		$sql = 'SELECT *

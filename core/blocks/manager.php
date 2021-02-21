@@ -34,7 +34,7 @@ class manager
 	protected $sections = ['special', 'right', 'bottom', 'left', 'top', 'middle'];
 
 	/** @var array type */
-	protected $type = ['page', 'cat', 'block'];
+	protected $type = ['page', 'section', 'name'];
 
 	/** @var array error */
 	protected $error = [];
@@ -73,10 +73,10 @@ class manager
 	* Load blocks
 	*
 	* @param mixed	$name [string, array, default is null]
-	* @param string $type [page, block, default is cat]
+	* @param string $type [page, name, default is section]
 	* @return void
 	*/
-	public function load($name = null, string $type = 'cat'): void
+	public function load($name = null, string $type = 'section'): void
 	{
 		if (!in_array($type, $this->type))
 		{
@@ -100,7 +100,7 @@ class manager
 	{
 		$where = (null !== $name) ? $this->where_clause($name, $type) : 'active = 1';
 
-		$sql = 'SELECT block_name, ext_name, cat_name
+		$sql = 'SELECT name, ext_name, section
 				FROM ' . $this->blocks_data . '
 				WHERE ' . $where . '
 				ORDER BY position';
@@ -109,30 +109,30 @@ class manager
 		self::$blocks = $blocks_data = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$block = $this->collection[$this->get_service_name($row['block_name'], $row['ext_name'])];
+			$block = $this->collection[$this->get_service_name($row['name'], $row['ext_name'])];
 
 			// If is set as special, then we can call it with get method
 			if ($block->is_load_special())
 			{
-				self::$blocks[$row['block_name']] = $block;
+				self::$blocks[$row['name']] = $block;
 			}
 
 			// If is set as active, then load method will handle it
 			if ($block->is_load_active())
 			{
-				$blocks_data[$row['block_name']] = $block;
+				$blocks_data[$row['name']] = $block;
 			}
 
 			// This is for twig blocks tag
 			if (!$this->is_special($row))
 			{
 				$data = [
-					'block_name' => (string) $row['block_name'],
-					'ext_name'	 => (string) $row['ext_name'],
+					'name'     => (string) $row['name'],
+					'ext_name' => (string) $row['ext_name'],
 				];
 
-				$data['block_name'] = $this->is_dls($data);
-				$this->event->set_data($row['cat_name'], [$data['block_name'] => $data['ext_name']]);
+				$data['name'] = $this->is_dls($data);
+				$this->event->set_data($row['section'], [$data['name'] => $data['ext_name']]);
 			}
 		}
 		$this->db->sql_freeresult($result);
@@ -151,11 +151,11 @@ class manager
 	{
 		if (is_array($name))
 		{
-			return $this->db->sql_in_set("{$type}_name", $name) . ' AND active = 1';
+			return $this->db->sql_in_set($type, $name) . ' AND active = 1';
 		}
 		else if (is_string($name))
 		{
-			return "{$type}_name = '" . $this->db->sql_escape($name) . "' AND active = 1";
+			return "{$type} = '" . $this->db->sql_escape($name) . "' AND active = 1";
 		}
 	}
 
@@ -184,14 +184,14 @@ class manager
 	}
 
 	/**
-	* Check if our cat name is special
+	* Check if our section name is special
 	*
 	* @param array $row block data
-	* @return bool Depending on whether or not the category is special
+	* @return bool Depending on whether or not the section is special
 	*/
 	protected function is_special(array $row): bool
 	{
-		return $row['cat_name'] === 'special';
+		return $row['section'] === 'special';
 	}
 
 	/**
@@ -219,9 +219,9 @@ class manager
 			$data = $this->check($service, $service_data->get_block_data(), $container);
 
 			// Validate data and set it for installation
-			if ($data && !in_array($data['block_name'], array_column($data_ary, 'block_name')))
+			if ($data && !in_array($data['name'], array_column($data_ary, 'name')))
 			{
-				$return[$data['block_name']] = $data;
+				$return[$data['name']] = $data;
 			}
 		}
 
@@ -238,10 +238,10 @@ class manager
 	*/
 	public function check(string $service, array $row, object $container): array
 	{
-		$this->_section($service, $row['cat_name']);
+		$this->_section($service, $row['section']);
 		$this->_ext_name($service, $row['ext_name'], $container);
 
-		$row['block_name'] = str_replace(
+		$row['name'] = str_replace(
 			utf8_substr($row['ext_name'], utf8_strpos($row['ext_name'], '_') + 1) . '_block_',
 			'',
 			str_replace('.', '_', $service)
@@ -250,9 +250,9 @@ class manager
 		$this->_block_name($service, $row, $container);
 
 		return $this->is_valid($service) ? $data = [
-			'block_name' => $row['block_name'],
-			'cat_name'	 => $row['cat_name'],
-			'ext_name'	 => $row['ext_name'],
+			'name'     => $row['name'],
+			'section'  => $row['section'],
+			'ext_name' => $row['ext_name'],
 		] : [];
 	}
 
@@ -290,11 +290,11 @@ class manager
 	{
 		if (!in_array($section, $this->sections))
 		{
-			$this->error[$service]['cat_name'] = $section;
+			$this->error[$service]['section'] = $section;
 
 			if (empty($section))
 			{
-				$this->error[$service]['cat_name'] = 'VAR_EMPTY';
+				$this->error[$service]['section'] = 'VAR_EMPTY';
 			}
 		}
 	}
@@ -332,12 +332,12 @@ class manager
 	*/
 	protected function _block_name($service, $row, $container): void
 	{
-		if (isset($this->error[$service]['cat_name']))
+		if (isset($this->error[$service]['section']))
 		{
 			$this->error[$service]['error'] = 'NOT_AVAILABLE';
 		}
 
-		if (!$container->has($this->get_service_name($row['block_name'], $row['ext_name'])))
+		if (!$container->has($this->get_service_name($row['name'], $row['ext_name'])))
 		{
 			if (empty($this->error[$service]['service']))
 			{
@@ -369,9 +369,9 @@ class manager
 	{
 		if ($this->get_vendor($data['ext_name']) === 'dls')
 		{
-			$data['block_name'] = str_replace('dls_', '', $data['block_name']);
+			$data['name'] = str_replace('dls_', '', $data['name']);
 		}
 
-		return $data['block_name'];
+		return $data['name'];
 	}
 }

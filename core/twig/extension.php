@@ -45,12 +45,12 @@ class extension extends \Twig\Extension\AbstractExtension
 	/**
 	* Get block data
 	*
-	* @param string $cat_name Category name
+	* @param string $section Section
 	* @return method
 	*/
-	public function get_block_loader($cat_name)
+	public function get_block_loader($section)
 	{
-		return $this->event->get($cat_name);
+		return $this->event->get($section);
 	}
 
 	/**

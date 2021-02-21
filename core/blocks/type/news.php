@@ -79,7 +79,7 @@ class news extends base
 	public function get_block_data(): array
 	{
 		return [
-			'cat_name' => 'special',
+			'section'  => 'special',
 			'ext_name' => 'dls_web',
 		];
 	}
@@ -130,7 +130,7 @@ class news extends base
 		}
 		$this->db->sql_freeresult($result);
 
-		return $forum_ary[$fid];
+		return $forum_ary[$fid] ?? '';
 	}
 
 	/**

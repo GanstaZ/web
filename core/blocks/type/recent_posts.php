@@ -21,7 +21,7 @@ class recent_posts extends base
 	public function get_block_data(): array
 	{
 		return [
-			'cat_name' => 'right',
+			'section'  => 'right',
 			'ext_name' => 'dls_web',
 		];
 	}

@@ -78,37 +78,45 @@ class admin_block_controller
 
 		$this->language->add_lang('acp_blocks', 'dls/web');
 
+		/**
+		* Add language
+		*
+		* @event dls.web.admin_add_language
+		* @since 2.4.0-dev
+		*/
+		$this->container->get('dispatcher')->dispatch('dls.web.admin_add_language');
+
 		// Get all blocks
 		$sql = 'SELECT *
 				FROM ' . $this->manager->blocks_data() . '
-				ORDER BY block_id';
+				ORDER BY id';
 		$result = $this->db->sql_query($sql);
 
 		$rowset = $count = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if (!isset($count[$row['cat_name']]['block']))
+			if (!isset($count[$row['section']]['block']))
 			{
-				$count[$row['cat_name']]['block'] = 0;
+				$count[$row['section']]['block'] = 0;
 			}
-			$count[$row['cat_name']]['block']++;
+			$count[$row['section']]['block']++;
 
-			if (!isset($count[$row['cat_name']]['position'][(int) $row['position']]))
+			if (!isset($count[$row['section']]['position'][(int) $row['position']]))
 			{
-				$count[$row['cat_name']]['position'][(int) $row['position']] = 0;
+				$count[$row['section']]['position'][(int) $row['position']] = 0;
 			}
 
 			if ($row['active'])
 			{
-				$count[$row['cat_name']]['position'][(int) $row['position']]++;
+				$count[$row['section']]['position'][(int) $row['position']]++;
 			}
 
-			$rowset[$row['cat_name']][] = [
-				'cat_name'	 => $row['cat_name'],
-				'block_name' => $row['block_name'],
-				'ext_name'	 => $row['ext_name'],
-				'active'	 => $row['active'],
-				'position'	 => (int) $row['position'],
+			$rowset[$row['section']][] = [
+				'section'  => $row['section'],
+				'name'	   => $row['name'],
+				'ext_name' => $row['ext_name'],
+				'active'   => $row['active'],
+				'position' => (int) $row['position'],
 			];
 		}
 		$this->db->sql_freeresult($result);
@@ -124,11 +132,11 @@ class admin_block_controller
 			foreach ($errors as $error_service => $error)
 			{
 				$this->template->assign_block_vars('error', [
-					'name'      => $error_service ?? false,
-					'ext_name'  => $error['ext_name'] ?? false,
-					'service'   => $error['service'] ?? false,
-					'cat_name'  => $error['cat_name'] ?? false,
-					'error'     => $error['error'] ?? false,
+					'name'	   => $error_service ?? false,
+					'ext_name' => $error['ext_name'] ?? false,
+					'service'  => $error['service'] ?? false,
+					'section'  => $error['section'] ?? false,
+					'error'	   => $error['error'] ?? false,
 				]);
 			}
 		}
@@ -160,7 +168,7 @@ class admin_block_controller
 
 		// Set template vars
 		$this->template->assign_vars([
-			'U_ADD'    => count($this->status('add')),
+			'U_ADD'	   => count($this->status('add')),
 			'U_ERROR'  => count($errors),
 			'U_PURGE'  => $this->status('purge') ?? false,
 			'U_ACTION' => $this->u_action,
@@ -177,11 +185,11 @@ class admin_block_controller
 	{
 		foreach ($data_ary as $data)
 		{
-			$block = $this->request->variable($data['block_name'], (int) 0);
+			$block = $this->request->variable($data['name'], (int) 0);
 
 			$block_data = [
-				'active'   => $this->request->variable($data['block_name'] . '_active', (int) 0),
-				'position' => $this->request->variable($data['block_name'] . '_position', (int) 0),
+				'active'   => $this->request->variable($data['name'] . '_active', (int) 0),
+				'position' => $this->request->variable($data['name'] . '_position', (int) 0),
 			];
 
 			if ($block)
@@ -189,14 +197,14 @@ class admin_block_controller
 				// Update selected/requested block data
 				$this->db->sql_query('UPDATE ' . $this->manager->blocks_data() . ' SET ' .
 					$this->db->sql_build_array('UPDATE', $block_data) . "
-					WHERE block_name = '" . $this->db->sql_escape($data['block_name']) . "'"
+					WHERE name = '" . $this->db->sql_escape($data['name']) . "'"
 				);
 			}
 
-			$new_block = $this->request->variable($data['block_name'] . '_new', (int) 0);
+			$new_block = $this->request->variable($data['name'] . '_new', (int) 0);
 
 			// Add new block/service data into db.
-			if ($new_block && in_array($data['block_name'], array_column($this->status('add'), 'block_name')))
+			if ($new_block && in_array($data['name'], array_column($this->status('add'), 'name')))
 			{
 				$this->db->sql_query('INSERT INTO ' . $this->manager->blocks_data() . ' ' .
 					$this->db->sql_build_array('INSERT', $data)
@@ -204,10 +212,10 @@ class admin_block_controller
 			}
 
 			// Purge removed block/service data from db. No confirm_box is needed! It is just a cleanup process :)
-			if (in_array($data['block_name'], $this->status('purge')))
+			if (in_array($data['name'], $this->status('purge')))
 			{
 				$this->db->sql_query('DELETE FROM ' . $this->manager->blocks_data() . "
-					WHERE block_name = '" . $this->db->sql_escape($data['block_name']) . "'"
+					WHERE name = '" . $this->db->sql_escape($data['name']) . "'"
 				);
 			}
 		}
@@ -222,25 +230,24 @@ class admin_block_controller
 	*/
 	protected function assign_template_block_data(array $rowset, array $count): void
 	{
-		foreach ($rowset as $category => $data)
+		foreach ($rowset as $section => $data)
 		{
 			// Set categories
-			$this->template->assign_block_vars('category', [
-				'cat_name' => strtoupper($category),
+			$this->template->assign_block_vars('section', [
+				'section'  => strtoupper($section),
 				'in_count' => count($data),
 			]);
 
 			// Add data to given categories
 			foreach ($data as $block)
 			{
-				$this->template->assign_block_vars('category.block', [
-					'name'		  => $block['block_name'],
-					'active'	  => $block['block_name'] . '_active',
-					'position'	  => $block['block_name'] . '_position',
+				$this->template->assign_block_vars('section.block', [
+					'name'		  => $block['name'],
+					'active'	  => $block['name'] . '_active',
+					'position'	  => $block['name'] . '_position',
 					's_activate'  => $block['active'],
-					'language'	  => strtoupper($block['block_name']),
-					's_duplicate' => ($count[$category]['position'][$block['position']] > 1) && $block['active'],
-					's_options'	  => $count[$category]['block'],
+					's_duplicate' => ($count[$section]['position'][$block['position']] > 1) && $block['active'],
+					's_options'	  => $count[$section]['block'],
 					's_current'	  => $block['position'],
 				]);
 			}
@@ -262,10 +269,10 @@ class admin_block_controller
 		// Check for unavailable blocks & prepare for purge
 		foreach ($block_data as $service)
 		{
-			if (!$this->container->has($this->manager->get_service_name($service['block_name'], $service['ext_name'])))
+			if (!$this->container->has($this->manager->get_service_name($service['name'], $service['ext_name'])))
 			{
 				// Set our block/service as unavailable
-				$this->status['purge'][] = $service['block_name'];
+				$this->status['purge'][] = $service['name'];
 			}
 		}
 	}
@@ -288,22 +295,22 @@ class admin_block_controller
 		foreach ($new_blocks as $data)
 		{
 			$position = 1;
-			if (array_key_exists($data['cat_name'], $count))
+			if (array_key_exists($data['section'], $count))
 			{
-				$position = end(array_keys($count[$data['cat_name']]['position']));
-				$count[$data['cat_name']]['position'][] = $position++;
+				$position = end(array_keys($count[$data['section']]['position']));
+				$count[$data['section']]['position'][] = $position++;
 			}
-			else if (in_array($data['cat_name'], array_column($this->status['add'], 'cat_name')))
+			else if (in_array($data['section'], array_column($this->status['add'], 'section')))
 			{
 				$position++;
 			}
 
 			$this->status['add'][] = [
-				'block_name' => $data['block_name'],
-				'ext_name'	 => $data['ext_name'],
-				'position'	 => $position,
-				'active'	 => 0,
-				'cat_name'	 => $data['cat_name'],
+				'name'	   => $data['name'],
+				'ext_name' => $data['ext_name'],
+				'position' => $position,
+				'active'   => 0,
+				'section'  => $data['section'],
 			];
 		}
 	}

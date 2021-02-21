@@ -19,7 +19,7 @@
 					<td class="tabled">{{ e.name }}</td>
 					<td class="tabled">{{ e.ext_name ? lang('EXT_ERROR', lang(e.ext_name)) : '-' }}</td>
 					<td class="tabled">{{ e.service ? lang(e.service) : '-' }}</td>
-					<td class="tabled">{{ e.cat_name ? lang('CAT_ERROR', lang(e.cat_name)) : '-' }}</td>
+					<td class="tabled">{{ e.section ? lang('CAT_ERROR', lang(e.section)) : '-' }}</td>
 					<td class="tabled"><span class="error">{{ lang(e.error) }}</span></td>
 				</tr>
 			{% endfor %}

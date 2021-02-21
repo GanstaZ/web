@@ -81,15 +81,14 @@ class extension extends \Twig\Extension\AbstractExtension
 	/**
 	* Load blocks
 	*
-	* @param \Twig_Environment $env		 Twig_Environment instance
-	* @param string			   $context	 Current context
-	* @param string			   $cat_name Name of the category
-	*
+	* @param \Twig_Environment $env		Twig_Environment instance
+	* @param string			   $context Current context
+	* @param string			   $section Section name
 	* @return mixed
 	*/
-	public function blocks(\Twig_Environment $env, $context, $cat_name)
+	public function blocks(\Twig_Environment $env, $context, $section)
 	{
-		foreach ($this->event->get($cat_name) as $name => $path)
+		foreach ($section as $name => $path)
 		{
 			$path = $path . '/block';
 

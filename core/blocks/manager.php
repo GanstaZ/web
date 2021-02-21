@@ -34,7 +34,7 @@ class manager
 	protected $sections = ['special', 'right', 'bottom', 'left', 'top', 'middle'];
 
 	/** @var array type */
-	protected $type = ['page', 'section', 'name'];
+	protected $type = ['section', 'name'];
 
 	/** @var array error */
 	protected $error = [];
@@ -73,7 +73,7 @@ class manager
 	* Load blocks
 	*
 	* @param mixed	$name [string, array, default is null]
-	* @param string $type [page, name, default is section]
+	* @param string $type [default is section]
 	* @return void
 	*/
 	public function load($name = null, string $type = 'section'): void
@@ -124,10 +124,10 @@ class manager
 			}
 
 			// This is for twig blocks tag
-			if (!$this->is_special($row))
+			if (!$this->is_special($row['section']))
 			{
 				$data = [
-					'name'     => (string) $row['name'],
+					'name'	   => (string) $row['name'],
 					'ext_name' => (string) $row['ext_name'],
 				];
 
@@ -186,12 +186,12 @@ class manager
 	/**
 	* Check if our section name is special
 	*
-	* @param array $row block data
+	* @param string $section Section
 	* @return bool Depending on whether or not the section is special
 	*/
-	protected function is_special(array $row): bool
+	protected function is_special(string $section): bool
 	{
-		return $row['section'] === 'special';
+		return $section === 'special';
 	}
 
 	/**
@@ -249,29 +249,18 @@ class manager
 
 		$this->_block_name($service, $row, $container);
 
-		return $this->is_valid($service) ? $data = [
-			'name'     => $row['name'],
+		return empty($this->error[$service]) ? $data = [
+			'name'	   => $row['name'],
 			'section'  => $row['section'],
 			'ext_name' => $row['ext_name'],
 		] : [];
 	}
 
 	/**
-	* Is valid data
-	*
-	* @param string $service
-	* @return bool
-	*/
-	public function is_valid($service): bool
-	{
-		return empty($this->error[$service]) ?? false;
-	}
-
-	/**
 	* Get service name
 	*
-	* @param string $service  Name of the service
-	* @param string $ext_name Name of the extension
+	* @param string $service  Service name
+	* @param string $ext_name Extension name
 	* @return string
 	*/
 	public function get_service_name(string $service, string $ext_name): string
@@ -302,8 +291,8 @@ class manager
 	/**
 	* Check if ext_name is valid
 	*
-	* @param string $service   Name of the service
-	* @param string $ext_name  Name of the extension
+	* @param string $service   Service name
+	* @param string $ext_name  Extension name
 	* @param object $container
 	* @return void
 	*/
@@ -325,7 +314,7 @@ class manager
 	/**
 	* Check if block service name is valid
 	*
-	* @param string $service   Name of the service
+	* @param string $service   Service name
 	* @param array	$row	   Data array
 	* @param object $container
 	* @return void
@@ -351,7 +340,7 @@ class manager
 	/**
 	* Get vendor name
 	*
-	* @param string $ext_name Name of the extension
+	* @param string $ext_name Extension name
 	* @return string
 	*/
 	public function get_vendor(string $ext_name): string
@@ -360,7 +349,7 @@ class manager
 	}
 
 	/**
-	* If extension name is dls, remove prefix
+	* If vendor name is dls, remove package
 	*
 	* @param array $data Data array
 	* @return string

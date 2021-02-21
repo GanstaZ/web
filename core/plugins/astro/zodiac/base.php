@@ -3,7 +3,7 @@
 *
 * DLS Web. An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2018, GanstaZ, http://www.dlsz.eu/
+* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
@@ -53,16 +53,16 @@ abstract class base implements plugin_interface, zodiac_interface
 	public function get_data(array $row): array
 	{
 		return [
-			'stem'	  => (int) $row['snr'],
-			'sign'	  => (string) $row['sign'],
-			'symbol'  => (string) $row['symbol'],
-			'plant'	  => (string) $row['plant'],
-			'gem'	  => (string) $row['gem'],
-			'ruler'	  => (string) $row['ruler'],
-			'extra'	  => (string) $row['ext'],
-			'dir'	  => $this->direction[(int) $row['dir']],
-			'element' => $this->elements[(int) $row['enr']],
-			'name'	  => $this->types[(int) $row['type']],
+			'stem'	  => isset($row['snr']) ? (int) $row['snr'] : '',
+			'sign'	  => isset($row['sign']) ? (string) $row['sign'] : '',
+			'symbol'  => isset($row['symbol']) ? (string) $row['symbol'] : '',
+			'plant'	  => isset($row['plant']) ? (string) $row['plant'] : '',
+			'gem'	  => isset($row['gem']) ? (string) $row['gem'] : '',
+			'ruler'	  => isset($row['ruler']) ? (string) $row['ruler'] : '',
+			'extra'	  => isset($row['ext']) ? (string) $row['ext'] : '',
+			'dir'	  => isset($row['dir']) ? $this->direction[(int) $row['dir']] : '',
+			'element' => isset($row['enr']) ? $this->elements[(int) $row['enr']] : '',
+			'name'	  => isset($row['type']) ? $this->types[(int) $row['type']] : '',
 		];
 	}
 

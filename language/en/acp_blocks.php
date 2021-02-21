@@ -19,9 +19,21 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, [
-	'BLOCK'    => ' Block name',
+	'BLOCK'	   => ' Block name',
+	'EXT_NAME' => ' Extension name',
+	'SERVICE_NAME' => 'Service name',
+	'NAME'		=> 'Name',
+	'SERVICE'	=> 'Service',
+	'SECTION'  => 'Section',
+	'ADD_ERROR' => '%s Error%s',
+	'CAT_ERROR' => ' (%s) does not exist',
+	'VAR_EMPTY' => 'None',
+	'EXT_ERROR' => ' (%s) is not enabled/available',
+	'PRE_ERROR' => ' Prefix does not match',
+	'SER_ERROR' => ' Incorrect service name',
+	'NOT_AVAILABLE' => ' Service not available',
+
 	'BLOCKS'   => ' block%s',
-	'ENABLE'   => 'Enable ',
 	'CHECK_TO' => 'Check to install ',
 	'RIGHT'	   => 'Right side',
 	'BOTTOM'   => 'Bottom',
@@ -36,9 +48,9 @@ $lang = array_merge($lang, [
 	'DLS_RECENT_TOPICS' => 'Recent topics',
 	'DLS_WHOS_ONLINE'	=> 'Who is online',
 
-	'BLOCK_POSITION'    => 'Position',
-	'BLOCK_CATEGORY'    => 'Change category',
-	'DUPLICATE_POS'     => 'Duplicate position',
-	'ADD_BLOCK'         => '%s New block%s available',
-	'PURGE_BLOCK'       => 'Purge required! Click submit to remove: %s.',
+	'BLOCK_POSITION'	=> 'Position',
+	'BLOCK_CATEGORY'	=> 'Change category',
+	'DUPLICATE_POS'		=> 'Duplicate position',
+	'ADD_BLOCK'			=> '%s New block%s available',
+	'PURGE_BLOCK'		=> 'Purge required! Click submit to remove: %s.',
 ]);

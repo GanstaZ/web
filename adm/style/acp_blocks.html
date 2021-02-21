@@ -7,6 +7,10 @@
 
 <form id="acp_web_block" method="post" action="{{ U_ACTION }}">
 
+{% if error %}
+	{{ include('@dls_web/error/acp_add_blocks_table.html') }}
+{% endif %}
+
 {% if U_PURGE %}
 	<fieldset>
 		{{ lang('PURGE_BLOCK', U_PURGE|join(lang('COMMA_SEPARATOR'))) }}

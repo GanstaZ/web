@@ -118,6 +118,21 @@ class admin_block_controller
 		// Run check for available/unavailable blocks
 		$this->check($data_ary, $count);
 
+		// Assign error messages into template, if there are any
+		if ($errors = $this->manager->get_error_log())
+		{
+			foreach ($errors as $error_service => $error)
+			{
+				$this->template->assign_block_vars('error', [
+					'name'      => $error_service ?? false,
+					'ext_name'  => $error['ext_name'] ?? false,
+					'service'   => $error['service'] ?? false,
+					'cat_name'  => $error['cat_name'] ?? false,
+					'error'     => $error['error'] ?? false,
+				]);
+			}
+		}
+
 		$data_ary = array_merge($data_ary, $this->status('add'));
 
 		// Is the form submitted
@@ -145,7 +160,8 @@ class admin_block_controller
 
 		// Set template vars
 		$this->template->assign_vars([
-			'U_ADD'	   => count($this->status('add')),
+			'U_ADD'    => count($this->status('add')),
+			'U_ERROR'  => count($errors),
 			'U_PURGE'  => $this->status('purge') ?? false,
 			'U_ACTION' => $this->u_action,
 		]);

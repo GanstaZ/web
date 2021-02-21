@@ -1,0 +1,15 @@
+<fieldset>
+	<h2>{{ lang('ADD_ERROR', '[' ~ U_ERROR ~ ']', U_ERROR > 1 ? 's') }}</h2>
+
+	{% for e in error %}
+		<dl>
+			<dt><label>{{ lang('SERVICE_NAME') ~ lang('COLON') ~ ' [' ~ e.name~ ']' }}</label></dt>
+
+			<dd>{{ lang('EXTENSION') ~ lang('COLON') ~ (e.ext_name ? lang('EXT_ERROR', lang(e.ext_name)) : ' -') }}</dd>
+			<dd>{{ lang('SERVICE') ~ lang('COLON') ~ (e.service ? lang(e.service) : ' -') }}</dd>
+			<dd>{{ lang('SECTION') ~ lang('COLON') ~ (e.section ? lang('CAT_ERROR', lang(e.section)) : ' -') }}</dd>
+			<dd>{{ lang('ERROR') ~ lang('COLON') }} <span class="error">{{ lang(e.error) }}</span></dd>
+		</dl>
+	{% endfor %}
+
+</fieldset>

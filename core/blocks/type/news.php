@@ -3,7 +3,7 @@
 *
 * DLS Web. An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2018, GanstaZ, http://www.dlsz.eu/
+* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
@@ -11,7 +11,6 @@
 namespace dls\web\core\blocks\type;
 
 use phpbb\auth\auth;
-use phpbb\controller\helper as controller;
 use phpbb\language\language;
 use phpbb\textformatter\s9e\renderer;
 use phpbb\user;
@@ -24,9 +23,6 @@ class news extends base
 {
 	/** @var auth */
 	protected $auth;
-
-	/** @var controller helper */
-	protected $controller;
 
 	/** @var language */
 	protected $language;
@@ -56,18 +52,16 @@ class news extends base
 	* Constructor
 	*
 	* @param auth		$auth		Auth object
-	* @param controller $controller Controller helper object
 	* @param language	$language	Language object
 	* @param renderer	$renderer	s9e renderer object
 	* @param user		$user		User object
 	* @param pagination $pagination Pagination object
 	*/
-	public function __construct($config, $db, $helper, $dispatcher, auth $auth, controller $controller, language $language, renderer $renderer, user $user, pagination $pagination)
+	public function __construct($config, $db, $controller, $template, $dispatcher, $root_path, $php_ext, auth $auth, language $language, renderer $renderer, user $user, pagination $pagination)
 	{
-		parent::__construct($config, $db, $helper, $dispatcher);
+		parent::__construct($config, $db, $controller, $template, $dispatcher, $root_path, $php_ext);
 
 		$this->auth = $auth;
-		$this->controller = $controller;
 		$this->language = $language;
 		$this->renderer = $renderer;
 		$this->user = $user;
@@ -75,8 +69,19 @@ class news extends base
 
 		if (!function_exists('phpbb_get_user_rank'))
 		{
-			include($this->helper->get('root_path') . 'includes/functions_display.php');
+			include($this->get('root_path') . 'includes/functions_display.php');
 		}
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_block_data(): array
+	{
+		return [
+			'section'  => 'special',
+			'ext_name' => 'dls_web',
+		];
 	}
 
 	/**
@@ -125,25 +130,7 @@ class news extends base
 		}
 		$this->db->sql_freeresult($result);
 
-		return $forum_ary[$fid];
-	}
-
-	/**
-	* Assign breadcrumb
-	*
-	* @param string $name	Name of the breadcrumb
-	* @param string $route	Name of the route
-	* @param array	$params Additional params
-	* @return \dls\web\core\blocks\block\news News object
-	*/
-	public function assign_breadcrumb(string $name, string $route, array $params)
-	{
-		$this->helper->assign('block_vars', 'navlinks', [
-			'FORUM_NAME'   => $name,
-			'U_VIEW_FORUM' => $this->controller->route($route, $params),
-		]);
-
-		return $this;
+		return $forum_ary[$fid] ?? '';
 	}
 
 	/**
@@ -181,7 +168,7 @@ class news extends base
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$this->helper->assign('block_vars', 'news', $this->get_template_data($row));
+			$this->template->assign_block_vars('news', $this->get_template_data($row));
 		}
 		$this->db->sql_freeresult($result);
 
@@ -204,10 +191,8 @@ class news extends base
 
 			$this->pagination->generate_template_pagination($base, 'pagination', 'page', $total, (int) $this->config['dls_limit'], $this->page);
 
-			$this->helper->assign('var', 'total_news', $total);
+			$this->template->assign_var('total_news', $total);
 		}
-
-		return;
 	}
 
 	/**
@@ -274,7 +259,7 @@ class news extends base
 		return [
 			'id'	  => $row['post_id'],
 			'link'	  => $this->controller->route('dls_web_article', ['aid' => $row['topic_id']]),
-			'title'	  => $this->helper->truncate($row['topic_title'], $this->config['dls_title_length']),
+			'title'	  => $this->truncate($row['topic_title'], $this->config['dls_title_length']),
 			'date'	  => $this->user->format_date($row['topic_time']),
 			'author'  => get_username_string('full', (int) $row['user_id'], $row['username'], $row['user_colour']),
 			'avatar'  => phpbb_get_user_avatar($poster),
@@ -282,7 +267,7 @@ class news extends base
 			'views'	  => $row['topic_views'],
 			'replies' => $row['topic_posts_approved'] - 1,
 			'text'	  => $this->trim_news ? $this->trim_message($text) : $text,
-			'topic_link' => append_sid("{$this->helper->get('root_path')}viewtopic.{$this->helper->get('php_ext')}", "f={$row['forum_id']}&amp;t={$row['topic_id']}"),
+			'topic_link' => append_sid("{$this->get('root_path')}viewtopic.{$this->get('php_ext')}", "f={$row['forum_id']}&amp;t={$row['topic_id']}"),
 			'is_trimmed' => $this->is_trimmed,
 		];
 	}
@@ -330,10 +315,8 @@ class news extends base
 		// Assign breadcrumb
 		$this->assign_breadcrumb($this->get_template_data($row)['title'], 'dls_web_article', ['aid' => $topic_id]);
 
-		$this->helper->assign('block_vars', 'article', $this->get_template_data($row));
+		$this->template->assign_block_vars('article', $this->get_template_data($row));
 
 		$this->db->sql_freeresult($result);
-
-		return;
 	}
 }

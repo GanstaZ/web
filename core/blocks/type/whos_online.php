@@ -3,7 +3,7 @@
 *
 * DLS Web. An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2018, GanstaZ, http://www.dlsz.eu/
+* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
@@ -30,9 +30,9 @@ class whos_online extends base
 	* @param auth $auth Auth object
 	* @param user $user User object
 	*/
-	public function __construct($config, $db, $helper, $dispatcher, auth $auth, user $user)
+	public function __construct($config, $db, $controller, $template, $dispatcher, $root_path, $php_ext, auth $auth, user $user)
 	{
-		parent::__construct($config, $db, $helper, $dispatcher);
+		parent::__construct($config, $db, $controller, $template, $dispatcher, $root_path, $php_ext);
 
 		$this->auth = $auth;
 		$this->user = $user;
@@ -41,17 +41,28 @@ class whos_online extends base
 	/**
 	* {@inheritdoc}
 	*/
+	public function get_block_data(): array
+	{
+		return [
+			'section'  => 'bottom',
+			'ext_name' => 'dls_web',
+		];
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function load(): void
 	{
-		$total_posts = (int) $this->config['num_posts'];
+		$total_posts  = (int) $this->config['num_posts'];
 		$total_topics = (int) $this->config['num_topics'];
-		$total_users = (int) $this->config['num_users'];
+		$total_users  = (int) $this->config['num_users'];
 
 		$boarddays = (time() - $this->config['board_startdate']) / 86400;
 
-		$posts_per_day = $total_posts / $boarddays;
-		$topics_per_day = $total_topics / $boarddays;
-		$users_per_day = $total_users / $boarddays;
+		$posts_per_day	= sprintf('%.2f', $total_posts / $boarddays);
+		$topics_per_day = sprintf('%.2f', $total_topics / $boarddays);
+		$users_per_day	= sprintf('%.2f', $total_users / $boarddays);
 
 		// Generate birthday list if required...
 		$show_birthdays = ($this->config['load_birthdays'] && $this->config['allow_birthdays'] && $this->auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'));
@@ -61,18 +72,18 @@ class whos_online extends base
 			$this->birthdays();
 		}
 
-		$this->helper->assign('vars', [
-			'T_POSTS'  => $total_posts,
-			'T_TOPICS' => $total_topics,
-			'T_USERS'  => $total_users,
-			'NEW_USER' => get_username_string('full', (int) $this->config['newest_user_id'], $this->config['newest_username'], $this->config['newest_user_colour']),
+		$this->legend();
 
-			'LEGEND'   => $this->legend(),
+		$this->template->assign_vars([
+			'dls_posts'	 => $total_posts,
+			'dls_topics' => $total_topics,
+			'dls_users'	 => $total_users,
+			'new_user'	 => get_username_string('full', (int) $this->config['newest_user_id'], $this->config['newest_username'], $this->config['newest_user_colour']),
 
-			'D_POSTS'  => (float) $posts_per_day,
-			'D_TOPICS' => (float) $topics_per_day,
-			'D_USERS'  => (float) $users_per_day,
-			'S_BIRTHDAY_LIST' => $show_birthdays,
+			'ppd' => $posts_per_day,
+			'tpd' => $topics_per_day,
+			'upd' => $users_per_day,
+			's_birthday_list' => $show_birthdays,
 		]);
 
 		/**
@@ -132,20 +143,20 @@ class whos_online extends base
 			$birthday_age = ($birthday_year) ? max(0, $now['year'] - $birthday_year) : '';
 
 			$birthdays[] = [
-				'USERNAME' => $birthday_username,
-				'AGE' => $birthday_age,
+				'member' => $birthday_username,
+				'age'	 => $birthday_age,
 			];
 		}
 
-		$this->helper->assign('block_vars_array', 'birthdays', $birthdays);
+		$this->template->assign_block_vars_array('birthdays', $birthdays);
 	}
 
 	/**
 	* Legend
 	*
-	* @return array
+	* @return void
 	*/
-	protected function legend(): array
+	protected function legend(): void
 	{
 		$order_legend = ($this->config['legend_sort_groupname']) ? 'group_name' : 'group_legend';
 
@@ -174,20 +185,14 @@ class whos_online extends base
 		$legend = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$colour_text = ($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . '"' : '';
-			$group_name = $this->helper->get_name($row['group_name']);
-			$group_link = append_sid("{$this->helper->get('root_path')}memberlist.{$this->helper->get('php_ext')}", "mode=group&amp;g={$row['group_id']}");
-
-			$legend[] = '<a' . $colour_text . ' href="' . $group_link . '">' . $group_name . '</a>';
-
-			if ($this->not_authed($row))
-			{
-				$legend[] = '<span' . $colour_text . '>' . $group_name . '</span>';
-			}
+			$this->template->assign_block_vars('legend', [
+				'color' => (string) $row['group_colour'],
+				'name'	=> (string) $row['group_name'],
+				'link'	=> (string) append_sid("{$this->get('root_path')}memberlist.{$this->get('php_ext')}", "mode=group&amp;g={$row['group_id']}"),
+				'not_authed' => (bool) $this->not_authed($row),
+			]);
 		}
 		$this->db->sql_freeresult($result);
-
-		return $legend;
 	}
 
 	/**

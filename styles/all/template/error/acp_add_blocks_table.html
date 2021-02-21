@@ -1,0 +1,30 @@
+<fieldset>
+	<h2>{{ lang('ADD_ERROR', '[' ~ U_ERROR ~ ']', U_ERROR > 1 ? 's') }}</h2>
+
+	<div class="lside">
+		<table class="table2 zebra-table no-header" data-no-responsive-header="true">
+			<thead>
+				<tr>
+					<th>{{ lang('NAME') }}</th>
+					<th>{{ lang('EXTENSION') }}</th>
+					<th>{{ lang('SERVICE') }}</th>
+					<th>{{ lang('SECTION') }}</th>
+					<th>{{ lang('ERROR') }}</th>
+				</tr>
+			</thead>
+
+			<tbody>
+			{% for e in error %}
+				<tr>
+					<td class="tabled">{{ e.name }}</td>
+					<td class="tabled">{{ e.ext_name ? lang('EXT_ERROR', lang(e.ext_name)) : '-' }}</td>
+					<td class="tabled">{{ e.service ? lang(e.service) : '-' }}</td>
+					<td class="tabled">{{ e.section ? lang('CAT_ERROR', lang(e.section)) : '-' }}</td>
+					<td class="tabled"><span class="error">{{ lang(e.error) }}</span></td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+</fieldset>

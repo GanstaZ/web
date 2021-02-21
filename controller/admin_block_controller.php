@@ -3,7 +3,7 @@
 *
 * DLS Web. An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2018, GanstaZ, http://www.dlsz.eu/
+* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
@@ -78,40 +78,70 @@ class admin_block_controller
 
 		$this->language->add_lang('acp_blocks', 'dls/web');
 
+		/**
+		* Add language
+		*
+		* @event dls.web.admin_block_add_language
+		* @since 2.4.0-dev
+		*/
+		$this->container->get('dispatcher')->dispatch('dls.web.admin_block_add_language');
+
 		// Get all blocks
 		$sql = 'SELECT *
 				FROM ' . $this->manager->blocks_data() . '
-				ORDER BY block_id';
+				ORDER BY id';
 		$result = $this->db->sql_query($sql);
 
-		$data_ary = $rowset = $count = [];
+		$rowset = $count = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$count[$row['cat_name']]['block']++;
-			$count[$row['cat_name']]['position'][(int) $row['position']]++;
-			if (!$row['active'])
+			if (!isset($count[$row['section']]['block']))
 			{
-				$count[$row['cat_name']]['position'][(int) $row['position']]--;
+				$count[$row['section']]['block'] = 0;
+			}
+			$count[$row['section']]['block']++;
+
+			if (!isset($count[$row['section']]['position'][(int) $row['position']]))
+			{
+				$count[$row['section']]['position'][(int) $row['position']] = 0;
 			}
 
-			$data_ary[$row['block_name']] = $row['ext_name'];
-			$rowset[$row['cat_name']][] = [
-				'cat_name'	 => $row['cat_name'],
-				'block_name' => $row['block_name'],
-				'ext_name'	 => $row['ext_name'],
-				'active'	 => $row['active'],
-				'position'	 => (int) $row['position'],
+			if ($row['active'])
+			{
+				$count[$row['section']]['position'][(int) $row['position']]++;
+			}
+
+			$rowset[$row['section']][] = [
+				'section'  => $row['section'],
+				'name'	   => $row['name'],
+				'ext_name' => $row['ext_name'],
+				'active'   => $row['active'],
+				'position' => (int) $row['position'],
 			];
 		}
 		$this->db->sql_freeresult($result);
 
+		$data_ary = array_reduce($rowset, 'array_merge', []);
+
 		// Run check for available/unavailable blocks
 		$this->check($data_ary, $count);
 
-		if ($s_status = $this->get_status())
+		// Assign error messages into template, if there are any
+		if ($errors = $this->manager->get_error_log())
 		{
-			$u_update = $s_status === 'add' ? array_column($this->status('add'), 'block_name') : $this->status($s_status);
+			foreach ($errors as $error_service => $error)
+			{
+				$this->template->assign_block_vars('error', [
+					'name'	   => $error_service ?? false,
+					'ext_name' => $error['ext_name'] ?? false,
+					'service'  => $error['service'] ?? false,
+					'section'  => $error['section'] ?? false,
+					'error'	   => $error['error'] ?? false,
+				]);
+			}
 		}
+
+		$data_ary = array_merge($data_ary, $this->status('add'));
 
 		// Is the form submitted
 		if ($this->request->is_set_post('submit'))
@@ -131,14 +161,16 @@ class admin_block_controller
 		}
 
 		// Set output vars for display in the template
+		$this->template->assign_block_vars_array('install', $this->status('add'));
 		$this->assign_template_block_data($rowset, $count);
 
 		unset($data_ary, $rowset, $count);
 
 		// Set template vars
 		$this->template->assign_vars([
-			'S_UPDATE' => $s_status,
-			'U_UPDATE' => $u_update,
+			'U_ADD'	   => count($this->status('add')),
+			'U_ERROR'  => count($errors),
+			'U_PURGE'  => $this->status('purge') ?? false,
 			'U_ACTION' => $this->u_action,
 		]);
 	}
@@ -151,30 +183,41 @@ class admin_block_controller
 	*/
 	public function update_data(array $data_ary): void
 	{
-		foreach ($data_ary as $block_name => $ext_name)
+		foreach ($data_ary as $data)
 		{
+			$block = $this->request->variable($data['name'], (int) 0);
+
 			$block_data = [
-				'active'   => $this->request->variable($block_name, (int) 0),
-				'position' => $this->request->variable($block_name . '_' . $ext_name, (int) 0),
+				'active'   => $this->request->variable($data['name'] . '_active', (int) 0),
+				'position' => $this->request->variable($data['name'] . '_position', (int) 0),
 			];
 
-			// Update selected/requested block data
-			$this->db->sql_query('UPDATE ' . $this->manager->blocks_data() . ' SET ' . $this->db->sql_build_array('UPDATE', $block_data) . "
-				WHERE block_name = '" . $this->db->sql_escape($block_name) . "'"
-			);
+			if ($block)
+			{
+				// Update selected/requested block data
+				$this->db->sql_query('UPDATE ' . $this->manager->blocks_data() . ' SET ' .
+					$this->db->sql_build_array('UPDATE', $block_data) . "
+					WHERE name = '" . $this->db->sql_escape($data['name']) . "'"
+				);
+			}
+
+			$new_block = $this->request->variable($data['name'] . '_new', (int) 0);
+
+			// Add new block/service data into db.
+			if ($new_block && in_array($data['name'], array_column($this->status('add'), 'name')))
+			{
+				$this->db->sql_query('INSERT INTO ' . $this->manager->blocks_data() . ' ' .
+					$this->db->sql_build_array('INSERT', $data)
+				);
+			}
 
 			// Purge removed block/service data from db. No confirm_box is needed! It is just a cleanup process :)
-			if (in_array($block_name, $this->status('purge')))
+			if (in_array($data['name'], $this->status('purge')))
 			{
 				$this->db->sql_query('DELETE FROM ' . $this->manager->blocks_data() . "
-				WHERE block_name = '" . $this->db->sql_escape($block_name) . "'");
+					WHERE name = '" . $this->db->sql_escape($data['name']) . "'"
+				);
 			}
-		}
-
-		// Add new blocks
-		if ($add_blocks = $this->status('add'))
-		{
-			$this->db->sql_multi_insert($this->manager->blocks_data(), $add_blocks);
 		}
 	}
 
@@ -187,21 +230,24 @@ class admin_block_controller
 	*/
 	protected function assign_template_block_data(array $rowset, array $count): void
 	{
-		foreach ($rowset as $category => $data)
+		foreach ($rowset as $section => $data)
 		{
 			// Set categories
-			$this->template->assign_block_vars('category', ['cat_name' => strtoupper($category),]);
+			$this->template->assign_block_vars('section', [
+				'section'  => strtoupper($section),
+				'in_count' => count($data),
+			]);
 
 			// Add data to given categories
 			foreach ($data as $block)
 			{
-				$this->template->assign_block_vars('category.block', [
-					'name'		  => $block['block_name'],
-					'position'	  => $block['block_name'] . '_' . $block['ext_name'],
+				$this->template->assign_block_vars('section.block', [
+					'name'		  => $block['name'],
+					'active'	  => $block['name'] . '_active',
+					'position'	  => $block['name'] . '_position',
 					's_activate'  => $block['active'],
-					'language'	  => strtoupper($block['block_name']),
-					's_duplicate' => ($count[$category]['position'][$block['position']] > 1) && $block['active'] ?? false,
-					's_options'	  => $count[$category]['block'],
+					's_duplicate' => ($count[$section]['position'][$block['position']] > 1) && $block['active'],
+					's_options'	  => $count[$section]['block'],
 					's_current'	  => $block['position'],
 				]);
 			}
@@ -217,28 +263,16 @@ class admin_block_controller
 	*/
 	public function check(array $block_data, array $count): void
 	{
-		$add_blocks = [];
+		// Check for new blocks & prepare for installation
+		$this->prepare($this->manager->check_for_new_blocks($block_data, $this->container), $count);
 
-		/**
-		* Event to add blocks
-		*
-		* @event dls.web.admin_add_blocks
-		* @var array add_blocks Contains blocks data
-		* @since 2.4.0-RC1
-		*/
-		$vars = ['add_blocks'];
-		extract($this->container->get('dispatcher')->trigger_event('dls.web.admin_add_blocks', compact($vars)));
-
-		// Check for new blocks
-		$this->prepare(array_diff_key($add_blocks, array_flip(array_keys($block_data))), $count);
-
-		// Check for unavailable blocks
-		foreach ($block_data as $service => $ext_name)
+		// Check for unavailable blocks & prepare for purge
+		foreach ($block_data as $service)
 		{
-			if (!$this->is_available(['block_name' => $service, 'ext_name' => $ext_name]))
+			if (!$this->container->has($this->manager->get_service_name($service['name'], $service['ext_name'])))
 			{
 				// Set our block/service as unavailable
-				$this->status['purge'][] = $service;
+				$this->status['purge'][] = $service['name'];
 			}
 		}
 	}
@@ -246,60 +280,39 @@ class admin_block_controller
 	/**
 	* Prepare data for installation
 	*
-	* @param array $block_data
+	* @param array new_blocks
 	* @param array $count
 	* @return void
 	*/
-	protected function prepare(array $block_data, array $count): void
+	protected function prepare(array $new_blocks, array $count): void
 	{
-		foreach ($block_data as $data)
+		if (!$new_blocks)
 		{
-			if (!$this->is_valid($data))
-			{
-				continue;
-			}
+			return;
+		}
 
+		$this->status['add'] = [];
+		foreach ($new_blocks as $data)
+		{
 			$position = 1;
-			if ($count[$data['cat_name']])
+			if (array_key_exists($data['section'], $count))
 			{
-				$position = end(array_keys($count[$data['cat_name']]['position']));
-				$count[$data['cat_name']]['position'][] = $position++;
+				$position = end(array_keys($count[$data['section']]['position']));
+				$count[$data['section']]['position'][] = $position++;
 			}
-			else if (in_array($data['cat_name'], array_column($this->status['add'], 'cat_name')))
+			else if (in_array($data['section'], array_column($this->status['add'], 'section')))
 			{
 				$position++;
 			}
 
 			$this->status['add'][] = [
-				'block_name' => $data['block_name'],
-				'ext_name'	 => $data['ext_name'],
-				'position'	 => $position,
-				'active'	 => 0,
-				'cat_name'	 => $data['cat_name'],
+				'name'	   => $data['name'],
+				'ext_name' => $data['ext_name'],
+				'position' => $position,
+				'active'   => 0,
+				'section'  => $data['section'],
 			];
 		}
-	}
-
-	/**
-	* Is valid data
-	*
-	* @param array $row
-	* @return bool
-	*/
-	protected function is_valid(array $row): bool
-	{
-		return $this->manager->is_valid_name($row) && $this->is_available($row);
-	}
-
-	/**
-	* Is service available
-	*
-	* @param array $row
-	* @return bool
-	*/
-	protected function is_available(array $row): bool
-	{
-		return $this->container->has($this->manager->get_service($row['block_name'], $row['ext_name']));
 	}
 
 	/**
@@ -314,36 +327,15 @@ class admin_block_controller
 	}
 
 	/**
-	* Check for update/purge status
-	*
-	* @return string
-	*/
-	public function get_status(): ?string
-	{
-		if (!$this->status)
-		{
-			return null;
-		}
-		else if ($this->status('add'))
-		{
-			$status = 'add';
-		}
-		else if ($this->status('purge'))
-		{
-			$status = 'purge';
-		}
-
-		return $status;
-	}
-
-	/**
 	* Set page url
 	*
 	* @param string $u_action Custom form action
-	* @return void
+	* @return self
 	*/
-	public function set_page_url(string $u_action): void
+	public function set_page_url(string $u_action): self
 	{
 		$this->u_action = $u_action;
+
+		return $this;
 	}
 }

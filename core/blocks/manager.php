@@ -3,7 +3,7 @@
 *
 * DLS Web. An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2018, GanstaZ, http://www.dlsz.eu/
+* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
@@ -30,8 +30,14 @@ class manager
 	/** @var blocks data table */
 	protected $blocks_data;
 
+	/** @var array sections */
+	protected $sections = ['special', 'right', 'bottom', 'left', 'top', 'middle'];
+
 	/** @var array type */
-	protected $type = ['cat', 'block'];
+	protected $type = ['section', 'name'];
+
+	/** @var array error */
+	protected $error = [];
 
 	/** @var array Contains validated block services */
 	protected static $blocks = false;
@@ -53,24 +59,24 @@ class manager
 	}
 
 	/**
-	* Get block data
+	* Get block service
 	*
 	* @param string $service Service name
 	* @return ?object
 	*/
-	public function get(string $service)
+	public function get(string $service): object
 	{
-		return self::$blocks[$service] ?? null;
+		return self::$blocks[$service];
 	}
 
 	/**
 	* Load blocks
 	*
-	* @param mixed	$name [string, array or null]
-	* @param string $type [default: cat, block]
-	* @return ?void
+	* @param mixed	$name [string, array, default is null]
+	* @param string $type [default is section]
+	* @return void
 	*/
-	public function load($name = null, string $type = 'cat'): void
+	public function load($name = null, string $type = 'section'): void
 	{
 		if (!in_array($type, $this->type))
 		{
@@ -94,7 +100,7 @@ class manager
 	{
 		$where = (null !== $name) ? $this->where_clause($name, $type) : 'active = 1';
 
-		$sql = 'SELECT block_name, ext_name, active, cat_name
+		$sql = 'SELECT name, ext_name, section
 				FROM ' . $this->blocks_data . '
 				WHERE ' . $where . '
 				ORDER BY position';
@@ -103,31 +109,30 @@ class manager
 		self::$blocks = $blocks_data = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$block = $this->collection[$this->get_service($row['block_name'], $row['ext_name'])];
+			$block = $this->collection[$this->get_service_name($row['name'], $row['ext_name'])];
 
-			if (!$block)
+			// If is set as special, then we can call it with get method
+			if ($block->is_load_special())
 			{
-				continue;
+				self::$blocks[$row['name']] = $block;
 			}
 
-			if ($this->is_special($row))
+			// If is set as active, then load method will handle it
+			if ($block->is_load_active())
 			{
-				self::$blocks[$row['block_name']] = $block;
-			}
-			else if ($block->is_load_active())
-			{
-				$blocks_data[$row['block_name']] = $block;
+				$blocks_data[$row['name']] = $block;
 			}
 
-			if (!$this->is_special($row))
+			// This is for twig blocks tag
+			if (!$this->is_special($row['section']))
 			{
 				$data = [
-					'block_name' => (string) $row['block_name'],
-					'ext_name'	 => (string) $row['ext_name'],
+					'name'	   => (string) $row['name'],
+					'ext_name' => (string) $row['ext_name'],
 				];
 
-				$data['block_name'] = $this->is_dls($data);
-				$this->event->set_data($row['cat_name'], [$data['block_name'] => $data['ext_name']]);
+				$data['name'] = $this->is_dls($data);
+				$this->event->set_data($row['section'], [$data['name'] => $data['ext_name']]);
 			}
 		}
 		$this->db->sql_freeresult($result);
@@ -146,11 +151,11 @@ class manager
 	{
 		if (is_array($name))
 		{
-			return $this->db->sql_in_set("{$type}_name", $name) . ' AND active = 1';
+			return $this->db->sql_in_set($type, $name) . ' AND active = 1';
 		}
 		else if (is_string($name))
 		{
-			return "{$type}_name = '" . $this->db->sql_escape($name) . "' AND active = 1";
+			return "{$type} = '" . $this->db->sql_escape($name) . "' AND active = 1";
 		}
 	}
 
@@ -169,25 +174,6 @@ class manager
 	}
 
 	/**
-	* Get service name
-	*
-	* @param string $service  Name of the service
-	* @param string $ext_name Name of the extension
-	* @param string $search	  Default is underscore
-	* @return ?string
-	*/
-	public function get_service(string $service, string $ext_name, string $search = '_'): ?string
-	{
-		$start = utf8_strpos($service, $search);
-		if (is_bool($start))
-		{
-			return null;
-		}
-
-		return str_replace($search, '.', "{$ext_name}.block." . utf8_substr($service, $start + utf8_strlen($search)));
-	}
-
-	/**
 	* Blocks data table
 	*
 	* @return string table name
@@ -198,20 +184,163 @@ class manager
 	}
 
 	/**
-	* Check if our cat name is special
+	* Check if our section name is special
 	*
-	* @param array $row block data
-	* @return bool Depending on whether or not the category is special
+	* @param string $section Section
+	* @return bool Depending on whether or not the section is special
 	*/
-	public function is_special(array $row): bool
+	protected function is_special(string $section): bool
 	{
-		return $row['cat_name'] === 'special' ?? false;
+		return $section === 'special';
+	}
+
+	/**
+	* Get error log for invalid block names
+	*
+	* @return array
+	*/
+	public function get_error_log(): array
+	{
+		return $this->error ?? [];
+	}
+
+	/**
+	* Check for new block/s
+	*
+	* @param array	$data_ary
+	* @param object $container
+	* @return array
+	*/
+	public function check_for_new_blocks(array $data_ary, object $container): array
+	{
+		$return = [];
+		foreach ($this->collection as $service => $service_data)
+		{
+			$data = $this->check($service, $service_data->get_block_data(), $container);
+
+			// Validate data and set it for installation
+			if ($data && !in_array($data['name'], array_column($data_ary, 'name')))
+			{
+				$return[$data['name']] = $data;
+			}
+		}
+
+		return $return ?? [];
+	}
+
+	/**
+	* Check conditioning
+	*
+	* @param string $service   Name of the service
+	* @param array	$row	   Data array
+	* @param object $container
+	* @return array
+	*/
+	public function check(string $service, array $row, object $container): array
+	{
+		$this->_section($service, $row['section']);
+		$this->_ext_name($service, $row['ext_name'], $container);
+
+		$row['name'] = str_replace(
+			utf8_substr($row['ext_name'], utf8_strpos($row['ext_name'], '_') + 1) . '_block_',
+			'',
+			str_replace('.', '_', $service)
+		);
+
+		$this->_block_name($service, $row, $container);
+
+		return empty($this->error[$service]) ? $data = [
+			'name'	   => $row['name'],
+			'section'  => $row['section'],
+			'ext_name' => $row['ext_name'],
+		] : [];
+	}
+
+	/**
+	* Get service name
+	*
+	* @param string $service  Service name
+	* @param string $ext_name Extension name
+	* @return string
+	*/
+	public function get_service_name(string $service, string $ext_name): string
+	{
+		return str_replace('_', '.', "{$ext_name}.block." . utf8_substr($service, utf8_strpos($service, '_') + 1));
+	}
+
+	/**
+	* Check if section is valid
+	*
+	* @param string $service Service name
+	* @param string $section Section name
+	* @return void
+	*/
+	protected function _section(string $service, string $section): void
+	{
+		if (!in_array($section, $this->sections))
+		{
+			$this->error[$service]['section'] = $section;
+
+			if (empty($section))
+			{
+				$this->error[$service]['section'] = 'VAR_EMPTY';
+			}
+		}
+	}
+
+	/**
+	* Check if ext_name is valid
+	*
+	* @param string $service   Service name
+	* @param string $ext_name  Extension name
+	* @param object $container
+	* @return void
+	*/
+	protected function _ext_name($service, string $ext_name, $container): void
+	{
+		if (!$container->get('ext.manager')->is_enabled(str_replace('_', '/', $ext_name)))
+		{
+			$this->error[$service]['ext_name'] = $ext_name;
+			$this->error[$service]['service'] = 'PRE_ERROR';
+
+			if (empty($ext_name))
+			{
+				$this->error[$service]['ext_name'] = 'VAR_EMPTY';
+				unset($this->error[$service]['service']);
+			}
+		}
+	}
+
+	/**
+	* Check if block service name is valid
+	*
+	* @param string $service   Service name
+	* @param array	$row	   Data array
+	* @param object $container
+	* @return void
+	*/
+	protected function _block_name($service, $row, $container): void
+	{
+		if (isset($this->error[$service]['section']))
+		{
+			$this->error[$service]['error'] = 'NOT_AVAILABLE';
+		}
+
+		if (!$container->has($this->get_service_name($row['name'], $row['ext_name'])))
+		{
+			if (empty($this->error[$service]['service']))
+			{
+				$this->error[$service]['service'] = 'SER_ERROR';
+			}
+
+			$this->error[$service]['error'] = 'NOT_AVAILABLE';
+		}
 	}
 
 	/**
 	* Get vendor name
 	*
-	* @param string $ext_name Name of the extension
+	* @param string $ext_name Extension name
 	* @return string
 	*/
 	public function get_vendor(string $ext_name): string
@@ -220,18 +349,7 @@ class manager
 	}
 
 	/**
-	* Check if our block name is valid
-	*
-	* @param array $data Stores data that we need to validate
-	* @return bool Depending on whether or not the block is valid
-	*/
-	public function is_valid_name(array $data): bool
-	{
-		return utf8_strpos($data['block_name'], $this->get_vendor($data['ext_name'])) !== false ?? false;
-	}
-
-	/**
-	* If extension name is dls, remove prefix
+	* If vendor name is dls, remove package
 	*
 	* @param array $data Data array
 	* @return string
@@ -240,9 +358,9 @@ class manager
 	{
 		if ($this->get_vendor($data['ext_name']) === 'dls')
 		{
-			$data['block_name'] = str_replace('dls_', '', $data['block_name']);
+			$data['name'] = str_replace('dls_', '', $data['name']);
 		}
 
-		return $data['block_name'];
+		return $data['name'];
 	}
 }

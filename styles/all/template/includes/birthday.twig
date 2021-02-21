@@ -1,0 +1,15 @@
+<div class="whos_inner">
+	<h2>{{ lang('BIRTHDAYS') }}</h2>
+	<p class="whos_p">
+	{% if birthdays %}
+		{{ lang('CONGRATULATIONS') ~ lang('COLON') }}
+		<strong>
+		{% for item in birthdays %}
+			{{ item.member ~ (item.age ? ' (' ~ item.age ~ ')') }}{{ not loop.last ? ', ' }}
+		{% endfor %}
+		</strong>
+	{% else %}
+		{{ lang('NO_BIRTHDAYS') }}
+	{% endif %}
+	</p>
+</div>

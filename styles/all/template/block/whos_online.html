@@ -1,53 +1,64 @@
+{% from '@dls_web/macros/tags.html' import icon, url %}
+
 <div class="block mid-bottom-content">
-
-	{% if S_DISPLAY_ONLINE_LIST %}
-		<div class="whos_inner">
-			<h2>{{ lang('WHO_IS_ONLINE') }}</h2>
-			<ul class="no_style">
-				<li>{{ TOTAL_USERS_ONLINE }} ({{ L_ONLINE_EXPLAIN }})</li>
-				<li>{{ RECORD_USERS }}</li>
-				{% if U_VIEWONLINE %}
-					<li><br></li>
-					<li>{{ LOGGED_IN_USER_LIST }}</li>
-					{% if LEGEND %}
-						<li><em>{{ lang('LEGEND') ~ lang('COLON') }} {{ LEGEND|join(lang('COMMA_SEPARATOR')) }}</em></li>
-					{% endif %}
-				{% endif %}
-			</ul>
-		</div>
-	{% endif %}
-
-	{% if S_BIRTHDAY_LIST %}
-		<div class="whos_inner">
-			<h2>{{ lang('BIRTHDAYS') }}</h2>
-			<p class="whos_p">
-			{% if birthdays %}
-				{{ lang('CONGRATULATIONS') ~ lang('COLON') }}
-				<strong>
-				{% for birthday in birthdays %}
-					{{ birthday.USERNAME }}{{ birthday.AGE ? ' (' ~ birthday.AGE ~ ')' }}{{ not loop.last ? ', ' }}
+{% if S_DISPLAY_ONLINE_LIST %}
+	<div class="whos_inner">
+		<h2>{{ lang('WHO_IS_ONLINE') }}</h2>
+		<ul class="no_style">
+			<li>{{ TOTAL_USERS_ONLINE }} ({{ L_ONLINE_EXPLAIN }})</li>
+			<li>{{ RECORD_USERS }}</li>
+			{% if U_VIEWONLINE %}
+			<li><br></li>
+			<li>{{ LOGGED_IN_USER_LIST }}</li>
+			{% if legend %}
+			<li><em>{{ lang('LEGEND') ~ lang('COLON') }}
+				{% for item in legend %}
+					{% set color = item.color ? 'color:#' ~ item.color : '' %}
+					{% if item.not_authed %}
+						<span {{ color }}>{{ get_group_name(item.name) }}</span>
+					{% else %}
+						{{ url({'href': item.link, 'style': color}, get_group_name(item.name)) }}
+					{% endif %}{{ not loop.last ? ', ' }}
 				{% endfor %}
-				</strong>
-			{% else %}
-				{{ lang('NO_BIRTHDAYS') }}
+				</em>
+			</li>
 			{% endif %}
-			</p>
-		</div>
-	{% endif %}
+			{% endif %}
+		</ul>
+	</div>
+{% endif %}
 
-	{% if NEW_USER %}
-		<div>
-			<h2>{{ lang('STATISTICS') }}</h2>
-			<ul class="no_style">
-				<li>
-					{{ lang('TOTAL_POSTS_COUNT', T_POSTS) }} &bull; {{ lang('TOTAL_TOPICS', T_TOPICS) }} &bull; {{ lang('TOTAL_USERS', T_USERS) }} &bull; {{ lang('NEWEST_USER', NEW_USER) }}
-				</li>
-				<li>
-					{{ lang('POSTS_PER_DAY', D_POSTS) }} &bull; {{ lang('TOPICS_PER_DAY', D_TOPICS) }} &bull; {{ lang('USERS_PER_DAY', D_USERS) }}
-				</li>
-			</ul>
-		</div>
-	{% endif %}
+{% if s_birthday_list %}
+	<div class="whos_inner">
+		<h2>{{ lang('BIRTHDAYS') }}</h2>
+		<p class="whos_p">
+		{% if birthdays %}
+			{{ lang('CONGRATULATIONS') ~ lang('COLON') }}
+			<strong>
+			{% for item in birthdays %}
+				{{ item.member ~ (item.age ? ' (' ~ item.age ~ ')') }}{{ not loop.last ? ', ' }}
+			{% endfor %}
+			</strong>
+		{% else %}
+			{{ lang('NO_BIRTHDAYS') }}
+		{% endif %}
+		</p>
+	</div>
+{% endif %}
+
+{% if new_user %}
+	<div>
+		<h2>{{ lang('STATISTICS') }}</h2>
+		<ul class="no_style">
+			<li>
+				{{ lang('TOTAL_POSTS_COUNT', dls_posts) }} &bull; {{ lang('TOTAL_TOPICS', dls_topics) }} &bull; {{ lang('TOTAL_USERS', dls_users) }} &bull; {{ lang('NEWEST_USER', new_user) }}
+			</li>
+			<li>
+				{{ lang('DLS_PER_DAY', lang('POSTS'), ppd) }} &bull; {{ lang('DLS_PER_DAY', lang('TOPICS'), tpd) }} &bull; {{ lang('DLS_PER_DAY', lang('USERS'), upd) }}
+			</li>
+		</ul>
+	</div>
+{% endif %}
 
 </div>
 {# End Bottom Content #}

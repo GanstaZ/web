@@ -39,9 +39,7 @@ $lang = array_merge($lang, [
 		2 => '%2$ss ago',
 	],
 
-	'POSTS_PER_DAY'  => 'Posts per day <strong>%.2f</strong>',
-	'TOPICS_PER_DAY' => 'Topics per day <strong>%.2f</strong>',
-	'USERS_PER_DAY'  => 'Users per day <strong>%.2f</strong>',
+	'DLS_PER_DAY' => '%s per day <strong>%s</strong>',
 
 	'LEADERS'		=> 'Top posters',
 	'RECENT_POSTS'	=> 'Recent posts',

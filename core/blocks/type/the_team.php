@@ -3,7 +3,7 @@
 *
 * DLS Web. An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2018, GanstaZ, http://www.dlsz.eu/
+* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
@@ -18,6 +18,17 @@ class the_team extends base
 	/**
 	* {@inheritdoc}
 	*/
+	public function get_block_data(): array
+	{
+		return [
+			'section'  => 'right',
+			'ext_name' => 'dls_web',
+		];
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function load(): void
 	{
 		$group_id = (int) $this->config['dls_the_team_fid'];
@@ -29,7 +40,7 @@ class the_team extends base
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		$this->helper->assign('var', 'get_team_name', $this->helper->get_name($row['group_name']));
+		$this->template->assign_var('team_name', $row['group_name']);
 
 		$sql = 'SELECT ug.*, u.username, u.user_id, u.user_colour, u.username_clean
 				FROM ' . USER_GROUP_TABLE . ' ug, ' . USERS_TABLE . ' u
@@ -40,7 +51,7 @@ class the_team extends base
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$this->helper->assign('block_vars', 'the_team', [
+			$this->template->assign_block_vars('the_team', [
 				'member' => get_username_string('full', (int) $row['user_id'], $row['username'], $row['user_colour']),
 			]);
 		}

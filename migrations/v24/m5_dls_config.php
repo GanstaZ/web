@@ -3,12 +3,12 @@
 *
 * DLS Web. An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2018, GanstaZ, http://www.dlsz.eu/
+* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
 
-namespace dls\web\migrations\v23;
+namespace dls\web\migrations\v24;
 
 class m5_dls_config extends \phpbb\db\migration\migration
 {
@@ -17,7 +17,7 @@ class m5_dls_config extends \phpbb\db\migration\migration
 	*/
 	static public function depends_on()
 	{
-		return ['\dls\web\migrations\v23\m1_dls_main'];
+		return ['\dls\web\migrations\v24\m1_dls_main'];
 	}
 
 	/**
@@ -30,13 +30,13 @@ class m5_dls_config extends \phpbb\db\migration\migration
 	{
 		return [
 			// Add the config variables we want to be able to set
-			['config.add', ['dls_core_version', '2.4.0-a1']],
+			['config.add', ['dls_core_version', '2.4.0-dev']],
 			['config.add', ['dls_news_fid', 2]],
 			['config.add', ['dls_the_team_fid', 8]],
 			['config.add', ['dls_top_posters_fid', 0]],
 			['config.add', ['dls_recent_posts_fid', 0]],
 			['config.add', ['dls_recent_topics_fid', 0]],
-			['config.add', ['dls_blocks_global', 0]],
+			['config.add', ['dls_profile_tabs', 1]],
 			['config.add', ['dls_pagination', 1]],
 			['config.add', ['dls_title_length', 26]],
 			['config.add', ['dls_content_length', 150]],

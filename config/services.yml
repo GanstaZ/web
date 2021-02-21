@@ -9,8 +9,6 @@ services:
         arguments:
             - '@group_helper'
             - '@template'
-            - '%core.root_path%'
-            - '%core.php_ext%'
 
     dls.web.listener:
         class: dls\web\event\listener
@@ -29,6 +27,7 @@ services:
         arguments:
             - '@template.twig.environment'
             - '@dls.web.block.event'
+            - '@group_helper'
         tags:
             - { name: twig.extension }
 
@@ -40,7 +39,7 @@ services:
             - '@dbal.conn'
             - '@language'
             - '@request'
-            - '@dls.web.helper'
+            - '@template'
 
     dls.web.admin.block.controller:
         class: dls\web\controller\admin_block_controller

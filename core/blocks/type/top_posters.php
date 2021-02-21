@@ -3,7 +3,7 @@
 *
 * DLS Web. An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2018, GanstaZ, http://www.dlsz.eu/
+* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
@@ -15,6 +15,17 @@ namespace dls\web\core\blocks\type;
 */
 class top_posters extends base
 {
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_block_data(): array
+	{
+		return [
+			'section'  => 'right',
+			'ext_name' => 'dls_web',
+		];
+	}
+
 	/**
 	* {@inheritdoc}
 	*/
@@ -30,7 +41,7 @@ class top_posters extends base
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$this->helper->assign('block_vars', 'top_posters', [
+			$this->template->assign_block_vars('top_posters', [
 				'top' => get_username_string('full', (int) $row['user_id'], $row['username'], $row['user_colour']),
 				'posts' => (int) $row['user_posts'],
 			]);

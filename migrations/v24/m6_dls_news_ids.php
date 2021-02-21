@@ -3,12 +3,12 @@
 *
 * DLS Web. An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2018, GanstaZ, http://www.dlsz.eu/
+* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
 
-namespace dls\web\migrations\v23;
+namespace dls\web\migrations\v24;
 
 class m6_dls_news_ids extends \phpbb\db\migration\migration
 {
@@ -25,7 +25,7 @@ class m6_dls_news_ids extends \phpbb\db\migration\migration
 	*/
 	static public function depends_on()
 	{
-		return ['\dls\web\migrations\v23\m1_dls_main'];
+		return ['\dls\web\migrations\v24\m1_dls_main'];
 	}
 
 	/**

@@ -16,8 +16,12 @@
 		</div>
 
 		{% block mid_bottom %}
-			{% BLOCKS bottom %}
+			{% BLOCKS middle %}
 		{% endblock %}
 	</div>
 
+{% endblock %}
+
+{% block side_section %}
+	{{ include('side_section.html') }}
 {% endblock %}

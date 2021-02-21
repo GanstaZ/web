@@ -22,8 +22,11 @@ services:
         arguments:
             - '@config'
             - '@dbal.conn'
-            - '@dls.web.helper'
+            - '@controller.helper'
+            - '@template'
             - '@dispatcher'
+            - '%core.root_path%'
+            - '%core.php_ext%'
 
 # ----- Blocks -----
     dls.web.block.news:
@@ -32,13 +35,13 @@ services:
         parent: dls.web.block.base
         arguments:
             - '@auth'
-            - '@controller.helper'
             - '@language'
             - '@text_formatter.renderer'
             - '@user'
             - '@pagination'
         calls:
-            - [loading, [false]]
+            - [set_active, [false]]
+            - [set_special, [true]]
         tags:
             - { name: dls.web.block }
 
@@ -47,7 +50,8 @@ services:
         shared: false
         parent: dls.web.block.base
         calls:
-            - [loading, [false]]
+            - [set_active, [false]]
+            - [set_special, [false]]
         tags:
             - { name: dls.web.block }
 
@@ -56,7 +60,8 @@ services:
         shared: false
         parent: dls.web.block.base
         calls:
-            - [loading, [true]]
+            - [set_active, [true]]
+            - [set_special, [true]]
         tags:
             - { name: dls.web.block }
 
@@ -65,7 +70,8 @@ services:
         shared: false
         parent: dls.web.block.base
         calls:
-            - [loading, [true]]
+            - [set_active, [true]]
+            - [set_special, [true]]
         tags:
             - { name: dls.web.block }
 
@@ -74,7 +80,8 @@ services:
         shared: false
         parent: dls.web.block.base
         calls:
-            - [loading, [true]]
+            - [set_active, [true]]
+            - [set_special, [true]]
         tags:
             - { name: dls.web.block }
 
@@ -83,7 +90,8 @@ services:
         shared: false
         parent: dls.web.block.base
         calls:
-            - [loading, [true]]
+            - [set_active, [true]]
+            - [set_special, [true]]
         tags:
             - { name: dls.web.block }
 
@@ -92,7 +100,8 @@ services:
         shared: false
         parent: dls.web.block.base
         calls:
-            - [loading, [true]]
+            - [set_active, [true]]
+            - [set_special, [true]]
         tags:
             - { name: dls.web.block }
 
@@ -104,6 +113,7 @@ services:
             - '@auth'
             - '@user'
         calls:
-            - [loading, [true]]
+            - [set_active, [true]]
+            - [set_special, [false]]
         tags:
             - { name: dls.web.block }

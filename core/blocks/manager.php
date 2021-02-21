@@ -30,6 +30,9 @@ class manager
 	/** @var blocks data table */
 	protected $blocks_data;
 
+	/** @var array sections */
+	protected $sections = ['special', 'right', 'bottom', 'left', 'top', 'middle'];
+
 	/** @var array type */
 	protected $type = ['page', 'cat', 'block'];
 
@@ -53,41 +56,6 @@ class manager
 		$this->collection = $collection;
 		$this->blocks_data = $blocks_data;
 		$this->event = $event;
-	}
-
-	/**
-	* Check for new block/s
-	*
-	* @param array	$block_ary
-	* @param object $container
-	* @return array
-	*/
-	public function check_for_new_blocks(array $block_ary, object $container): array
-	{
-		$return = [];
-		foreach ($this->collection as $service => $service_data)
-		{
-			$data = $service_data->get_block_data();
-			$data['block_name'] = $this->get_block_name($service, $data['ext_name'], $container);
-
-			// Validate data and set it for installation
-			if ($this->is_valid($data) && !in_array($data['block_name'], array_column($block_ary, 'block_name')))
-			{
-				$return[$data['block_name']] = $data;
-			}
-		}
-
-		return $return ?? [];
-	}
-
-	/**
-	* Get error log for invalid block names
-	*
-	* @return array
-	*/
-	public function get_error_log(): array
-	{
-		return $this->error ?? [];
 	}
 
 	/**
@@ -206,42 +174,6 @@ class manager
 	}
 
 	/**
-	* Get block name from service
-	*	 For example acme.demo.block.some.name => acme_some_name
-	*
-	* @param string $service  Name of the service
-	* @param string $ext_name Name of the extension
-	* @param object $container
-	* @return string
-	*/
-	public function get_block_name(string $service, string $ext_name, object $container): string
-	{
-		$clean  = '';
-		$string = str_replace('.', '_', $service);
-
-		if ($this->is_valid_ext_name($service, $string, $ext_name, $container))
-		{
-			$clean = str_replace(utf8_substr($ext_name, utf8_strpos($ext_name, '_') + 1) . '_block_', '', $string);
-		}
-
-		$validate = !empty($clean) ? $clean : $service;
-
-		return $this->is_valid_name(['validate' => $validate, 'ext_name' => $ext_name], $container) ? $clean : '';
-	}
-
-	/**
-	* Get service name
-	*
-	* @param string $service  Name of the service
-	* @param string $ext_name Name of the extension
-	* @return string
-	*/
-	public function get_service_name(string $service, string $ext_name): string
-	{
-		return str_replace('_', '.', "{$ext_name}.block." . utf8_substr($service, utf8_strpos($service, '_') + 1));
-	}
-
-	/**
 	* Blocks data table
 	*
 	* @return string table name
@@ -263,14 +195,157 @@ class manager
 	}
 
 	/**
+	* Get error log for invalid block names
+	*
+	* @return array
+	*/
+	public function get_error_log(): array
+	{
+		return $this->error ?? [];
+	}
+
+	/**
+	* Check for new block/s
+	*
+	* @param array	$data_ary
+	* @param object $container
+	* @return array
+	*/
+	public function check_for_new_blocks(array $data_ary, object $container): array
+	{
+		$return = [];
+		foreach ($this->collection as $service => $service_data)
+		{
+			$data = $this->check($service, $service_data->get_block_data(), $container);
+
+			// Validate data and set it for installation
+			if ($data && !in_array($data['block_name'], array_column($data_ary, 'block_name')))
+			{
+				$return[$data['block_name']] = $data;
+			}
+		}
+
+		return $return ?? [];
+	}
+
+	/**
+	* Check conditioning
+	*
+	* @param string $service   Name of the service
+	* @param array	$row	   Data array
+	* @param object $container
+	* @return array
+	*/
+	public function check(string $service, array $row, object $container): array
+	{
+		$this->_section($service, $row['cat_name']);
+		$this->_ext_name($service, $row['ext_name'], $container);
+
+		$row['block_name'] = str_replace(
+			utf8_substr($row['ext_name'], utf8_strpos($row['ext_name'], '_') + 1) . '_block_',
+			'',
+			str_replace('.', '_', $service)
+		);
+
+		$this->_block_name($service, $row, $container);
+
+		return $this->is_valid($service) ? $data = [
+			'block_name' => $row['block_name'],
+			'cat_name'	 => $row['cat_name'],
+			'ext_name'	 => $row['ext_name'],
+		] : [];
+	}
+
+	/**
 	* Is valid data
 	*
-	* @param array $row
+	* @param string $service
 	* @return bool
 	*/
-	protected function is_valid($row): bool
+	public function is_valid($service): bool
 	{
-		return is_array($row) && !empty($row['block_name']) && !empty($row['ext_name']) && !empty($row['cat_name']);
+		return empty($this->error[$service]) ?? false;
+	}
+
+	/**
+	* Get service name
+	*
+	* @param string $service  Name of the service
+	* @param string $ext_name Name of the extension
+	* @return string
+	*/
+	public function get_service_name(string $service, string $ext_name): string
+	{
+		return str_replace('_', '.', "{$ext_name}.block." . utf8_substr($service, utf8_strpos($service, '_') + 1));
+	}
+
+	/**
+	* Check if section is valid
+	*
+	* @param string $service Service name
+	* @param string $section Section name
+	* @return void
+	*/
+	protected function _section(string $service, string $section): void
+	{
+		if (!in_array($section, $this->sections))
+		{
+			$this->error[$service]['cat_name'] = $section;
+
+			if (empty($section))
+			{
+				$this->error[$service]['cat_name'] = 'VAR_EMPTY';
+			}
+		}
+	}
+
+	/**
+	* Check if ext_name is valid
+	*
+	* @param string $service   Name of the service
+	* @param string $ext_name  Name of the extension
+	* @param object $container
+	* @return void
+	*/
+	protected function _ext_name($service, string $ext_name, $container): void
+	{
+		if (!$container->get('ext.manager')->is_enabled(str_replace('_', '/', $ext_name)))
+		{
+			$this->error[$service]['ext_name'] = $ext_name;
+			$this->error[$service]['service'] = 'PRE_ERROR';
+
+			if (empty($ext_name))
+			{
+				$this->error[$service]['ext_name'] = 'VAR_EMPTY';
+				unset($this->error[$service]['service']);
+			}
+		}
+	}
+
+	/**
+	* Check if block service name is valid
+	*
+	* @param string $service   Name of the service
+	* @param array	$row	   Data array
+	* @param object $container
+	* @return void
+	*/
+	protected function _block_name($service, $row, $container): void
+	{
+		if (isset($this->error[$service]['cat_name']))
+		{
+			$this->error[$service]['error'] = 'NOT_AVAILABLE';
+		}
+
+		if (!$container->has($this->get_service_name($row['block_name'], $row['ext_name'])))
+		{
+			if (empty($this->error[$service]['service']))
+			{
+				$this->error[$service]['service'] = 'SER_ERROR';
+			}
+
+			$this->error[$service]['error'] = 'NOT_AVAILABLE';
+		}
 	}
 
 	/**
@@ -282,64 +357,6 @@ class manager
 	public function get_vendor(string $ext_name): string
 	{
 		return strstr($ext_name, '_', true);
-	}
-
-	/**
-	* Check if our ext_name is valid
-	*
-	* @param string $service  Name of the service
-	* @param string $string	  Name of the service
-	* @param string $ext_name Name of the extension
-	* @param object $container
-	* @return bool
-	*/
-	protected function is_valid_ext_name($service, string $string, string $ext_name, $container): bool
-	{
-		if (empty($ext_name))
-		{
-			$this->error[$service] = [
-				'ext_name' => 'Extension name not given',
-			];
-
-			return false;
-		}
-		else if (!$container->get('ext.manager')->is_enabled(str_replace('_', '/', $ext_name)))
-		{
-			$this->error[$service] = [
-				'ext_name' => 'Extension is not enabled',
-				'service'  => 'Service name is not valid',
-			];
-
-			return false;
-		}
-
-		return strcmp($string, $ext_name . '_' . utf8_substr($string, utf8_strlen($ext_name) + 1)) === 0;
-	}
-
-	/**
-	* Check if our block service name is valid
-	*
-	* @param array  $data Stores data that we need to validate
-	* @param object $container
-	* @return bool
-	*/
-	protected function is_valid_name(array $data, $container): bool
-	{
-		if (!$container->has($this->get_service_name($data['validate'], $data['ext_name'])))
-		{
-			if (array_key_exists($data['validate'], $this->error))
-			{
-				$this->error[$data['validate']] = array_merge($this->error[$data['validate']], ['error' => 'Service not available',]);
-			}
-			else
-			{
-				$this->error[$data['validate']] = ['error' => 'Service not available',];
-			}
-
-			return false;
-		}
-
-		return true;
 	}
 
 	/**

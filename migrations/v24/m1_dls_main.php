@@ -3,12 +3,12 @@
 *
 * DLS Web. An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2018, GanstaZ, http://www.dlsz.eu/
+* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
 
-namespace dls\web\migrations\v23;
+namespace dls\web\migrations\v24;
 
 class m1_dls_main extends \phpbb\db\migration\migration
 {
@@ -36,7 +36,7 @@ class m1_dls_main extends \phpbb\db\migration\migration
 	*/
 	static public function depends_on()
 	{
-		return array('\phpbb\db\migration\data\v320\v320');
+		return array('\phpbb\db\migration\data\v330\v330');
 	}
 
 	/**
@@ -51,14 +51,14 @@ class m1_dls_main extends \phpbb\db\migration\migration
 			'add_tables' => [
 				$this->table_prefix . 'blocks' => [
 					'COLUMNS' => [
-						'block_id'	 => ['UINT', null, 'auto_increment'],
-						'block_name' => ['VCHAR', ''],
-						'ext_name'	 => ['VCHAR', ''],
-						'position'	 => ['UINT', 0],
-						'active'	 => ['BOOL', 0],
-						'cat_name'	 => ['VCHAR', ''],
+						'id'	   => ['UINT', null, 'auto_increment'],
+						'name'	   => ['VCHAR', ''],
+						'ext_name' => ['VCHAR', ''],
+						'position' => ['UINT', 0],
+						'active'   => ['BOOL', 0],
+						'section'  => ['VCHAR', ''],
 					],
-					'PRIMARY_KEY' => ['block_id'],
+					'PRIMARY_KEY' => ['id'],
 				],
 				$this->table_prefix . 'zodiac' => [
 					'COLUMNS' => [

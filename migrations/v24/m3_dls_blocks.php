@@ -95,7 +95,7 @@ class m3_dls_blocks extends \phpbb\db\migration\migration
 					'ext_name' => 'dls_web',
 					'position' => 1,
 					'active'   => 1,
-					'section'  => 'bottom',
+					'section'  => 'middle',
 				],
 			];
 			$this->db->sql_multi_insert($this->table_prefix . 'blocks', $sql_ary);

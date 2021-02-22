@@ -61,8 +61,11 @@
 					<tr>
 						<th>{{ lang('BLOCK') }}</th>
 						<th>{{ lang('ACTIONS') }}</th>
-						{% if section.section !== 'SPECIAL' and section.in_count > 1 %}
-							<th>{{ lang('BLOCK_POSITION') }}</th>
+						{% if section.section !== 'SPECIAL' %}
+							{% if section.in_count > 1 %}
+								<th>{{ lang('BLOCK_POSITION') }}</th>
+							{% endif %}
+							<th>{{ lang('SECTION') }}</th>
 						{% endif %}
 					</tr>
 				</thead>
@@ -76,13 +79,20 @@
 						<td class="tabled">
 							{{ form.radio(block.active, block.s_activate, {'yes': lang('ENABLE'), 'no': lang('DISABLE')}) }}
 						</td>
-						{% if section.section !== 'SPECIAL' and block.s_options > 1 %}
-							<td class="tabled">
-								{{ form.select(block.position, block.s_current, range(1, block.s_options)) }}
-							{% if block.s_duplicate %}
-								<span class="error">{{ lang('DUPLICATE_POS') ~ icon('font', 'exclamation-triangle', 'fa-fw') }}</span>
+						{% if section.section !== 'SPECIAL' %}
+							{% if block.s_options > 1 %}
+								<td class="tabled">
+									{{ form.select(block.position, block.s_current, range(1, block.s_options)) }}
+								{% if block.s_duplicate %}
+									{{ icon('font', 'exclamation-triangle', 'fa-fw error', {'title': lang('DUPLICATE')}) }}
+								{% endif %}
+								</td>
 							{% endif %}
-							</td>
+							{% if block.s_section %}
+								<td class="tabled">
+									{{ form.select(block.section, block.s_section, block.S_SECTIONS) }}
+								</td>
+							{% endif %}
 						{% endif %}
 					</tr>
 				{% endfor %}

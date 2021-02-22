@@ -56,14 +56,21 @@ class admin_block_controller
 	* @param template  $template  Template object
 	* @param manager   $manager	  Data manager object
 	*/
-	public function __construct(container $container, driver $db, language $language, request $request, template $template, manager $manager)
+	public function __construct(
+		container $container,
+		driver $db,
+		language $language,
+		request $request,
+		template $template,
+		manager $manager
+	)
 	{
 		$this->container = $container;
-		$this->db = $db;
-		$this->language = $language;
-		$this->request = $request;
-		$this->manager = $manager;
-		$this->template = $template;
+		$this->db		 = $db;
+		$this->language	 = $language;
+		$this->request	 = $request;
+		$this->manager	 = $manager;
+		$this->template	 = $template;
 	}
 
 	/**
@@ -115,7 +122,7 @@ class admin_block_controller
 				'section'  => $row['section'],
 				'name'	   => $row['name'],
 				'ext_name' => $row['ext_name'],
-				'active'   => $row['active'],
+				'active'   => (bool) $row['active'],
 				'position' => (int) $row['position'],
 			];
 		}
@@ -126,7 +133,7 @@ class admin_block_controller
 		// Run check for available/unavailable blocks
 		$this->check($data_ary, $count);
 
-		// Assign error messages into template, if there are any
+		// Assign error message/s into template, if there are any
 		if ($errors = $this->manager->get_error_log())
 		{
 			foreach ($errors as $error_service => $error)
@@ -160,6 +167,9 @@ class admin_block_controller
 			trigger_error($this->language->lang('ACP_DLS_SETTINGS_SAVED') . adm_back_link($this->u_action));
 		}
 
+		// Remove special section from section options
+		$this->manager->remove_section(0);
+
 		// Set output vars for display in the template
 		$this->template->assign_block_vars_array('install', $this->status('add'));
 		$this->assign_template_block_data($rowset, $count);
@@ -190,6 +200,7 @@ class admin_block_controller
 			$block_data = [
 				'active'   => $this->request->variable($data['name'] . '_active', (int) 0),
 				'position' => $this->request->variable($data['name'] . '_position', (int) 0),
+				'section'  => $this->request->variable($data['name'] . '_section', (string) ''),
 			];
 
 			if ($block)
@@ -245,6 +256,9 @@ class admin_block_controller
 					'name'		  => $block['name'],
 					'active'	  => $block['name'] . '_active',
 					'position'	  => $block['name'] . '_position',
+					'section'	  => $block['name'] . '_section',
+					's_section'	  => $block['section'],
+					'S_SECTIONS'  => $this->manager->get_sections(),
 					's_activate'  => $block['active'],
 					's_duplicate' => ($count[$section]['position'][$block['position']] > 1) && $block['active'],
 					's_options'	  => $count[$section]['block'],

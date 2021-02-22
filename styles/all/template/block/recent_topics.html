@@ -1,9 +1,10 @@
+{% from '@dls_web/macros/tags.html' import icon, url %}
 <div class="block">
 	<h2>{{ lang('RECENT_TOPICS') }}</h2>
 	<div class="inner-block">
 		<ul class="no_style">
 		{% for recent in recent_topics %}
-			<li><i class="fa fa-file-o fa-fw icon-red" aria-hidden="true"></i><a href="{{ recent.link }}">{{ recent.title }}</a></li>
+			<li>{{ icon('font', 'file-o', 'fa-fw icon-red', null, lang('IN_TOPIC')) ~ url({'href': recent.link}, recent.title) }}</li>
 		{% endfor %}
 		</ul>
 	</div>

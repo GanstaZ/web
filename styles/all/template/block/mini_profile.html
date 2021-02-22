@@ -1,10 +1,12 @@
 {% if S_REGISTERED_USER %}
+{% from '@dls_web/macros/tags.html' import url %}
 	<div class="block">
-		<h2>{{ lang('WELCOME') }} {{ S_USERNAME }}</h2>
+		<h2>{{ lang('WELCOME') ~ S_USERNAME }}</h2>
 		<div class="inner-block">
 			<div class="login_avatar">{{ CURRENT_USER_AVATAR }}</div>
 		{% if S_DISPLAY_PM %}
-			{{ lang('PRIVATE_MESSAGES') ~ lang('COLON') }} <a href="{{ U_PRIVATEMSGS }}">{{ PRIVATE_MESSAGE_COUNT }}{% if PRIVATE_MESSAGE_COUNT == 1 %}{{ lang('NEW_PM') }}{% else %}{{ lang('NEW_PMS') }}{% endif %}</a>
+			{% set PMC = PRIVATE_MESSAGE_COUNT == 1 ? lang('NEW_PM') : lang('NEW_PMS') %}
+			{{ lang('PRIVATE_MESSAGES') ~ lang('COLON') ~ url({'href': U_PRIVATEMSGS}, PRIVATE_MESSAGE_COUNT ~ PMC) }}
 		{% endif %}
 		</div>
 	</div>

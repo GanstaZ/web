@@ -19,6 +19,8 @@
 		<delete file="${dir}/.gitignore" />
 		<delete file="${dir}/.gitattributes" />
 		<delete file="${dir}/build.xml" />
+		<delete file="${dir}/.codeclimate.yml" />
+		<delete file="${dir}/.editorconfig" />
 		<delete file="${dir}/composer.lock" />
 		<delete file="${dir}/composer.phar" />
 		<delete file="${dir}/phpunit.xml.dist" />

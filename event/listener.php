@@ -3,7 +3,7 @@
 *
 * DLS Web. An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2018, GanstaZ, http://www.dlsz.eu/
+* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
@@ -51,7 +51,14 @@ class listener implements EventSubscriberInterface
 	* @param template $template Template object
 	* @param manager  $plugin	Plugin object
 	*/
-	public function __construct(config $config, helper $helper, language $language, request $request, template $template, manager $plugin)
+	public function __construct(
+		config $config,
+		helper $helper,
+		language $language,
+		request $request,
+		template $template,
+		manager $plugin
+	)
 	{
 		$this->config	= $config;
 		$this->helper	= $helper;
@@ -70,11 +77,11 @@ class listener implements EventSubscriberInterface
 	{
 		return [
 			'core.user_setup'  => 'add_language',
+			'core.page_header' => 'add_dls_web_data',
 			'core.acp_manage_forums_request_data'  => 'web_manage_forums_request_data',
 			'core.acp_manage_forums_display_form'  => 'web_manage_forums_display_form',
-			'core.page_header' => 'add_dls_web_data',
 			'core.memberlist_prepare_profile_data' => 'prepare_profile_data',
-			'core.memberlist_view_profile' => 'view_profile_stats',
+			'core.memberlist_view_profile'		   => 'view_profile_stats',
 		];
 	}
 
@@ -85,14 +92,20 @@ class listener implements EventSubscriberInterface
 	*/
 	public function add_language($event): void
 	{
-		// Load a single language file
-		$lang_set_ext = $event['lang_set_ext'];
-		$lang_set_ext[] = [
-			'ext_name' => 'dls/web',
-			'lang_set' => 'common',
-		];
+		// Load a single language file from dls/web/language/en/common.php
+		$this->language->add_lang('common', 'dls/web');
+	}
 
-		$event['lang_set_ext'] = $lang_set_ext;
+	/**
+	* Event core.page_header
+	*
+	* @param \phpbb\event\data $event The event object
+	*/
+	public function add_dls_web_data(): void
+	{
+		$this->template->assign_vars([
+			'U_NEWS' => $this->helper->route('dls_web_news_base'),
+		]);
 	}
 
 	/**
@@ -117,18 +130,6 @@ class listener implements EventSubscriberInterface
 		$template_data = $event['template_data'];
 		$template_data['S_NEWS_FID'] = $event['forum_data']['news_fid_enable'];
 		$event['template_data'] = $template_data;
-	}
-
-	/**
-	* Event core.page_header
-	*
-	* @param \phpbb\event\data $event The event object
-	*/
-	public function add_dls_web_data(): void
-	{
-		$this->template->assign_vars([
-			'U_NEWS' => $this->helper->route('dls_web_news_base'),
-		]);
 	}
 
 	/**

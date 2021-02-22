@@ -204,7 +204,7 @@ class news extends base
 	*/
 	public function get_sql_data(int $id, string $where = 'forum'): array
 	{
-		$where = 't.' . $where . '_id = ';
+		$sql_where = 't.' . $where . '_id = ';
 
 		$sql_ary = [
 			'SELECT'	=> 't.topic_id, t.forum_id, t.topic_title, t.topic_time, t.topic_views, t.topic_status, t.topic_posts_approved,
@@ -226,7 +226,7 @@ class news extends base
 				],
 			],
 
-			'WHERE'		=> $where . (int) $id . '
+			'WHERE'		=> $sql_where . (int) $id . '
 				AND t.topic_status <> ' . ITEM_MOVED . '
 				AND t.topic_visibility = 1',
 		];

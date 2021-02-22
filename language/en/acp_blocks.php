@@ -55,7 +55,7 @@ $lang = array_merge($lang, [
 	'BLOCKS'			=> ' block%s',
 	'BLOCK_POSITION'	=> 'Position',
 	'BLOCK_SECTION'		=> 'Change section',
-	'DUPLICATE_POS'		=> 'Duplicate position',
+	'DUPLICATE'			=> 'Duplicate',
 	'ADD_BLOCK'			=> '%s New block%s available',
 	'PURGE_BLOCK'		=> 'Purge required! Click submit to remove: %s.',
 ]);

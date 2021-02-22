@@ -84,7 +84,7 @@
 								<td class="tabled">
 									{{ form.select(block.position, block.s_current, range(1, block.s_options)) }}
 								{% if block.s_duplicate %}
-									{{ icon('font', 'exclamation-triangle fa-fw error', {'title': lang('DUPLICATE')}) }}
+									{{ icon('font', 'exclamation-triangle', 'fa-fw error', {'title': lang('DUPLICATE')}) }}
 								{% endif %}
 								</td>
 							{% endif %}

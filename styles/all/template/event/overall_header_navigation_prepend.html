@@ -1,4 +1,5 @@
+{% from '@dls_web/macros/tags.html' import icon, url %}
 <li data-last-responsive="true">
-	<a href="{{ U_NEWS }}"><i class="icon fa-newspaper-o fa-fw" aria-hidden="true"></i><span>{{ lang('NEWS') }}</span></a>
+	{{ url({'href': U_NEWS, 'title': lang('NEWS')}, icon('font', 'newspaper-o', 'fa-fw', null, lang('NEWS'))) }}
 </li>
 {% EVENT dls_web_navi_after %}

@@ -198,12 +198,14 @@ class news extends base
 	/**
 	* Get sql data
 	*
-	* @param int $s_id id to get news or article data
+	* @param int	$id	   id to get news or article data
 	* @param string $where query where clause [forum or topic]
 	* @return array
 	*/
-	public function get_sql_data($s_id, string $where = 'forum'): array
+	public function get_sql_data(int $id, string $where = 'forum'): array
 	{
+		$sql_where = 't.' . $where . '_id = ';
+
 		$sql_ary = [
 			'SELECT'	=> 't.topic_id, t.forum_id, t.topic_title, t.topic_time, t.topic_views, t.topic_status, t.topic_posts_approved,
 			p.post_id, p.poster_id, p.post_text, u.user_id, u.username, u.user_posts, u.user_rank, u.user_colour, u.user_avatar,
@@ -224,7 +226,7 @@ class news extends base
 				],
 			],
 
-			'WHERE'		=> 't.' . $where . '_id = ' . (int) $s_id . '
+			'WHERE'		=> $sql_where . (int) $id . '
 				AND t.topic_status <> ' . ITEM_MOVED . '
 				AND t.topic_visibility = 1',
 		];

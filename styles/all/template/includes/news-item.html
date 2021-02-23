@@ -31,7 +31,7 @@
 			</p>
 
 			<article class="content">
-				{{ news.text }}{% if news.is_trimmed %}{{ lang('ELLIPSIS') }} {{ url({'href': news.link}, lang('READ_FULL')) }}{% endif %}
+				{{ news.text ~ (news.is_trimmed ? lang('ELLIPSIS') ~ url({'href': news.link}, lang('READ_FULL'))) }}
 			</article>
 
 		</section>

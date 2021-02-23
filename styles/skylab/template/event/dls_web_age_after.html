@@ -1,52 +1,54 @@
 {% EVENT dls_web_zodiac_before %}
 
+{% from '@dls_web/macros/tags.html' import icon, url %}
+
 {% if zodiac_data %}
 	{% for zodiac in zodiac_data %}
 		{% set element = lang(zodiac.element) %}
 		{% if zodiac.stem %}
-			{% set element = lang('STEM', zodiac.stem)~' '~lang(zodiac.element) %}
+			{% set element = lang('STEM', zodiac.stem) ~ ' ' ~ lang(zodiac.element) %}
 		{% endif %}
 		<dt>{{ lang(zodiac.name) ~ lang('COLON') }}</dt>
 		<dd class="profile-zodiac dls_dd">
 			<div class="dropdown-container">
-				<a href="#" class="dropdown-trigger">
-					{% if element %}{{ element }}{% endif %} {{ lang(zodiac.sign) }}<i class="icon fa-caret-down fa-fw" aria-hidden="true"></i>
-				</a>
+				{{ url({'href': '#', 'class': 'dropdown-trigger', 'title': lang(zodiac.sign)},
+					(element ? element ~ ' ') ~ lang(zodiac.sign) ~ icon('font', 'caret-down', 'fa-fw')|trim)
+				}}
 				<div class="dropdown dropdown-extended">
 					<div class="pointer"><div class="pointer-inner"></div></div>
 					<ul class="dropdown-contents dropdown-zodiac" role="menu">
 					<div class="header zhead">{{ lang(zodiac.name)~' '~lang('ZODIAC') }}</div>
 						<li class="zrow">
-							<strong><i class="icon fa-star fa-fw" aria-hidden="true"></i>{{ lang('SIGN') ~ lang('COLON') }}</strong> {{ lang(zodiac.sign) }}
+							<strong>{{ icon('font', 'star', 'fa-fw', null, lang('SIGN') ~ lang('COLON')) }}</strong> {{ lang(zodiac.sign) }}
 						</li>
 
 					{% if element %}
 						<li class="zrow">
-							<strong><i class="icon fa-bolt fa-fw" aria-hidden="true"></i>{{ lang('ELEMENT') ~ lang('COLON') }}</strong> {{ element }}
+							<strong>{{ icon('font', 'bolt', 'fa-fw', null, lang('ELEMENT') ~ lang('COLON')) }}</strong> {{ element }}
 						</li>
 					{% endif %}
 
 					{% if zodiac.symbol %}
 						<li class="zrow">
-							<strong><i class="icon fa-plus fa-fw" aria-hidden="true"></i>{{ lang('SYMBOL') ~ lang('COLON') }}</strong> {{ lang(zodiac.symbol) }}
+							<strong>{{ icon('font', 'plus', 'fa-fw', null, lang('SYMBOL') ~ lang('COLON')) }}</strong> {{ lang(zodiac.symbol) }}
 						</li>
 					{% endif %}
 
 					{% if zodiac.plant %}
 						<li class="zrow">
-							<strong><i class="icon fa-tree fa-fw" aria-hidden="true"></i>{{ lang('PLANT') ~ lang('COLON') }}</strong> {{ lang(zodiac.plant) }}
+							<strong>{{ icon('font', 'tree', 'fa-fw', null, lang('PLANT') ~ lang('COLON')) }}</strong> {{ lang(zodiac.plant) }}
 						</li>
 					{% endif %}
 
 					{% if zodiac.gem %}
 						<li class="zrow">
-							<strong><i class="icon fa-diamond fa-fw" aria-hidden="true"></i>{{ lang('STONE') ~ lang('COLON') }}</strong> {{ lang(zodiac.gem) }}
+							<strong>{{ icon('font', 'diamond', 'fa-fw', null, lang('STONE') ~ lang('COLON')) }}</strong> {{ lang(zodiac.gem) }}
 						</li>
 					{% endif %}
 
 					{% if zodiac.ruler %}
 						<li class="zrow">
-							<strong><i class="icon fa-globe fa-fw" aria-hidden="true"></i>{{ lang('RULER') ~ lang('COLON') }}</strong> {{ lang(zodiac.ruler) }}
+							<strong>{{ icon('font', 'globe', 'fa-fw', null, lang('RULER') ~ lang('COLON')) }}</strong> {{ lang(zodiac.ruler) }}
 						</li>
 					{% endif %}
 
@@ -61,13 +63,13 @@
 							{% set symbol = 'calendar' %}
 						{% endif %}
 						<li class="zrow">
-							<strong><i class="icon fa-{{ symbol }} fa-fw" aria-hidden="true"></i>{{ lang(extra) ~ lang('COLON') }}</strong> {{ lang(zodiac.extra) }}
+							<strong>{{ icon('font', symbol, 'fa-fw', null, lang(extra) ~ lang('COLON')) }}</strong> {{ lang(zodiac.extra) }}
 						</li>
 					{% endif %}
 
 					{% if zodiac.dir %}
 						<li class="zrow">
-							<strong><i class="icon fa-compass fa-fw" aria-hidden="true"></i>{{ lang('DIRECTION') ~ lang('COLON') }}</strong> {{ lang(zodiac.dir) }}
+							<strong>{{ icon('font', 'compass', 'fa-fw', null, lang('DIRECTION') ~ lang('COLON')) }}</strong> {{ lang(zodiac.dir) }}
 						</li>
 					{% endif %}
 					</ul>

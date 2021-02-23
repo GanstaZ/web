@@ -12,9 +12,4 @@ $('dl.tabs dd.ztab').click(function() {
 	$('#'+tab_id).addClass('current');
 });
 
-$('.accordion').find('.accordion-toggle').click(function() {
-	$(this).next().slideToggle('fast');
-	$('.accordion-content').not($(this).next()).slideUp('fast');
-});
-
 }); // Avoid conflicts with other libraries

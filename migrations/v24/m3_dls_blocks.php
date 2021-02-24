@@ -38,7 +38,7 @@ class m3_dls_blocks extends \phpbb\db\migration\migration
 	*/
 	public function add_blocks()
 	{
-		if ($this->db_tools->sql_table_exists($this->table_prefix . 'blocks'))
+		if ($this->db_tools->sql_table_exists($this->table_prefix . 'dls_blocks'))
 		{
 			$sql_ary = [
 				[
@@ -98,7 +98,7 @@ class m3_dls_blocks extends \phpbb\db\migration\migration
 					'section'  => 'middle',
 				],
 			];
-			$this->db->sql_multi_insert($this->table_prefix . 'blocks', $sql_ary);
+			$this->db->sql_multi_insert($this->table_prefix . 'dls_blocks', $sql_ary);
 		}
 	}
 }

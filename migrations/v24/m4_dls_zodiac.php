@@ -42,7 +42,7 @@ class m4_dls_zodiac extends \phpbb\db\migration\migration
 	*/
 	public function zodiac_data()
 	{
-		if ($this->db_tools->sql_table_exists($this->table_prefix . 'zodiac'))
+		if ($this->db_tools->sql_table_exists($this->table_prefix . 'dls_zodiac'))
 		{
 			$sql_ary = [
 				// Tropical/Sidereal
@@ -95,7 +95,7 @@ class m4_dls_zodiac extends \phpbb\db\migration\migration
 				['sign' => 'GUINEA_PIG',  'plant'=> '', 'gem' => '', 'ruler' => 'VENUS',   'ext' => 'Friday',	   'enr' => 0, 'dir' => 1,],
 				['sign' => 'DRAGON',	  'plant'=> '', 'gem' => '', 'ruler' => 'SATURN',  'ext' => 'Saturday',	   'enr' => 0, 'dir' => 7,],
 			];
-			$this->db->sql_multi_insert($this->table_prefix . 'zodiac', $sql_ary);
+			$this->db->sql_multi_insert($this->table_prefix . 'dls_zodiac', $sql_ary);
 		}
 	}
 
@@ -104,7 +104,7 @@ class m4_dls_zodiac extends \phpbb\db\migration\migration
 	*/
 	public function zodiac_dates()
 	{
-		if ($this->db_tools->sql_table_exists($this->table_prefix . 'zodiac_dates'))
+		if ($this->db_tools->sql_table_exists($this->table_prefix . 'dls_zodiac_dates'))
 		{
 			$sql_ary = [
 				// Tropical
@@ -170,7 +170,7 @@ class m4_dls_zodiac extends \phpbb\db\migration\migration
 				['zid' => 44, 'type' => 6, 'date' => '1',],
 				['zid' => 45, 'type' => 6, 'date' => '1',],
 			];
-			$this->db->sql_multi_insert($this->table_prefix . 'zodiac_dates', $sql_ary);
+			$this->db->sql_multi_insert($this->table_prefix . 'dls_zodiac_dates', $sql_ary);
 		}
 	}
 
@@ -179,7 +179,7 @@ class m4_dls_zodiac extends \phpbb\db\migration\migration
 	*/
 	public function zodiac_symbols()
 	{
-		if ($this->db_tools->sql_table_exists($this->table_prefix . 'zodiac_symbols'))
+		if ($this->db_tools->sql_table_exists($this->table_prefix . 'dls_zodiac_symbols'))
 		{
 			$sql_ary = [
 				// Chinese
@@ -189,7 +189,7 @@ class m4_dls_zodiac extends \phpbb\db\migration\migration
 				['symbol' => 'WERMILLION_BIRD', 'type' => 5, 'ruler' => 'MARS',	   'ext' => 'SUMMER', 'dir' => 3,],
 				['symbol' => 'YELLOW_DRAGON',	'type' => 5, 'ruler' => 'SATURN',  'ext' => 'LMOTS',  'dir' => 9,],
 			];
-			$this->db->sql_multi_insert($this->table_prefix . 'zodiac_symbols', $sql_ary);
+			$this->db->sql_multi_insert($this->table_prefix . 'dls_zodiac_symbols', $sql_ary);
 		}
 	}
 
@@ -198,7 +198,7 @@ class m4_dls_zodiac extends \phpbb\db\migration\migration
 	*/
 	public function zodiac_heavenly_stems()
 	{
-		if ($this->db_tools->sql_table_exists($this->table_prefix . 'zodiac_heavenly_stems'))
+		if ($this->db_tools->sql_table_exists($this->table_prefix . 'dls_zodiac_heavenly_stems'))
 		{
 			$sql_ary = [
 				// Ten heavenly stems & their cycle numbers (number 0 is equivalent to 60)
@@ -213,7 +213,7 @@ class m4_dls_zodiac extends \phpbb\db\migration\migration
 				['snr' => 1, 'enr' => 4, 'sid' => 3, 'aid' => 9,  'bid' => 19, 'cid' => 29, 'did' => 39, 'eid' => 49, 'fid'=> 59,],
 				['snr' => 2, 'enr' => 4, 'sid' => 3, 'aid' => 10, 'bid' => 20, 'cid' => 30, 'did' => 40, 'eid' => 50, 'fid'=> 0,],
 			];
-			$this->db->sql_multi_insert($this->table_prefix . 'zodiac_heavenly_stems', $sql_ary);
+			$this->db->sql_multi_insert($this->table_prefix . 'dls_zodiac_heavenly_stems', $sql_ary);
 		}
 	}
 }

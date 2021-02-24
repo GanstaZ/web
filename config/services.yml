@@ -7,8 +7,9 @@ services:
     dls.web.helper:
         class: dls\web\core\helper
         arguments:
-            - '@group_helper'
-            - '@template'
+            - '@dbal.conn'
+            - '@user'
+            - '%dls.web.tables.page%'
 
     dls.web.listener:
         class: dls\web\event\listener
@@ -18,6 +19,7 @@ services:
             - '@language'
             - '@request'
             - '@template'
+            - '@dls.web.helper'
             - '@dls.web.plugin.manager'
         tags:
             - { name: event.listener }

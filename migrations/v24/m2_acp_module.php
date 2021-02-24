@@ -50,6 +50,13 @@ class m2_acp_module extends \phpbb\db\migration\migration
 					'module_basename' => '\dls\web\acp\blocks_module', 'modes' => ['blocks'],
 				],
 			]],
+			['module.add', [
+				'acp',
+				'ACP_DLS_WEB_TITLE',
+				[
+					'module_basename' => '\dls\web\acp\page_module', 'modes' => ['page'],
+				],
+			]],
 		];
 	}
 }

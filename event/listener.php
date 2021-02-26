@@ -15,6 +15,7 @@ use phpbb\controller\helper;
 use phpbb\language\language;
 use phpbb\request\request;
 use phpbb\template\template;
+use dls\web\core\helper as dls_helper;
 use dls\web\core\plugins\manager;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -38,18 +39,22 @@ class listener implements EventSubscriberInterface
 	/** @var template */
 	protected $template;
 
+	/** @var dls_helper */
+	protected $dls_helper;
+
 	/** @var manager */
 	protected $plugin;
 
 	/**
 	* Constructor
 	*
-	* @param config	  $config	Config object
-	* @param helper	  $helper	Controller helper object
-	* @param language $language Language object
-	* @param request  $request	Request object
-	* @param template $template Template object
-	* @param manager  $plugin	Plugin object
+	* @param config		$config		Config object
+	* @param helper		$helper		Controller helper object
+	* @param language	$language	Language object
+	* @param request	$request	Request object
+	* @param template	$template	Template object
+	* @param dls_helper $dls_helper Dls helper object
+	* @param manager	$plugin		Plugin object
 	*/
 	public function __construct(
 		config $config,
@@ -57,15 +62,17 @@ class listener implements EventSubscriberInterface
 		language $language,
 		request $request,
 		template $template,
+		dls_helper $dls_helper,
 		manager $plugin
 	)
 	{
-		$this->config	= $config;
-		$this->helper	= $helper;
-		$this->language = $language;
-		$this->request	= $request;
-		$this->template = $template;
-		$this->plugin	= $plugin;
+		$this->config	  = $config;
+		$this->helper	  = $helper;
+		$this->language	  = $language;
+		$this->request	  = $request;
+		$this->template	  = $template;
+		$this->dls_helper = $dls_helper;
+		$this->plugin	  = $plugin;
 	}
 
 	/**
@@ -103,6 +110,8 @@ class listener implements EventSubscriberInterface
 	*/
 	public function add_dls_web_data(): void
 	{
+		$this->dls_helper->get_page_data();
+
 		$this->template->assign_vars([
 			'U_NEWS' => $this->helper->route('dls_web_news_base'),
 		]);

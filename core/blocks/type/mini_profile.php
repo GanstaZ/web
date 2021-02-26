@@ -21,7 +21,7 @@ class mini_profile extends base
 	public function get_block_data(): array
 	{
 		return [
-			'section'  => 'right',
+			'section'  => 'dls_right',
 			'ext_name' => 'dls_web',
 		];
 	}

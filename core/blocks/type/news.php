@@ -57,14 +57,27 @@ class news extends base
 	* @param user		$user		User object
 	* @param pagination $pagination Pagination object
 	*/
-	public function __construct($config, $db, $controller, $template, $dispatcher, $root_path, $php_ext, auth $auth, language $language, renderer $renderer, user $user, pagination $pagination)
+	public function __construct(
+		$config,
+		$db,
+		$controller,
+		$template,
+		$dispatcher,
+		$root_path,
+		$php_ext,
+		auth $auth,
+		language $language,
+		renderer $renderer,
+		user $user,
+		pagination $pagination
+	)
 	{
 		parent::__construct($config, $db, $controller, $template, $dispatcher, $root_path, $php_ext);
 
-		$this->auth = $auth;
-		$this->language = $language;
-		$this->renderer = $renderer;
-		$this->user = $user;
+		$this->auth		  = $auth;
+		$this->language	  = $language;
+		$this->renderer	  = $renderer;
+		$this->user		  = $user;
 		$this->pagination = $pagination;
 
 		if (!function_exists('phpbb_get_user_rank'))
@@ -79,7 +92,7 @@ class news extends base
 	public function get_block_data(): array
 	{
 		return [
-			'section'  => 'special',
+			'section'  => 'dls_special',
 			'ext_name' => 'dls_web',
 		];
 	}
@@ -141,8 +154,9 @@ class news extends base
 	*/
 	public function base(int $forum_id): void
 	{
+		$category = $this->categories($forum_id);
 		// Check news id
-		if (!$this->categories($forum_id))
+		if (!$category)
 		{
 			throw new \phpbb\exception\http_exception(404, 'NO_FORUM', [$forum_id]);
 		}
@@ -159,7 +173,7 @@ class news extends base
 		}
 
 		// Assign breadcrumb
-		$this->assign_breadcrumb($this->categories($forum_id), 'dls_web_news_base', ['id' => $forum_id]);
+		$this->assign_breadcrumb($category, 'dls_web_news_base', ['id' => $forum_id]);
 
 		// Do the sql thang
 		$sql_ary = $this->get_sql_data($forum_id);
@@ -172,7 +186,7 @@ class news extends base
 		}
 		$this->db->sql_freeresult($result);
 
-		if ($this->config['dls_pagination'])
+		if ($this->config['dls_pagination'] && null !== $this->page)
 		{
 			// Get total posts
 			$sql_ary['SELECT'] = 'COUNT(p.post_id) AS num_posts';

@@ -155,6 +155,7 @@ class news extends base
 	public function base(int $forum_id): void
 	{
 		$category = $this->categories($forum_id);
+
 		// Check news id
 		if (!$category)
 		{

@@ -22,6 +22,7 @@ services:
             - '@template'
             - '@dls.web.helper'
             - '@dls.web.plugin.manager'
+            - '@?dls.web.block.manager'
         tags:
             - { name: event.listener }
 

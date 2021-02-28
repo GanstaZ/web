@@ -16,7 +16,8 @@ use phpbb\language\language;
 use phpbb\request\request;
 use phpbb\template\template;
 use dls\web\core\helper as dls_helper;
-use dls\web\core\plugins\manager;
+use dls\web\core\plugins\manager as plugins;
+use dls\web\core\blocks\manager;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -42,8 +43,11 @@ class listener implements EventSubscriberInterface
 	/** @var dls_helper */
 	protected $dls_helper;
 
-	/** @var manager */
+	/** @var plugins */
 	protected $plugin;
+
+	/** @var manager */
+	protected $manager;
 
 	/**
 	* Constructor
@@ -54,7 +58,8 @@ class listener implements EventSubscriberInterface
 	* @param request	$request	Request object
 	* @param template	$template	Template object
 	* @param dls_helper $dls_helper Dls helper object
-	* @param manager	$plugin		Plugin object
+	* @param plugins	$plugin		Plugin object
+	* @param manager	$manager	Blocks manager object
 	*/
 	public function __construct(
 		config $config,
@@ -63,7 +68,8 @@ class listener implements EventSubscriberInterface
 		request $request,
 		template $template,
 		dls_helper $dls_helper,
-		manager $plugin
+		plugins $plugin,
+		manager $manager = null
 	)
 	{
 		$this->config	  = $config;
@@ -73,6 +79,7 @@ class listener implements EventSubscriberInterface
 		$this->template	  = $template;
 		$this->dls_helper = $dls_helper;
 		$this->plugin	  = $plugin;
+		$this->manager	  = $manager;
 	}
 
 	/**
@@ -83,8 +90,9 @@ class listener implements EventSubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			'core.user_setup'  => 'add_language',
-			'core.page_header' => 'add_dls_web_data',
+			'core.user_setup'		=> 'add_language',
+			'core.user_setup_after' => 'add_manager_data',
+			'core.page_header'		=> 'add_dls_web_data',
 			'core.acp_manage_forums_request_data'  => 'web_manage_forums_request_data',
 			'core.acp_manage_forums_display_form'  => 'web_manage_forums_display_form',
 			'core.memberlist_prepare_profile_data' => 'prepare_profile_data',
@@ -104,14 +112,25 @@ class listener implements EventSubscriberInterface
 	}
 
 	/**
+	* Event core.user_setup_after
+	*
+	* @param \phpbb\event\data $event The event object
+	*/
+	public function add_manager_data($event): void
+	{
+		if ($this->config['dls_blocks'] && $get_page_data = $this->dls_helper->get_page_data())
+		{
+			$this->manager->load($get_page_data);
+		}
+	}
+
+	/**
 	* Event core.page_header
 	*
 	* @param \phpbb\event\data $event The event object
 	*/
 	public function add_dls_web_data(): void
 	{
-		$this->dls_helper->get_page_data();
-
 		$this->template->assign_vars([
 			'U_NEWS' => $this->helper->route('dls_web_news_base'),
 		]);

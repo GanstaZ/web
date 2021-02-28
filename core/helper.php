@@ -50,24 +50,20 @@ class helper
 	/**
 	* Get page data for blocks loader
 	*
-	* @return void
+	* @return array
 	*/
-	public function get_page_data()
+	public function get_page_data(): array
 	{
 		$on_page = explode('/', str_replace('.php', '', $this->user->page['page_name']));
 		$page_name = $on_page[0];
 
 		if ($page_name === 'app')
 		{
-			$page_name = count($on_page) > 2 && is_numeric(end($on_page)) ? $on_page[1] : end($on_page);
+			$get_last  = end($on_page);
+			$page_name = count($on_page) > 2 && is_numeric($get_last) ? $on_page[1] : $get_last;
 		}
 
-		$data = $this->get($page_name);
-
-		if ($data)
-		{
-			var_dump($data);
-		}
+		return $this->get($page_name);
 	}
 
 	/**
@@ -78,8 +74,8 @@ class helper
 	*/
 	public function get(string $name = null): array
 	{
-		//if (($pages = $this->cache->get('_dls_pages')) === false)
-		//{
+		if (($pages = $this->cache->get('_dls_pages')) === false)
+		{
 			$sql = 'SELECT name, dls_special, dls_right, dls_left, dls_middle, dls_top, dls_bottom
 					FROM ' . $this->page_data . '
 					WHERE active = 1
@@ -97,8 +93,8 @@ class helper
 			}
 			$this->db->sql_freeresult($result);
 
-			//$this->cache->put('_dls_pages', $pages);
-		//}
+			$this->cache->put('_dls_pages', $pages);
+		}
 
 		return $pages[$name] ?? [];
 	}

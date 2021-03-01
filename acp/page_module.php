@@ -23,13 +23,13 @@ class page_module
 	{
 		global $phpbb_container;
 
-		// Get an instance of the admin page controller
-		$admin_controller = $phpbb_container->get('dls.web.admin.page.controller');
-
 		$this->tpl_name = 'acp_pages';
 		$this->page_title = $phpbb_container->get('language')->lang('ACP_DLS_PAGE_TITLE');
 
-		$admin_controller->set_page_url($this->u_action);
+		// Get an instance of the admin page controller
+		$admin_controller = $phpbb_container->get('dls.web.admin.page.controller')
+			->set_page_url($this->u_action);
+
 		$admin_controller->display_page();
 	}
 }

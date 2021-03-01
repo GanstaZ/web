@@ -173,14 +173,14 @@ class admin_page_controller
 		foreach ($pages as $page => $data)
 		{
 			$this->template->assign_block_vars('pages', [
-				'name'		  => $page,
-				'active'	  => $data['active'],
-				'dls_special' => $data['dls_special'],
-				'dls_right'	  => $data['dls_right'],
-				'dls_left'	  => $data['dls_left'],
-				'dls_middle'  => $data['dls_middle'],
-				'dls_top'	  => $data['dls_top'],
-				'dls_bottom'  => $data['dls_bottom'],
+				'name'    => $page,
+				'active'  => $data['active'],
+				'special' => $data['dls_special'],
+				'right'   => $data['dls_right'],
+				'left'    => $data['dls_left'],
+				'middle'  => $data['dls_middle'],
+				'top'     => $data['dls_top'],
+				'bottom'  => $data['dls_bottom'],
 			]);
 		}
 	}

@@ -46,7 +46,7 @@ class admin_controller
 	* @param driver_interface $db		Database object
 	* @param language		  $language Language object
 	* @param request		  $request	Request object
-	* @param template	      $template Template object
+	* @param template		  $template Template object
 	*/
 	public function __construct(config $config, driver_interface $db, language $language, request $request, template $template)
 	{
@@ -108,14 +108,21 @@ class admin_controller
 
 		// Set template vars
 		$this->template->assign_vars([
-			'DLS_VERSION'	 => $this->config['dls_core_version'],
-			'DLS_NEWS_ID'	 => $this->get_ids(),
-			'S_NEWS_CURRENT' => $this->config['dls_news_fid'],
-			'S_PAGINATION'	 => $this->config['dls_pagination'],
-			'DLS_LIMIT'		 => $this->config['dls_limit'],
-			'DLS_USER_LIMIT' => $this->config['dls_user_limit'],
+			'DLS_VERSION'		 => $this->config['dls_core_version'],
+			'DLS_NEWS_ID'		 => $this->get_ids(),
+			'S_NEWS_CURRENT'	 => $this->config['dls_news_fid'],
+			'S_PAGINATION'		 => $this->config['dls_pagination'],
+			'DLS_LIMIT'			 => $this->config['dls_limit'],
+			'DLS_USER_LIMIT'	 => $this->config['dls_user_limit'],
 			'MIN_TITLE_LENGTH'	 => $this->config['dls_title_length'],
 			'MIN_CONTENT_LENGTH' => $this->config['dls_content_length'],
+			'S_BLOCKS'			 => $this->config['dls_blocks'],
+			'S_SPECIAL'			 => $this->config['dls_special'],
+			'S_RIGHT'			 => $this->config['dls_right'],
+			'S_LEFT'			 => $this->config['dls_left'],
+			'S_MIDDLE'			 => $this->config['dls_middle'],
+			'S_TOP'				 => $this->config['dls_top'],
+			'S_BOTTOM'			 => $this->config['dls_bottom'],
 			'U_ACTION'			 => $this->u_action,
 		]);
 	}
@@ -133,6 +140,13 @@ class admin_controller
 		$this->config->set('dls_content_length', $this->request->variable('dls_content_length', (int) 0));
 		$this->config->set('dls_limit', $this->request->variable('dls_limit', (int) 0));
 		$this->config->set('dls_user_limit', $this->request->variable('dls_user_limit', (int) 0));
+		$this->config->set('dls_blocks', $this->request->variable('dls_blocks', (bool) 0));
+		$this->config->set('dls_special', $this->request->variable('dls_special', (bool) 0));
+		$this->config->set('dls_right', $this->request->variable('dls_right', (bool) 0));
+		$this->config->set('dls_left', $this->request->variable('dls_left', (bool) 0));
+		$this->config->set('dls_middle', $this->request->variable('dls_middle', (bool) 0));
+		$this->config->set('dls_top', $this->request->variable('dls_top', (bool) 0));
+		$this->config->set('dls_bottom', $this->request->variable('dls_bottom', (bool) 0));
 	}
 
 	/**

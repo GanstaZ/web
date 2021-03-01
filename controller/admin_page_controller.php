@@ -123,7 +123,6 @@ class admin_page_controller
 		// Set output vars for display in the template
 		$this->assign_template_page_data($pages);
 
-
 		// Set template vars
 		$this->template->assign_vars([
 			'U_ACTION' => $this->u_action,

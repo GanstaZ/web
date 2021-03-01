@@ -63,7 +63,7 @@ class helper
 			$page_name = count($on_page) > 2 && is_numeric($get_last) ? $on_page[1] : $get_last;
 		}
 
-		return $this->get($page_name);
+		return $this->user->page['page_dir'] !== 'adm' ? $this->get($page_name) : [];
 	}
 
 	/**

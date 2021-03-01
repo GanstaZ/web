@@ -55,6 +55,16 @@ services:
             - '@template'
             - '@dls.web.block.manager'
 
+    dls.web.admin.page.controller:
+        class: dls\web\controller\admin_page_controller
+        arguments:
+            - '@cache'
+            - '@dbal.conn'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '%dls.web.tables.page%'
+
     dls.web.news.controller:
         class: dls\web\controller\news_controller
         arguments:

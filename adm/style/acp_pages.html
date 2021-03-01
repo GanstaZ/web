@@ -1,0 +1,66 @@
+{{ include('overall_header.html') }}
+
+<h1>{{ lang('ACP_DLS_PAGE') }}</h1>
+
+{% import '@dls_web/macros/forms.html' as form %}
+
+<form id="acp_web_page" method="post" action="{{ U_ACTION }}">
+
+	<fieldset>
+		<div class="lside">
+			<table class="table2 zebra-table no-header" data-no-responsive-header="true">
+			{% for page in loops.pages|slice(0, 1) %}
+				<thead>
+					<tr>
+					{% for key in page|keys|slice(0, 8) %}
+						<th>{{ key }}</th>
+					{% endfor %}
+					</tr>
+				</thead>
+			{% endfor %}
+
+			{% for page in loops.pages %}
+				{% set name = page.name %}
+				<tbody>
+					<tr>
+						<td class="tabled">
+							{{ form.checkbox(page.name, '0') ~ page.name }}
+						</td>
+						<td class="tabled">
+							{{ form.radio(name ~ '_active', page.active, {'yes': lang('YES'), 'no': lang('NO')}) }}
+						</td>
+						<td class="tabled">
+							{{ form.radio(name ~ '_special', page.dls_special, {'yes': lang('YES'), 'no': lang('NO')}) }}
+						</td>
+						<td class="tabled">
+							{{ form.radio(name ~ '_right', page.dls_right, {'yes': lang('YES'), 'no': lang('NO')}) }}
+						</td>
+						<td class="tabled">
+							{{ form.radio(name ~ '_left', page.dls_left, {'yes': lang('YES'), 'no': lang('NO')}) }}
+						</td>
+						<td class="tabled">
+							{{ form.radio(name ~ '_middle', page.dls_middle, {'yes': lang('YES'), 'no': lang('NO')}) }}
+						</td>
+						<td class="tabled">
+							{{ form.radio(name ~ '_top', page.dls_top, {'yes': lang('YES'), 'no': lang('NO')}) }}
+						</td>
+						<td class="tabled">
+							{{ form.radio(name ~ '_bottom', page.dls_bottom, {'yes': lang('YES'), 'no': lang('NO')}) }}
+						</td>
+					</tr>
+				</tbody>
+			{% endfor %}
+			</table>
+		</div>
+	</fieldset>
+
+	<p class="submit-buttons">
+		{{ form.input('submit', lang('SUBMIT'), 'button1', {'type': 'submit'}) }}
+		{{ form.input('reset', lang('RESET'), 'button2', {'type': 'reset'}) }}
+	</p>
+
+	{{ S_FORM_TOKEN }}
+
+</form>
+
+{{ include('overall_footer.html') }}

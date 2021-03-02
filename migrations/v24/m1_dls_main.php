@@ -17,7 +17,7 @@ class m1_dls_main extends \phpbb\db\migration\migration
 	*/
 	public function effectively_installed()
 	{
-		return $this->check('blocks') && $this->check('page') && $this->check('zodiac') && $this->check('zodiac_dates') && $this->check('zodiac_symbols') && $this->check('zodiac_heavenly_stems');
+		return $this->check('blocks') && $this->check('pages') && $this->check('zodiac') && $this->check('zodiac_dates') && $this->check('zodiac_symbols') && $this->check('zodiac_heavenly_stems');
 	}
 
 	/**
@@ -60,12 +60,13 @@ class m1_dls_main extends \phpbb\db\migration\migration
 					],
 					'PRIMARY_KEY' => ['id'],
 				],
-				$this->table_prefix . 'dls_page' => [
+				$this->table_prefix . 'dls_pages' => [
 					'COLUMNS' => [
 						'id'		  => ['UINT', null, 'auto_increment'],
 						'name'		  => ['VCHAR', ''],
 						'active'	  => ['BOOL', 0],
 						'allow'		  => ['BOOL', 0],
+						'changeable'  => ['BOOL', 0],
 						'dls_special' => ['BOOL', 0],
 						'dls_right'	  => ['BOOL', 0],
 						'dls_left'	  => ['BOOL', 0],
@@ -138,7 +139,7 @@ class m1_dls_main extends \phpbb\db\migration\migration
 		return [
 			'drop_tables' => [
 				$this->table_prefix . 'dls_blocks',
-				$this->table_prefix . 'dls_page',
+				$this->table_prefix . 'dls_pages',
 				$this->table_prefix . 'dls_zodiac',
 				$this->table_prefix . 'dls_zodiac_dates',
 				$this->table_prefix . 'dls_zodiac_symbols',

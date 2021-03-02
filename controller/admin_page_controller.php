@@ -82,7 +82,7 @@ class admin_page_controller
 		//$this->language->add_lang('acp_pages', 'dls/web');
 
 		// Get all pages
-		$sql = 'SELECT name, active, allow, dls_special, dls_right, dls_left, dls_middle, dls_top, dls_bottom
+		$sql = 'SELECT name, active, allow, changeable, dls_special, dls_right, dls_left, dls_middle, dls_top, dls_bottom
 				FROM ' . $this->page_data . '
 				ORDER BY id';
 		$result = $this->db->sql_query($sql);
@@ -94,6 +94,7 @@ class admin_page_controller
 				'name'		  => $row['name'],
 				'active'	  => (bool) $row['active'],
 				'allow'		  => (bool) $row['allow'],
+				'changeable'  => (bool) $row['changeable'],
 				'dls_special' => (bool) $row['dls_special'],
 				'dls_right'	  => (bool) $row['dls_right'],
 				'dls_left'	  => (bool) $row['dls_left'],
@@ -126,7 +127,8 @@ class admin_page_controller
 
 		// Set template vars
 		$this->template->assign_vars([
-			'U_ACTION' => $this->u_action,
+			'S_DLS_PAGE' => true,
+			'U_ACTION'	 => $this->u_action,
 		]);
 	}
 
@@ -175,15 +177,16 @@ class admin_page_controller
 		foreach ($pages as $page => $data)
 		{
 			$this->template->assign_block_vars('pages', [
-				'name'	  => $page,
-				'active'  => $data['active'],
-				'allow'	  => $data['allow'],
-				'special' => $data['dls_special'],
-				'right'	  => $data['dls_right'],
-				'left'	  => $data['dls_left'],
-				'middle'  => $data['dls_middle'],
-				'top'	  => $data['dls_top'],
-				'bottom'  => $data['dls_bottom'],
+				'name'		 => $page,
+				'active'	 => $data['active'],
+				'allow'		 => $data['allow'],
+				'special'	 => $data['dls_special'],
+				'right'		 => $data['dls_right'],
+				'left'		 => $data['dls_left'],
+				'middle'	 => $data['dls_middle'],
+				'top'		 => $data['dls_top'],
+				'bottom'	 => $data['dls_bottom'],
+				'changeable' => $data['changeable'],
 			]);
 		}
 	}

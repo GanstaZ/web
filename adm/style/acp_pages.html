@@ -22,6 +22,7 @@
 				<tbody>
 				{% for page in loops.pages %}
 					{% set name = page.name %}
+					{% set inactive = page|keys|slice(3, 6) %}
 					<tr>
 						<td class="tabled">
 							{{ form.checkbox(page.name, '0') ~ page.name }}
@@ -29,25 +30,25 @@
 						<td class="tabled">
 							{{ form.radio(name ~ '_active', page.active, {'yes': lang('YES'), 'no': lang('NO')}) }}
 						</td>
-						<td class="tabled">
+						<td class="tabled {{ not page.changeable ? 'acp_no_click'}}">
 							{{ form.radio(name ~ '_allow', page.allow, {'yes': lang('YES'), 'no': lang('NO')}) }}
 						</td>
-						<td class="tabled">
+						<td class="tabled {{ not config('dls_' ~ inactive.0) ? 'acp_no_click'}}">
 							{{ form.radio(name ~ '_special', page.special, {'yes': lang('YES'), 'no': lang('NO')}) }}
 						</td>
-						<td class="tabled">
+						<td class="tabled {{ not config('dls_' ~ inactive.1) ? 'acp_no_click'}}">
 							{{ form.radio(name ~ '_right', page.right, {'yes': lang('YES'), 'no': lang('NO')}) }}
 						</td>
-						<td class="tabled">
+						<td class="tabled {{ not config('dls_' ~ inactive.2) ? 'acp_no_click'}}">
 							{{ form.radio(name ~ '_left', page.left, {'yes': lang('YES'), 'no': lang('NO')}) }}
 						</td>
-						<td class="tabled">
+						<td class="tabled {{ not config('dls_' ~ inactive.3) ? 'acp_no_click'}}">
 							{{ form.radio(name ~ '_middle', page.middle, {'yes': lang('YES'), 'no': lang('NO')}) }}
 						</td>
-						<td class="tabled">
+						<td class="tabled {{ not config('dls_' ~ inactive.4) ? 'acp_no_click'}}">
 							{{ form.radio(name ~ '_top', page.top, {'yes': lang('YES'), 'no': lang('NO')}) }}
 						</td>
-						<td class="tabled">
+						<td class="tabled {{ not config('dls_' ~ inactive.5) ? 'acp_no_click'}}">
 							{{ form.radio(name ~ '_bottom', page.bottom, {'yes': lang('YES'), 'no': lang('NO')}) }}
 						</td>
 					</tr>

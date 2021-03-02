@@ -29,22 +29,23 @@ class m7_dls_page extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return [
-			['custom', [[$this, 'add_page']]],
+			['custom', [[$this, 'add_pages']]],
 		];
 	}
 
 	/**
-	* Custom function to add page data
+	* Custom function to add pages data
 	*/
-	public function add_page()
+	public function add_pages()
 	{
-		if ($this->db_tools->sql_table_exists($this->table_prefix . 'dls_page'))
+		if ($this->db_tools->sql_table_exists($this->table_prefix . 'dls_pages'))
 		{
 			$sql_ary = [
 				[
 					'name'		  => 'app',
 					'active'	  => 1,
 					'allow'		  => 0,
+					'changeable'  => 1,
 					'dls_special' => 1,
 					'dls_right'	  => 1,
 					'dls_left'	  => 0,
@@ -56,6 +57,7 @@ class m7_dls_page extends \phpbb\db\migration\migration
 					'name'		  => 'news',
 					'active'	  => 1,
 					'allow'		  => 0,
+					'changeable'  => 0,
 					'dls_special' => 1,
 					'dls_right'	  => 1,
 					'dls_left'	  => 0,
@@ -67,6 +69,7 @@ class m7_dls_page extends \phpbb\db\migration\migration
 					'name'		  => 'article',
 					'active'	  => 1,
 					'allow'		  => 0,
+					'changeable'  => 0,
 					'dls_special' => 1,
 					'dls_right'	  => 1,
 					'dls_left'	  => 0,
@@ -78,6 +81,7 @@ class m7_dls_page extends \phpbb\db\migration\migration
 					'name'		  => 'index',
 					'active'	  => 1,
 					'allow'		  => 0,
+					'changeable'  => 0,
 					'dls_special' => 0,
 					'dls_right'	  => 1,
 					'dls_left'	  => 0,
@@ -89,6 +93,7 @@ class m7_dls_page extends \phpbb\db\migration\migration
 					'name'		  => 'memberlist',
 					'active'	  => 0,
 					'allow'		  => 0,
+					'changeable'  => 0,
 					'dls_special' => 0,
 					'dls_right'	  => 0,
 					'dls_left'	  => 0,
@@ -100,6 +105,7 @@ class m7_dls_page extends \phpbb\db\migration\migration
 					'name'		  => 'viewforum',
 					'active'	  => 0,
 					'allow'		  => 0,
+					'changeable'  => 0,
 					'dls_special' => 0,
 					'dls_right'	  => 0,
 					'dls_left'	  => 0,
@@ -111,6 +117,7 @@ class m7_dls_page extends \phpbb\db\migration\migration
 					'name'		  => 'viewtopic',
 					'active'	  => 0,
 					'allow'		  => 0,
+					'changeable'  => 0,
 					'dls_special' => 0,
 					'dls_right'	  => 0,
 					'dls_left'	  => 0,
@@ -122,6 +129,7 @@ class m7_dls_page extends \phpbb\db\migration\migration
 					'name'		  => 'search',
 					'active'	  => 0,
 					'allow'		  => 0,
+					'changeable'  => 0,
 					'dls_special' => 0,
 					'dls_right'	  => 0,
 					'dls_left'	  => 0,
@@ -133,6 +141,7 @@ class m7_dls_page extends \phpbb\db\migration\migration
 					'name'		  => 'faq',
 					'active'	  => 0,
 					'allow'		  => 0,
+					'changeable'  => 0,
 					'dls_special' => 0,
 					'dls_right'	  => 0,
 					'dls_left'	  => 0,
@@ -141,7 +150,7 @@ class m7_dls_page extends \phpbb\db\migration\migration
 					'dls_bottom'  => 0,
 				],
 			];
-			$this->db->sql_multi_insert($this->table_prefix . 'dls_page', $sql_ary);
+			$this->db->sql_multi_insert($this->table_prefix . 'dls_pages', $sql_ary);
 		}
 	}
 }

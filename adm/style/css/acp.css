@@ -1,0 +1,7 @@
+/* DLS Web ACP
+----------------------------------*/
+.acp_no_click {
+	opacity: 0.5;
+	pointer-events: none;
+	cursor: default;
+}

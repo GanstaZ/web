@@ -8,6 +8,7 @@ services:
         class: dls\web\core\helper
         arguments:
             - '@cache'
+            - '@config'
             - '@dbal.conn'
             - '@user'
             - '%dls.web.tables.page%'

@@ -12,22 +12,25 @@
 			{% for page in loops.pages|slice(0, 1) %}
 				<thead>
 					<tr>
-					{% for key in page|keys|slice(0, 8) %}
+					{% for key in page|keys|slice(0, 9) %}
 						<th>{{ key }}</th>
 					{% endfor %}
 					</tr>
 				</thead>
 			{% endfor %}
 
-			{% for page in loops.pages %}
-				{% set name = page.name %}
 				<tbody>
+				{% for page in loops.pages %}
+					{% set name = page.name %}
 					<tr>
 						<td class="tabled">
 							{{ form.checkbox(page.name, '0') ~ page.name }}
 						</td>
 						<td class="tabled">
 							{{ form.radio(name ~ '_active', page.active, {'yes': lang('YES'), 'no': lang('NO')}) }}
+						</td>
+						<td class="tabled">
+							{{ form.radio(name ~ '_allow', page.allow, {'yes': lang('YES'), 'no': lang('NO')}) }}
 						</td>
 						<td class="tabled">
 							{{ form.radio(name ~ '_special', page.special, {'yes': lang('YES'), 'no': lang('NO')}) }}
@@ -48,8 +51,8 @@
 							{{ form.radio(name ~ '_bottom', page.bottom, {'yes': lang('YES'), 'no': lang('NO')}) }}
 						</td>
 					</tr>
+				{% endfor %}
 				</tbody>
-			{% endfor %}
 			</table>
 		</div>
 	</fieldset>

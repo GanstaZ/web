@@ -112,7 +112,7 @@ class helper
 				FROM ' . $this->page_data . '
 				WHERE active = 1
 				ORDER BY id';
-		$result = $this->db->sql_query($sql, 86400);
+		$result = $this->db->sql_query($sql, 300);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{

@@ -65,6 +65,7 @@ class m1_dls_main extends \phpbb\db\migration\migration
 						'id'		  => ['UINT', null, 'auto_increment'],
 						'name'		  => ['VCHAR', ''],
 						'active'	  => ['BOOL', 0],
+						'allow'		  => ['BOOL', 0],
 						'dls_special' => ['BOOL', 0],
 						'dls_right'	  => ['BOOL', 0],
 						'dls_left'	  => ['BOOL', 0],

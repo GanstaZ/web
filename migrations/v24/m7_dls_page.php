@@ -44,6 +44,7 @@ class m7_dls_page extends \phpbb\db\migration\migration
 				[
 					'name'		  => 'app',
 					'active'	  => 1,
+					'allow'		  => 0,
 					'dls_special' => 1,
 					'dls_right'	  => 1,
 					'dls_left'	  => 0,
@@ -54,6 +55,7 @@ class m7_dls_page extends \phpbb\db\migration\migration
 				[
 					'name'		  => 'news',
 					'active'	  => 1,
+					'allow'		  => 0,
 					'dls_special' => 1,
 					'dls_right'	  => 1,
 					'dls_left'	  => 0,
@@ -64,6 +66,7 @@ class m7_dls_page extends \phpbb\db\migration\migration
 				[
 					'name'		  => 'article',
 					'active'	  => 1,
+					'allow'		  => 0,
 					'dls_special' => 1,
 					'dls_right'	  => 1,
 					'dls_left'	  => 0,
@@ -72,18 +75,9 @@ class m7_dls_page extends \phpbb\db\migration\migration
 					'dls_bottom'  => 0,
 				],
 				[
-					'name'		  => 'faq',
-					'active'	  => 0,
-					'dls_special' => 0,
-					'dls_right'	  => 0,
-					'dls_left'	  => 0,
-					'dls_middle'  => 0,
-					'dls_top'	  => 0,
-					'dls_bottom'  => 0,
-				],
-				[
 					'name'		  => 'index',
 					'active'	  => 1,
+					'allow'		  => 0,
 					'dls_special' => 0,
 					'dls_right'	  => 1,
 					'dls_left'	  => 0,
@@ -94,6 +88,7 @@ class m7_dls_page extends \phpbb\db\migration\migration
 				[
 					'name'		  => 'memberlist',
 					'active'	  => 0,
+					'allow'		  => 0,
 					'dls_special' => 0,
 					'dls_right'	  => 0,
 					'dls_left'	  => 0,
@@ -102,8 +97,9 @@ class m7_dls_page extends \phpbb\db\migration\migration
 					'dls_bottom'  => 0,
 				],
 				[
-					'name'		  => 'ucp',
+					'name'		  => 'viewforum',
 					'active'	  => 0,
+					'allow'		  => 0,
 					'dls_special' => 0,
 					'dls_right'	  => 0,
 					'dls_left'	  => 0,
@@ -112,8 +108,9 @@ class m7_dls_page extends \phpbb\db\migration\migration
 					'dls_bottom'  => 0,
 				],
 				[
-					'name'		  => 'mcp',
+					'name'		  => 'viewtopic',
 					'active'	  => 0,
+					'allow'		  => 0,
 					'dls_special' => 0,
 					'dls_right'	  => 0,
 					'dls_left'	  => 0,
@@ -124,6 +121,18 @@ class m7_dls_page extends \phpbb\db\migration\migration
 				[
 					'name'		  => 'search',
 					'active'	  => 0,
+					'allow'		  => 0,
+					'dls_special' => 0,
+					'dls_right'	  => 0,
+					'dls_left'	  => 0,
+					'dls_middle'  => 0,
+					'dls_top'	  => 0,
+					'dls_bottom'  => 0,
+				],
+				[
+					'name'		  => 'faq',
+					'active'	  => 0,
+					'allow'		  => 0,
 					'dls_special' => 0,
 					'dls_right'	  => 0,
 					'dls_left'	  => 0,

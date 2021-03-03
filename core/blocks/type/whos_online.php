@@ -44,7 +44,7 @@ class whos_online extends base
 	public function get_block_data(): array
 	{
 		return [
-			'section'  => 'bottom',
+			'section'  => 'dls_bottom',
 			'ext_name' => 'dls_web',
 		];
 	}

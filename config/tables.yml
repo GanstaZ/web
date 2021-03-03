@@ -1,6 +1,7 @@
 parameters:
-    dls.web.tables.blocks: '%core.table_prefix%blocks'
-    dls.web.tables.zodiac: '%core.table_prefix%zodiac'
-    dls.web.tables.zodiac_dates: '%core.table_prefix%zodiac_dates'
-    dls.web.tables.zodiac_symbols: '%core.table_prefix%zodiac_symbols'
-    dls.web.tables.heavenly_stems: '%core.table_prefix%zodiac_heavenly_stems'
+    dls.web.tables.blocks: '%core.table_prefix%dls_blocks'
+    dls.web.tables.page: '%core.table_prefix%dls_pages'
+    dls.web.tables.zodiac: '%core.table_prefix%dls_zodiac'
+    dls.web.tables.zodiac_dates: '%core.table_prefix%dls_zodiac_dates'
+    dls.web.tables.zodiac_symbols: '%core.table_prefix%dls_zodiac_symbols'
+    dls.web.tables.heavenly_stems: '%core.table_prefix%dls_zodiac_heavenly_stems'

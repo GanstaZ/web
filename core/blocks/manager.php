@@ -31,7 +31,7 @@ class manager
 	protected $blocks_data;
 
 	/** @var array sections */
-	protected $sections = ['special', 'right', 'bottom', 'left', 'top', 'middle'];
+	protected $sections = ['dls_special', 'dls_right', 'dls_bottom', 'dls_left', 'dls_top', 'dls_middle'];
 
 	/** @var array type */
 	protected $type = ['section', 'name'];

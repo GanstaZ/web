@@ -7,8 +7,12 @@ services:
     dls.web.helper:
         class: dls\web\core\helper
         arguments:
-            - '@group_helper'
-            - '@template'
+            - '@cache'
+            - '@config'
+            - '@dbal.conn'
+            - '@user'
+            - '%dls.web.tables.page%'
+            - '%core.php_ext%'
 
     dls.web.listener:
         class: dls\web\event\listener
@@ -18,7 +22,9 @@ services:
             - '@language'
             - '@request'
             - '@template'
+            - '@dls.web.helper'
             - '@dls.web.plugin.manager'
+            - '@?dls.web.block.manager'
         tags:
             - { name: event.listener }
 
@@ -50,6 +56,16 @@ services:
             - '@request'
             - '@template'
             - '@dls.web.block.manager'
+
+    dls.web.admin.page.controller:
+        class: dls\web\controller\admin_page_controller
+        arguments:
+            - '@cache'
+            - '@dbal.conn'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '%dls.web.tables.page%'
 
     dls.web.news.controller:
         class: dls\web\controller\news_controller

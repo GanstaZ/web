@@ -35,12 +35,12 @@ $lang = array_merge($lang, [
 	'CHECK_TO'		=> 'Check to install ',
 
 	// Sections
-	'SPECIAL' => 'Special',
-	'RIGHT'	  => 'Right side',
-	'LEFT'	  => 'Left side',
-	'TOP'	  => 'Top',
-	'MIDDLE'  => 'Middle',
-	'BOTTOM'  => 'Bottom',
+	'DLS_SPECIAL'	=> 'Special',
+	'DLS_RIGHT'		=> 'Right side',
+	'DLS_LEFT'		=> 'Left side',
+	'DLS_TOP'		=> 'Top',
+	'DLS_MIDDLE'	=> 'Middle',
+	'DLS_BOTTOM'	=> 'Bottom',
 
 	// Blocks
 	'DLS_NEWS'			=> 'News',

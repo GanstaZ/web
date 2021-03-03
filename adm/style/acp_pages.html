@@ -1,0 +1,70 @@
+{{ include('overall_header.html') }}
+
+<h1>{{ lang('ACP_DLS_PAGE') }}</h1>
+
+{% import '@dls_web/macros/forms.html' as form %}
+
+<form id="acp_web_page" method="post" action="{{ U_ACTION }}">
+
+	<fieldset>
+		<div class="lside">
+			<table class="table2 zebra-table no-header" data-no-responsive-header="true">
+			{% for page in loops.pages|slice(0, 1) %}
+				<thead>
+					<tr>
+					{% for key in page|keys|slice(0, 9) %}
+						<th>{{ key }}</th>
+					{% endfor %}
+					</tr>
+				</thead>
+			{% endfor %}
+
+				<tbody>
+				{% for page in loops.pages %}
+					{% set name = page.name %}
+					{% set inactive = page|keys|slice(3, 6) %}
+					<tr>
+						<td class="tabled">
+							{{ form.checkbox(page.name, '0') ~ page.name }}
+						</td>
+						<td class="tabled">
+							{{ form.radio(name ~ '_active', page.active, {'yes': lang('YES'), 'no': lang('NO')}) }}
+						</td>
+						<td class="tabled {{ not page.changeable ? 'acp_no_click'}}">
+							{{ form.radio(name ~ '_allow', page.allow, {'yes': lang('YES'), 'no': lang('NO')}) }}
+						</td>
+						<td class="tabled {{ not config('dls_' ~ inactive.0) ? 'acp_no_click'}}">
+							{{ form.radio(name ~ '_special', page.special, {'yes': lang('YES'), 'no': lang('NO')}) }}
+						</td>
+						<td class="tabled {{ not config('dls_' ~ inactive.1) ? 'acp_no_click'}}">
+							{{ form.radio(name ~ '_right', page.right, {'yes': lang('YES'), 'no': lang('NO')}) }}
+						</td>
+						<td class="tabled {{ not config('dls_' ~ inactive.2) ? 'acp_no_click'}}">
+							{{ form.radio(name ~ '_left', page.left, {'yes': lang('YES'), 'no': lang('NO')}) }}
+						</td>
+						<td class="tabled {{ not config('dls_' ~ inactive.3) ? 'acp_no_click'}}">
+							{{ form.radio(name ~ '_middle', page.middle, {'yes': lang('YES'), 'no': lang('NO')}) }}
+						</td>
+						<td class="tabled {{ not config('dls_' ~ inactive.4) ? 'acp_no_click'}}">
+							{{ form.radio(name ~ '_top', page.top, {'yes': lang('YES'), 'no': lang('NO')}) }}
+						</td>
+						<td class="tabled {{ not config('dls_' ~ inactive.5) ? 'acp_no_click'}}">
+							{{ form.radio(name ~ '_bottom', page.bottom, {'yes': lang('YES'), 'no': lang('NO')}) }}
+						</td>
+					</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</fieldset>
+
+	<p class="submit-buttons">
+		{{ form.input('submit', lang('SUBMIT'), 'button1', {'type': 'submit'}) }}
+		{{ form.input('reset', lang('RESET'), 'button2', {'type': 'reset'}) }}
+	</p>
+
+	{{ S_FORM_TOKEN }}
+
+</form>
+
+{{ include('overall_footer.html') }}

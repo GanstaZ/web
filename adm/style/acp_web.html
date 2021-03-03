@@ -14,8 +14,8 @@
 		</dl>
 
 		<dl>
-			<dt>{{ form.label('dls_pagination', lang('SHOW_PAGINATION') ~ lang('COLON')) }}</dt>
-			<dd>{{ form.radio('dls_pagination', S_PAGINATION, {'yes': lang('YES'), 'no': lang('NO')}) }}</dd>
+			<dt>{{ form.label('dls_pagination', lang('DLS_PAGINATION') ~ lang('COLON')) }}</dt>
+			<dd>{{ form.radio('dls_pagination', S_PAGINATION, {'yes': lang('ENABLE'), 'no': lang('DISABLE')}) }}</dd>
 		</dl>
 
 		<dl>
@@ -51,6 +51,47 @@
 				<span>{{ lang('LIMIT_EXPLAIN') }}</span>
 			</dt>
 			<dd>{{ form.input('dls_user_limit', DLS_USER_LIMIT, '', {'type': 'number', 'min': 0, 'max': 10}) }}</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset>
+		<legend>{{ lang('DLS_SECTIONS') }}</legend>
+
+		<dl>
+			<dt>{{ form.label('dls_blocks', lang('DLS_BLOCKS') ~ lang('COLON')) }}<br>
+				<span>{{ lang('DLS_BLOCKS_EXPLAIN') }}</span>
+			</dt>
+			<dd>{{ form.radio('dls_blocks', S_BLOCKS, {'yes': lang('ENABLE'), 'no': lang('DISABLE')}) }}</dd>
+		</dl>
+
+		<dl>
+			<dt>{{ form.label('dls_special', lang('DLS_SPECIAL') ~ lang('COLON')) }}</dt>
+			<dd>{{ form.radio('dls_special', S_SPECIAL, {'yes': lang('ENABLE'), 'no': lang('DISABLE')}) }}</dd>
+		</dl>
+
+		<dl>
+			<dt>{{ form.label('dls_right', lang('DLS_RIGHT') ~ lang('COLON')) }}</dt>
+			<dd>{{ form.radio('dls_right', S_RIGHT, {'yes': lang('ENABLE'), 'no': lang('DISABLE')}) }}</dd>
+		</dl>
+
+		<dl>
+			<dt>{{ form.label('dls_left', lang('DLS_LEFT') ~ lang('COLON')) }}</dt>
+			<dd>{{ form.radio('dls_left', S_LEFT, {'yes': lang('ENABLE'), 'no': lang('DISABLE')}) }}</dd>
+		</dl>
+
+		<dl>
+			<dt>{{ form.label('dls_middle', lang('DLS_MIDDLE') ~ lang('COLON')) }}</dt>
+			<dd>{{ form.radio('dls_middle', S_MIDDLE, {'yes': lang('ENABLE'), 'no': lang('DISABLE')}) }}</dd>
+		</dl>
+
+		<dl>
+			<dt>{{ form.label('dls_top', lang('DLS_TOP') ~ lang('COLON')) }}</dt>
+			<dd>{{ form.radio('dls_top', S_TOP, {'yes': lang('ENABLE'), 'no': lang('DISABLE')}) }}</dd>
+		</dl>
+
+		<dl>
+			<dt>{{ form.label('dls_bottom', lang('DLS_BOTTOM') ~ lang('COLON')) }}</dt>
+			<dd>{{ form.radio('dls_bottom', S_BOTTOM, {'yes': lang('ENABLE'), 'no': lang('DISABLE')}) }}</dd>
 		</dl>
 	</fieldset>
 

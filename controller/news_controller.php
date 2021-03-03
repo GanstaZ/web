@@ -40,8 +40,6 @@ class news_controller
 		$this->helper = $helper;
 		$this->language = $language;
 		$this->manager = $manager;
-
-		$this->manager->load();
 	}
 
 	/**

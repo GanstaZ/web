@@ -35,6 +35,9 @@ class helper
 	/** @var page table */
 	protected $page_data;
 
+	/** @var php file extension */
+	protected $php_ext;
+
 	/** @var array allow */
 	protected $allow = [];
 
@@ -46,14 +49,16 @@ class helper
 	* @param driver_interface $db		 Database object
 	* @param user			  $user		 User object
 	* @param string			  $page_data The name of the page data table
+	* @param string			  $php_ext	 PHP file extension
 	*/
-	public function __construct(cache $cache, config $config, driver_interface $db, user $user, $page_data)
+	public function __construct(cache $cache, config $config, driver_interface $db, user $user, $page_data, $php_ext)
 	{
 		$this->cache	 = $cache;
 		$this->config	 = $config;
 		$this->db		 = $db;
 		$this->user		 = $user;
 		$this->page_data = $page_data;
+		$this->php_ext	 = $php_ext;
 	}
 
 	/**
@@ -63,10 +68,10 @@ class helper
 	*/
 	public function get_page_data(): array
 	{
-		$on_page = explode('/', str_replace('.php', '', $this->user->page['page_name']));
+		$on_page = explode('/', str_replace('.' . $this->php_ext, '', $this->user->page['page_name']));
 		$page_name = $on_page[0];
 
-		// Do we have special pages, that can load all pages (controllers/routes)
+		// Do we have any special pages, that can load everything (route paths)
 		$this->check_allowed_condition();
 
 		if ($page_name === 'app')
@@ -75,6 +80,9 @@ class helper
 			$page_name = count($on_page) > 2 && is_numeric($get_last) ? $on_page[1] : $get_last;
 			$page_name = isset($on_page[1]) && $this->allow($on_page[1]) ? $on_page[1] : $page_name;
 		}
+
+		// This is global for app.php & will load everything, even, if above route/s is/are disabled.
+		$page_name = $this->allow($on_page[0]) ? $on_page[0] : $page_name;
 
 		return !$this->is_cp($page_name) ? $this->get($page_name) : [];
 	}

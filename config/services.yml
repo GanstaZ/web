@@ -12,6 +12,7 @@ services:
             - '@dbal.conn'
             - '@user'
             - '%dls.web.tables.page%'
+            - '%core.php_ext%'
 
     dls.web.listener:
         class: dls\web\event\listener

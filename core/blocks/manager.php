@@ -66,7 +66,7 @@ class manager
 	*/
 	public function get(string $service): object
 	{
-		return self::$blocks[$service] ?? (object)[];
+		return self::$blocks[$service] ?? (object) [];
 	}
 
 	/**

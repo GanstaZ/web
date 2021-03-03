@@ -141,10 +141,10 @@ class news extends base
 				AND news_fid_enable = 1',
 		];
 
-		if(is_string($this->db->sql_build_query('SELECT', $sql_ary)))
+		if (is_string($this->db->sql_build_query('SELECT', $sql_ary)))
 		{
 			$default = [];
-			
+
 			/**
 			* Add category id/s
 			*

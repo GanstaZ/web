@@ -38,6 +38,13 @@ services:
             - { name: twig.extension }
 
 # ----- Controllers -----
+    dls.web.controller.base:
+        abstract: true
+        arguments:
+            - '@controller.helper'
+            - '@language'
+            - '@dls.web.block.manager'
+
     dls.web.admin.controller:
         class: dls\web\controller\admin_controller
         arguments:
@@ -69,7 +76,7 @@ services:
 
     dls.web.news.controller:
         class: dls\web\controller\news_controller
+        shared: false
+        parent: dls.web.controller.base
         arguments:
-            - '@controller.helper'
-            - '@language'
-            - '@dls.web.block.manager'
+            - '@config'

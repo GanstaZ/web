@@ -18,34 +18,7 @@
 {% endif %}
 
 {% if install %}
-	<fieldset>
-		<h2>{{ lang('ADD_BLOCK', '[' ~ U_ADD ~ ']', U_ADD > 1 ? 's') }}</h2>
-
-		<div class="lside">
-			<table class="table2 zebra-table no-header" data-no-responsive-header="true">
-				<thead>
-					<tr>
-						<th>{{ lang('BLOCK') }}</th>
-						<th>{{ lang('CHECK_TO') }}</th>
-					</tr>
-				</thead>
-
-				<tbody>
-				{% for add in install %}
-					<tr>
-						<td class="tabled">{{ lang(add.name|upper) }}</td>
-						<td class="tabled">{{ form.checkbox(add.name ~ '_new', '0') }}</td>
-					</tr>
-				{% endfor %}
-				</tbody>
-			</table>
-		</div>
-
-	</fieldset>
-
-	<p class="submit-buttons">
-		{{ form.input('submit', lang('SUBMIT'), 'button1', {'type': 'submit'}) }}
-	</p>
+	{{ include('@dls_web/includes/install.html') }}
 {% endif %}
 
 	<fieldset>

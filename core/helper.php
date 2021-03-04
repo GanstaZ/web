@@ -81,7 +81,7 @@ class helper
 			$page_name = isset($on_page[1]) && $this->allow($on_page[1]) ? $on_page[1] : $page_name;
 		}
 
-		// This is global for app.php & will load everything, even, if above route/s is/are disabled.
+		// This is global for app.php & will load everything, even, if above route path/s is/are disabled.
 		$page_name = $this->allow($on_page[0]) ? $on_page[0] : $page_name;
 
 		return !$this->is_cp($page_name) ? $this->get($page_name) : [];

@@ -26,7 +26,7 @@ class dls_time
 	/**
 	* Constructor
 	*
-	* @param language $language
+	* @param language $language Language object
 	*/
 	public function __construct(language $language)
 	{
@@ -37,7 +37,6 @@ class dls_time
 	* Time ago
 	*
 	* @param string $date
-	*
 	* @return string
 	*/
 	public function ago($date): string
@@ -66,7 +65,6 @@ class dls_time
 	* Plural
 	*
 	* @param array $unit Time units (1, 2, 3... [numbers] & s, i, h... [sec, min aso])
-	*
 	* @return string
 	*/
 	protected function plural($unit): string
@@ -82,7 +80,6 @@ class dls_time
 	*
 	* @param string $uot Unit of time [second, minute...]
 	* @param int	$int Time value [1, 2...]
-	*
 	* @return string
 	*/
 	protected function calculate($uot, $int): ?string

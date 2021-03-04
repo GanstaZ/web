@@ -10,28 +10,11 @@
 
 namespace dls\web\controller;
 
-use phpbb\config\config;
-
 /**
 * DLS Web news controller
 */
 class news_controller extends base
 {
-	/** @var config */
-	protected $config;
-
-	/**
-	* Constructor
-	*
-	* @param config $config Config object
-	*/
-	public function __construct($helper, $language, $manager, config $config)
-	{
-		parent::__construct($helper, $language, $manager);
-
-		$this->config = $config;
-	}
-
 	/**
 	* News controller for routes:
 	*

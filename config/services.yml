@@ -83,5 +83,3 @@ services:
         class: dls\web\controller\news_controller
         shared: false
         parent: dls.web.controller.base
-        arguments:
-            - '@config'

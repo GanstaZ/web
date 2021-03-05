@@ -19,7 +19,7 @@ class blocks extends \Twig\Node\Node
 	{
 		$this->environment = $environment;
 
-		parent::__construct(array('expr' => $expr), array(), $lineno, $tag);
+		parent::__construct(['expr' => $expr], [], $lineno, $tag);
 	}
 
 	/**

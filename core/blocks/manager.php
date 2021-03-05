@@ -215,7 +215,7 @@ class manager
 	*/
 	protected function is_special(string $section): bool
 	{
-		return $section === 'special';
+		return $section === 'dls_special';
 	}
 
 	/**

@@ -195,10 +195,10 @@ class admin_block_controller
 	{
 		foreach ($data_ary as $data)
 		{
-			$block = $this->request->variable($data['name'], (int) 0);
+			$block = $this->request->variable($data['name'], (bool) 0);
 
 			$block_data = [
-				'active'   => $this->request->variable($data['name'] . '_active', (int) 0),
+				'active'   => $this->request->variable($data['name'] . '_active', (bool) 0),
 				'position' => $this->request->variable($data['name'] . '_position', (int) 0),
 				'section'  => $this->request->variable($data['name'] . '_section', (string) ''),
 			];
@@ -212,7 +212,7 @@ class admin_block_controller
 				);
 			}
 
-			$new_block = $this->request->variable($data['name'] . '_new', (int) 0);
+			$new_block = $this->request->variable($data['name'] . '_new', (bool) 0);
 
 			// Add new block/service data into db.
 			if ($new_block && in_array($data['name'], array_column($this->status('add'), 'name')))
@@ -243,13 +243,13 @@ class admin_block_controller
 	{
 		foreach ($rowset as $section => $data)
 		{
-			// Set categories
+			// Set sections
 			$this->template->assign_block_vars('section', [
 				'section'  => strtoupper($section),
 				'in_count' => count($data),
 			]);
 
-			// Add data to given categories
+			// Add data to given sections
 			foreach ($data as $block)
 			{
 				$this->template->assign_block_vars('section.block', [

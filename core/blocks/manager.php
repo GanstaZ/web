@@ -66,7 +66,7 @@ class manager
 	*/
 	public function get(string $service): object
 	{
-		return self::$blocks[$service];
+		return self::$blocks[$service] ?? (object) [];
 	}
 
 	/**
@@ -215,7 +215,7 @@ class manager
 	*/
 	protected function is_special(string $section): bool
 	{
-		return $section === 'special';
+		return $section === 'dls_special';
 	}
 
 	/**

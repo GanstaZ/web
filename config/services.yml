@@ -14,6 +14,11 @@ services:
             - '%dls.web.tables.page%'
             - '%core.php_ext%'
 
+    dls.web.time:
+        class: dls\web\core\dls_time
+        arguments:
+            - '@language'
+
     dls.web.listener:
         class: dls\web\event\listener
         arguments:
@@ -38,6 +43,13 @@ services:
             - { name: twig.extension }
 
 # ----- Controllers -----
+    dls.web.controller.base:
+        abstract: true
+        arguments:
+            - '@controller.helper'
+            - '@language'
+            - '@dls.web.block.manager'
+
     dls.web.admin.controller:
         class: dls\web\controller\admin_controller
         arguments:
@@ -69,7 +81,5 @@ services:
 
     dls.web.news.controller:
         class: dls\web\controller\news_controller
-        arguments:
-            - '@controller.helper'
-            - '@language'
-            - '@dls.web.block.manager'
+        shared: false
+        parent: dls.web.controller.base

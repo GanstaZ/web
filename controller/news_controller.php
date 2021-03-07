@@ -10,38 +10,11 @@
 
 namespace dls\web\controller;
 
-use phpbb\controller\helper;
-use phpbb\language\language;
-use dls\web\core\blocks\manager;
-
 /**
 * DLS Web news controller
 */
-class news_controller
+class news_controller extends base
 {
-	/** @var controller helper */
-	protected $helper;
-
-	/** @var language */
-	protected $language;
-
-	/** @var manager */
-	protected $manager;
-
-	/**
-	* Constructor
-	*
-	* @param helper	  $helper	Controller helper object
-	* @param language $language Language object
-	* @param manager  $manager	Manager object
-	*/
-	public function __construct(helper $helper, language $language, manager $manager)
-	{
-		$this->helper = $helper;
-		$this->language = $language;
-		$this->manager = $manager;
-	}
-
 	/**
 	* News controller for routes:
 	*
@@ -53,10 +26,10 @@ class news_controller
 	* @throws \phpbb\exception\http_exception
 	* @return \Symfony\Component\HttpFoundation\Response A Symfony Response object
 	*/
-	public function handle(int $id, int $page)
+	public function handle(int $id, int $page): \Symfony\Component\HttpFoundation\Response
 	{
 		// Check if news is disabled
-		if (!$this->manager->get('dls_news'))
+		if ($this->disabled('dls_news'))
 		{
 			throw new \phpbb\exception\http_exception(404, 'DISABLED');
 		}
@@ -76,10 +49,10 @@ class news_controller
 	* @throws \phpbb\exception\http_exception
 	* @return \Symfony\Component\HttpFoundation\Response A Symfony Response object
 	*/
-	public function article(int $aid)
+	public function article(int $aid): \Symfony\Component\HttpFoundation\Response
 	{
 		// Check if news is disabled
-		if (!$this->manager->get('dls_news'))
+		if ($this->disabled('dls_news'))
 		{
 			throw new \phpbb\exception\http_exception(404, 'DISABLED');
 		}

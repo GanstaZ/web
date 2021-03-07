@@ -10,17 +10,19 @@
 
 namespace dls\web\core\twig\tokenparser;
 
+use phpbb\template\twig\environment;
+
 class blocks extends \Twig\TokenParser\AbstractTokenParser
 {
-	/** @var \phpbb\template\twig\environment */
+	/** @var environment */
 	protected $environment;
 
 	/**
 	* Constructor
 	*
-	* @param \phpbb\template\twig\environment $environment
+	* @param environment $environment
 	*/
-	public function __construct(\phpbb\template\twig\environment $environment)
+	public function __construct(environment $environment)
 	{
 		$this->environment = $environment;
 	}

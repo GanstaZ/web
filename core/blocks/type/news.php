@@ -131,10 +131,36 @@ class news extends base
 	*/
 	public function categories(int $fid): string
 	{
-		$sql = 'SELECT forum_id, forum_name
-				FROM ' . FORUMS_TABLE . '
-				WHERE forum_type = ' . FORUM_POST . '
-					AND news_fid_enable = 1';
+		$sql_ary = [
+			'SELECT' => 'forum_id, forum_name',
+			'FROM'	 => [
+				FORUMS_TABLE => 'f',
+			],
+
+			'WHERE'	 => 'forum_type = ' . FORUM_POST . '
+				AND news_fid_enable = 1',
+		];
+
+		if (is_string($this->db->sql_build_query('SELECT', $sql_ary)))
+		{
+			$default = [];
+
+			/**
+			* Add category id/s
+			*
+			* @event dls.web.news_add_category
+			* @var array default Array containing default category id/s
+			* @since 2.4.0-RC1
+			*/
+			$vars = ['default',];
+			extract($this->dispatcher->trigger_event('dls.web.news_add_category', compact($vars)));
+
+			$default[] = (int) $this->config['dls_news_fid'];
+
+			$sql_ary['WHERE'] = 'forum_type = ' . FORUM_POST . ' AND ' . $this->db->sql_in_set('forum_id', $default);
+		}
+
+		$sql = $this->db->sql_build_query('SELECT', $sql_ary);
 		$result = $this->db->sql_query($sql, 86400);
 
 		while ($row = $this->db->sql_fetchrow($result))

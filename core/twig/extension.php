@@ -12,7 +12,7 @@ namespace dls\web\core\twig;
 
 use phpbb\template\twig\environment;
 use dls\web\core\blocks\event;
-use phpbb\group\helper as group_helper;
+use phpbb\group\helper as group;
 
 /**
 * DLS Web template loader extension for blocks
@@ -26,20 +26,20 @@ class extension extends \Twig\Extension\AbstractExtension
 	protected $event;
 
 	/** @var helper */
-	protected $group_helper;
+	protected $group;
 
 	/**
 	* Constructor
 	*
-	* @param environment  $environment
-	* @param event		  $event Block helper object
-	* @param group_helper $group_helper Group helper object
+	* @param environment $environment Environment object
+	* @param event		 $event		  Block helper object
+	* @param group		 $group		  Group helper object
 	*/
-	public function __construct(environment $environment, event $event, group_helper $group_helper)
+	public function __construct(environment $environment, event $event, group $group)
 	{
 		$this->environment = $environment;
 		$this->event = $event;
-		$this->group_helper = $group_helper;
+		$this->group = $group;
 	}
 
 	/**
@@ -88,7 +88,7 @@ class extension extends \Twig\Extension\AbstractExtension
 	*/
 	public function blocks(\Twig_Environment $env, $context, $section)
 	{
-		foreach ($section as $name => $path)
+		foreach ($this->get_block_loader($section) as $name => $path)
 		{
 			$path = $path . '/block';
 
@@ -107,6 +107,6 @@ class extension extends \Twig\Extension\AbstractExtension
 	*/
 	public function get_group_name($group_name)
 	{
-		return $this->group_helper->get_name($group_name);
+		return $this->group->get_name($group_name);
 	}
 }

@@ -21,23 +21,23 @@ class event
 	/**
 	* Set template data
 	*
-	* @param string $category Name of the category
-	* @param array	$data	  Block data
+	* @param string $section Name of the section
+	* @param array	$data	 Block data
 	* @return void
 	*/
-	public function set_data(string $category, array $data): void
+	public function set_data(string $section, array $data): void
 	{
-		$this->get($category) ? self::$data[$category] = array_merge(self::$data[$category], $data) : self::$data[$category] = $data;
+		$this->get($section) ? self::$data[$section] = array_merge(self::$data[$section], $data) : self::$data[$section] = $data;
 	}
 
 	/**
-	* Get data from a given category
+	* Get data from a given section
 	*
-	* @param string $category Category name
+	* @param string $section Name of the section
 	* @return array
 	*/
-	public function get(string $category): array
+	public function get(string $section): array
 	{
-		return self::$data[$category] ?? [];
+		return self::$data[$section] ?? [];
 	}
 }

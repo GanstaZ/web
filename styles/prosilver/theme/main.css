@@ -1,9 +1,10 @@
 /* DLS Web Default Configurations
 ----------------------------------*/
 .dls_wrap {
-	margin: 15px 0 9px;
 	font-size: 1.1em;
-	position: relative;
+	margin: 15px 0 9px;
+	display: -webkit-flex;
+	display: flex;
 }
 
 .dls_wrap h2 {
@@ -14,25 +15,19 @@
 	margin: 2px 5px 7px;
 }
 
-.main_section, .right_section {
-	display: inline-block;
-}
-
 .block {
 	margin-bottom: 10px;
 	padding: 8px;
 	border-radius: 8px;
-	background: rgb(236,241,243);
 }
 
 /* Post Middle Content
 ----------------------------------*/
-.main_section {
-	width: 72%;
-	float: left;
+.section_main {
+	flex: 3;
 }
 
-.main_section h3 {
+.section_main h3 {
 	margin-bottom: 2px;
 	font-size: 1.3em;
 	font-weight: bold;
@@ -59,7 +54,7 @@
 	margin: 0.8em 0 0.9em 3em;
 }
 
-.main_section .avatar-container img {
+.section_main .avatar-container img {
 	max-width: 75px;
 	max-height: 75px;
 }
@@ -77,11 +72,17 @@
 	padding-right: 8px;
 }
 
-/* Right Section
+/* Side Section
 ----------------------------------------*/
-.right_section { 
-	width: 26%;
-	float: right;
+.section_side { 
+	flex: 1;
+}
+
+.sec_left {
+	margin-right: 10px;
+}
+.sec_right {
+	margin-left: 10px;
 }
 
 .inner-block {
@@ -165,20 +166,20 @@ li.drow strong {
 }
 
 @media (max-width: 700px) {
-	.main_section {
+	.section_main {
 		border: none;
 		margin: 0;
 		width: auto;
 		padding: 0 5px;
 	}
 
-	.main_section, .block {
+	.section_main, .block {
 		border-radius: 0;
 		margin-left: -5px;
 		margin-right: -5px;
 	}
 
-	.right_section {
+	.section_side {
 		display: none;
 	}
 }
@@ -268,16 +269,4 @@ dl.details dd.dls_dd {
 li.zrow strong {
 	font-weight: normal;
 	color: #000033;
-}
-
-.accordion-toggle {
-	cursor: pointer;
-}
-
-.accordion-content {
-	display: none;
-}
-
-.accordion-content.default {
-	display: block;
 }

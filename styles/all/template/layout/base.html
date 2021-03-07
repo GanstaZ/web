@@ -1,11 +1,34 @@
 {{ include('overall_header.html') }}
 
-{% block top_content %}{% endblock %}
+{% block top_content %}
+	<p class="{{ S_CONTENT_FLOW_END }} responsive-center time{{ S_USER_LOGGED_IN ? ' rightside' }}">
+		{{ S_USER_LOGGED_IN ? LAST_VISIT_DATE : CURRENT_TIME }}
+	</p>
+	{% if S_USER_LOGGED_IN %}<p class="responsive-center time">{{ CURRENT_TIME }}</p>{% endif %}
+{% endblock %}
 
 <div class="inner dls_wrap">
-	{% block content %}{% endblock %}
 
-	{% block side_section %}{% endblock %}
+	{% block section_left %}
+		{% if config('dls_left') %}
+			<div class="section_side sec_left">
+				{% BLOCKS dls_left %}
+			</div>
+		{% endif %}
+	{% endblock %}
+
+	<div class="section_main">
+		{% block content %}{% endblock %}
+	</div>
+
+	{% block section_right %}
+		{% if config('dls_right') %}
+			<div class="section_side sec_right">
+				{% BLOCKS dls_right %}
+			</div>
+		{% endif %}
+	{% endblock %}
+
 </div>
 
 {{ include('overall_footer.html') }}

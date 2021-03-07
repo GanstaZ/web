@@ -1,6 +1,7 @@
 {% if S_REGISTERED_USER %}
-{% from '@dls_web/macros/tags.html' import url %}
-	<div class="block">
+	{% from '@dls_web/macros/tags.html' import url %}
+
+	<div class="block bg1">
 		<h2>{{ lang('WELCOME') ~ S_USERNAME }}</h2>
 		<div class="inner-block">
 			<div class="login_avatar">{{ CURRENT_USER_AVATAR }}</div>

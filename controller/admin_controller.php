@@ -135,6 +135,11 @@ class admin_controller
 	protected function set_options(): void
 	{
 		$this->config->set('dls_news_fid', $this->request->variable('dls_news_fid', (int) 0));
+		$this->config->set('dls_the_team_fid', $this->request->variable('dls_the_team_fid', (int) 0));
+		$this->config->set('dls_top_posters_fid', $this->request->variable('dls_top_posters_fid', (int) 0));
+		$this->config->set('dls_recent_posts_fid', $this->request->variable('dls_recent_posts_fid', (int) 0));
+		$this->config->set('dls_recent_topics_fid', $this->request->variable('dls_recent_topics_fid', (int) 0));
+		$this->config->set('dls_profile_tabs', $this->request->variable('dls_profile_tabs', (bool) 0));
 		$this->config->set('dls_pagination', $this->request->variable('dls_pagination', (bool) 0));
 		$this->config->set('dls_title_length', $this->request->variable('dls_title_length', (int) 0));
 		$this->config->set('dls_content_length', $this->request->variable('dls_content_length', (int) 0));

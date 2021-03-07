@@ -1,0 +1,10 @@
+{{ include('overall_header.html') }}
+
+<h1>{% block acp_heading %}{% endblock %}</h1>
+
+<form method="post" action="{{ U_ACTION }}">
+	{% block acp_form_content %}{% endblock %}
+	{{ S_FORM_TOKEN }}
+</form>
+
+{{ include('overall_footer.html') }}

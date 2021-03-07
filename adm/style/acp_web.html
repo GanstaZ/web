@@ -1,10 +1,13 @@
-{{ include('overall_header.html') }}
+{% extends '@dls_web/layout/acp-base.html' %}
 
-<h1>{{ lang('ACP_DLS_WEB') }}</h1>
+{% block acp_heading %}
+	{{ lang('ACP_DLS_WEB') }}
+{% endblock %}
 
 {% import '@dls_web/macros/forms.html' as form %}
 
-<form id="acp_web_general" method="post" action="{{ U_ACTION }}">
+{% block acp_form_content %}
+
 	<fieldset>
 		<legend>{{ lang('SETTINGS') }}</legend>
 
@@ -95,13 +98,4 @@
 		</dl>
 	</fieldset>
 
-	<p class="submit-buttons">
-		{{ form.input('submit', lang('SUBMIT'), 'button1', {'type': 'submit'}) }}
-		{{ form.input('reset', lang('RESET'), 'button2', {'type': 'reset'}) }}
-	</p>
-
-	{{ S_FORM_TOKEN }}
-
-</form>
-
-{{ include('overall_footer.html') }}
+{% endblock %}

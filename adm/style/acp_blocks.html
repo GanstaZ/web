@@ -1,25 +1,27 @@
-{{ include('overall_header.html') }}
+{% extends '@dls_web/layout/acp-base.html' %}
 
-<h1>{{ lang('ACP_DLS_BLOCKS') }}</h1>
+{% block acp_heading %}
+	{{ lang('ACP_DLS_BLOCKS') }}
+{% endblock %}
 
 {% import '@dls_web/macros/forms.html' as form %}
 {% from '@dls_web/macros/tags.html' import icon %}
 
-<form id="acp_web_block" method="post" action="{{ U_ACTION }}">
+{% block acp_form_content %}
 
-{% if error %}
-	{{ include('@dls_web/error/acp_add_blocks_table.html') }}
-{% endif %}
+	{% if error %}
+		{{ include('@dls_web/error/acp_add_blocks_table.html') }}
+	{% endif %}
 
-{% if U_PURGE %}
-	<fieldset>
-		{{ lang('PURGE_BLOCK', U_PURGE|join(lang('COMMA_SEPARATOR'))) }}
-	</fieldset>
-{% endif %}
+	{% if U_PURGE %}
+		<fieldset>
+			{{ lang('PURGE_BLOCK', U_PURGE|join(lang('COMMA_SEPARATOR'))) }}
+		</fieldset>
+	{% endif %}
 
-{% if install %}
-	{{ include('@dls_web/includes/install.html') }}
-{% endif %}
+	{% if install %}
+		{{ include('@dls_web/includes/install.html') }}
+	{% endif %}
 
 	<fieldset>
 	{% for section in loops.section %}
@@ -75,13 +77,4 @@
 	{% endfor %}
 	</fieldset>
 
-	<p class="submit-buttons">
-		{{ form.input('submit', lang('SUBMIT'), 'button1', {'type': 'submit'}) }}
-		{{ form.input('reset', lang('RESET'), 'button2', {'type': 'reset'}) }}
-	</p>
-
-	{{ S_FORM_TOKEN }}
-
-</form>
-
-{{ include('overall_footer.html') }}
+{% endblock %}

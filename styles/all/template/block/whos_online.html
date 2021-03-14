@@ -1,8 +1,8 @@
-{% from '@dls_web/macros/tags.html' import icon, url %}
+{% from '@dls_web/macros/tags.html' import url %}
 
-<div class="block mid-bottom-content bg1">
+<div class="post block mid-bottom-content bg1">
 {% if S_DISPLAY_ONLINE_LIST %}
-	<div class="whos_inner">
+	<div class="whos_inner inner-block">
 		<h2>{{ lang('WHO_IS_ONLINE') }}</h2>
 		<ul class="no_style">
 			<li>{{ TOTAL_USERS_ONLINE }} ({{ L_ONLINE_EXPLAIN }})</li>
@@ -29,7 +29,7 @@
 {% endif %}
 
 {% if s_birthday_list %}
-	<div class="whos_inner">
+	<div class="whos_inner inner-block">
 		<h2>{{ lang('BIRTHDAYS') }}</h2>
 		<p class="whos_p">
 		{% if birthdays %}
@@ -47,7 +47,7 @@
 {% endif %}
 
 {% if new_user %}
-	<div>
+	<div class="inner-block">
 		<h2>{{ lang('STATISTICS') }}</h2>
 		<ul class="no_style">
 			<li>

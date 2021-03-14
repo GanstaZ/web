@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block section_left %}
-	{% if config('dls_left') %}
+	{% if dls_left %}
 		<div class="section_side sec_left">
 			{% BLOCKS dls_left %}
 		</div>
@@ -30,7 +30,7 @@
 {% endblock %}
 
 {% block section_right %}
-	{% if config('dls_right') %}
+	{% if dls_right %}
 		<div class="section_side sec_right">
 			{% BLOCKS dls_right %}
 		</div>

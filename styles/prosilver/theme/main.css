@@ -17,8 +17,6 @@
 
 .block {
 	margin-bottom: 10px;
-	padding: 8px;
-	border-radius: 8px;
 }
 
 /* Post Middle Content
@@ -36,22 +34,8 @@
 	margin-top: 0;
 }
 
-.news {
-	margin-bottom: 10px;
-}
-
 .dls_content {
-	color: rgb(83, 100, 130);
-	min-height: 3em;
-	overflow: hidden;
-	overflow-x: auto;
-	line-height: 1.4em;
-	padding-bottom: 1px;
-	clear: both;
-}
-
-.dls_content ul, .dls_content ol {
-	margin: 0.8em 0 0.9em 3em;
+	font-size: 1.3em;
 }
 
 .section_main .avatar-container img {
@@ -86,7 +70,7 @@
 }
 
 .inner-block {
-	padding: 0 2px 0;
+	padding: 0 2px 3px;
 }
 
 .login_avatar {

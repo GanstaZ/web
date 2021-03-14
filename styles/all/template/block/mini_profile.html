@@ -1,14 +1,17 @@
 {% if S_REGISTERED_USER %}
-	{% from '@dls_web/macros/tags.html' import url %}
+	{% embed '@dls_web/includes/block-item.html' %}
+		{% from '@dls_web/macros/tags.html' import url %}
 
-	<div class="block bg1">
-		<h2>{{ lang('WELCOME') ~ S_USERNAME }}</h2>
-		<div class="inner-block">
+		{% block block_heading %}{{ lang('WELCOME') ~ S_USERNAME }}{% endblock %}
+
+		{% block block_content %}
 			<div class="login_avatar">{{ CURRENT_USER_AVATAR }}</div>
-		{% if S_DISPLAY_PM %}
-			{% set PMC = PRIVATE_MESSAGE_COUNT == 1 ? lang('NEW_PM') : lang('NEW_PMS') %}
-			{{ lang('PRIVATE_MESSAGES') ~ lang('COLON') ~ url({'href': U_PRIVATEMSGS}, PRIVATE_MESSAGE_COUNT ~ PMC) }}
-		{% endif %}
-		</div>
-	</div>
+			{% if S_DISPLAY_PM %}
+				{% set PMC = PRIVATE_MESSAGE_COUNT == 1 ? lang('NEW_PM') : lang('NEW_PMS') %}
+				{{ lang('PRIVATE_MESSAGES') ~ lang('COLON') ~ url({'href': U_PRIVATEMSGS}, PRIVATE_MESSAGE_COUNT ~ PMC) }}
+			{% endif %}
+		{% endblock %}
+
+	{% endembed %}
+
 {% endif %}

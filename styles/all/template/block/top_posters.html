@@ -1,14 +1,15 @@
-{% from '@dls_web/macros/tags.html' import icon %}
-{% apply spaceless %}
-<div class="block bg1">
-	<h2>{{ lang('LEADERS') }}</h2>
-	<div class="inner-block">
+{% embed '@dls_web/includes/block-item.html' %}
+	{% from '@dls_web/macros/tags.html' import icon %}
+
+	{% block block_heading %}{{ lang('LEADERS') }}{% endblock %}
+
+	{% block block_content %}
 		<ul class="no_style">
 			<li class="head"><strong>{{ lang('USERNAME') }}</strong><span class="right"><strong>{{ lang('POSTS') }}</strong></span></li>
 		{% for posters in top_posters %}
 			<li>{{ loop.index ~ '.' ~ icon('fonts', 'star', 'fa-fw icon-gold', null, posters.top)|trim }}<span class="right">{{ posters.posts }}</span></li>
 		{% endfor %}
 		</ul>
-	</div>
-</div>
-{% endapply %}
+	{% endblock %}
+
+{% endembed %}

@@ -120,7 +120,19 @@ class listener implements EventSubscriberInterface
 	{
 		if ($this->config['dls_blocks'] && $get_page_data = $this->dls_helper->get_page_data())
 		{
+			// Set page var for template, so we know where we are
+			$this->template->assign_var('S_DLS_PAGE', true);
+
+			// Load available blocks
 			$this->manager->load($get_page_data);
+
+			// Assign template vars
+			foreach ($get_page_data as $s_page)
+			{
+				$this->template->assign_vars([
+					$s_page => $this->manager->has($s_page),
+				]);
+			}
 		}
 	}
 

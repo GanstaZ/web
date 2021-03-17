@@ -1,9 +1,20 @@
-{% from '@dls_web/macros/tags.html' import url %}
+{% from '@dls_web/macros/tags.html' import icon, url %}
+
+<div class="dls_wrap tabs">
+	<div class="dls_row ztab current" data-tab="tab-1">
+		<span class="zicon">{{ icon('font', 'user-circle', 'fa-fw') }}</span>{{ lang('WHO_IS_ONLINE') }}
+	</div>
+	<div class="dls_row ztab" data-tab="tab-2">
+		<span class="zicon">{{ icon('font', 'birthday-cake', 'fa-fw') }}</span>{{ lang('BIRTHDAYS') }}
+	</div>
+	<div class="dls_row ztab" data-tab="tab-3">
+		<span class="zicon">{{ icon('font', 'pie-chart', 'fa-fw') }}</span>{{ lang('STATISTICS') }}
+	</div>
+</div>
 
 <div class="post block mid-bottom-content bg1">
-{% if S_DISPLAY_ONLINE_LIST %}
-	<div class="whos_inner inner-block">
-		<h2>{{ lang('WHO_IS_ONLINE') }}</h2>
+	<div class="tab-content current" id="tab-1">
+	{% if S_DISPLAY_ONLINE_LIST %}
 		<ul class="no_style">
 			<li>{{ TOTAL_USERS_ONLINE }} ({{ L_ONLINE_EXPLAIN }})</li>
 			<li>{{ RECORD_USERS }}</li>
@@ -25,12 +36,10 @@
 			{% endif %}
 			{% endif %}
 		</ul>
+	{% endif %}
 	</div>
-{% endif %}
-
-{% if s_birthday_list %}
-	<div class="whos_inner inner-block">
-		<h2>{{ lang('BIRTHDAYS') }}</h2>
+	<div class="tab-content" id="tab-2">
+	{% if s_birthday_list %}
 		<p class="whos_p">
 		{% if birthdays %}
 			{{ lang('CONGRATULATIONS') ~ lang('COLON') }}
@@ -43,12 +52,10 @@
 			{{ lang('NO_BIRTHDAYS') }}
 		{% endif %}
 		</p>
+	{% endif %}
 	</div>
-{% endif %}
-
-{% if new_user %}
-	<div class="inner-block">
-		<h2>{{ lang('STATISTICS') }}</h2>
+	<div class="tab-content" id="tab-3">
+	{% if new_user %}
 		<ul class="no_style">
 			<li>
 				{{ lang('TOTAL_POSTS_COUNT', dls_posts) }} &bull; {{ lang('TOTAL_TOPICS', dls_topics) }} &bull; {{ lang('TOTAL_USERS', dls_users) }} &bull; {{ lang('NEWEST_USER', new_user) }}
@@ -57,9 +64,7 @@
 				{{ lang('DLS_PER_DAY', lang('POSTS'), ppd) }} &bull; {{ lang('DLS_PER_DAY', lang('TOPICS'), tpd) }} &bull; {{ lang('DLS_PER_DAY', lang('USERS'), upd) }}
 			</li>
 		</ul>
+	{% endif %}
 	</div>
-{% endif %}
-
 </div>
 {# End Bottom Content #}
-

@@ -2,10 +2,10 @@ $(function() {  // Avoid conflicts with other libraries
 
 'use strict';
 
-$('dl.tabs dd.ztab').click(function() {
+$('.tabs .ztab').click(function() {
 	var tab_id = $(this).attr('data-tab');
 
-	$('dl.tabs dd.ztab').removeClass('current');
+	$('.tabs .ztab').removeClass('current');
 	$('.tab-content').removeClass('current');
 
 	$(this).addClass('current');

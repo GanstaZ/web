@@ -1,18 +1,25 @@
 /* DLS Web Default Configurations
 ----------------------------------*/
 .dls_wrap {
-	font-size: 1.1em;
-	margin: 15px 0 9px;
 	display: -webkit-flex;
 	display: flex;
 }
 
-.dls_wrap h2 {
+.dls_wrap_content {
+	font-size: 1.1em;
+	margin: 15px 0 9px;
+}
+
+.dls_wrap_content h2 {
 	font-size: 1.3em;
 	color: #115098;
 	border-bottom: 1px solid #dbdee3;
 	padding: 2px 0;
 	margin: 2px 5px 7px;
+}
+
+.dls_row {
+	flex: 1;
 }
 
 .block {
@@ -43,12 +50,9 @@
 	max-height: 75px;
 }
 
-.whos_inner {
-	margin-bottom: 1.4em;
-}
-
 .whos_p {
 	font-size: inherit;
+	margin-bottom: 0;
 }
 
 .dls_pagination {
@@ -58,7 +62,7 @@
 
 /* Side Section
 ----------------------------------------*/
-.section_side { 
+.section_side {
 	flex: 1;
 }
 
@@ -168,13 +172,16 @@ li.drow strong {
 	}
 }
 
-dl.tabs {
+.tabs {
 	margin: 0;
+}
+
+.tabs-profile {
 	padding-right: 5px;
 	border-right: 1.5px solid #FFF;
 }
 
-dl.tabs dd.ztab {
+.tabs .ztab {
 	padding: 2px 5px;
 	margin: 5px 0;
 	font-size: 13px;
@@ -200,7 +207,7 @@ dl.tabs dd.ztab {
 	color: #8f8f8f;
 }
 
-dl.tabs dd.ztab:hover {
+.tabs .ztab:hover {
 	color: #0A8ED0;
 	border-color: #0A8ED0;
 	background-color: #FFFFFF; /* Old browsers */ /* FF3.6+ */

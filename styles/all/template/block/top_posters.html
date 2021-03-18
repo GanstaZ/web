@@ -7,7 +7,7 @@
 		<ul class="no_style">
 			<li class="head"><strong>{{ lang('USERNAME') }}</strong><span class="right"><strong>{{ lang('POSTS') }}</strong></span></li>
 		{% for posters in top_posters %}
-			<li>{{ loop.index ~ '.' ~ icon('fonts', 'star', 'fa-fw icon-gold', null, posters.top)|trim }}<span class="right">{{ posters.posts }}</span></li>
+			<li>{{ loop.index ~ '.' ~ icon('fa', 'star fa-fw icon-gold', null, posters.top)|trim }}<span class="right">{{ posters.posts }}</span></li>
 		{% endfor %}
 		</ul>
 	{% endblock %}

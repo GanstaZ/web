@@ -6,7 +6,7 @@
 	{% block block_content %}
 		<ul class="no_style">
 		{% for recent in recent_posts %}
-			<li>{{ icon('font', 'file-o', 'fa-fw icon-red', null, lang('IN_TOPIC')) ~ url({'href': recent.link}, recent.title) }}</li>
+			<li>{{ icon('fa', 'file-o fa-fw icon-red', null, lang('IN_TOPIC')) ~ url({'href': recent.link}, recent.title) }}</li>
 		{% endfor %}
 		</ul>
 	{% endblock %}

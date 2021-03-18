@@ -15,18 +15,18 @@
 			<ul class="post-buttons">
 				<li>
 					<span class="button button-icon-only" title="{{ news.views }} {{ lang('VIEWS') }}">
-						{{ icon('font', 'eye', 'fa-fw') }}<span class="sr-only">{{ lang('VIEWS') }}</span>
+						{{ icon('icon', 'eye fa-fw') }}<span class="sr-only">{{ lang('VIEWS') }}</span>
 					</span>
 				</li>
 				<li>
 					<span class="button button-icon-only" title="{{ news.replies }} {{ lang('REPLIES') }}">
-						{{ icon('font', 'commenting', 'fa-fw') }}<span class="sr-only">{{ lang('REPLIES') }}</span>
+						{{ icon('icon', 'commenting fa-fw') }}<span class="sr-only">{{ lang('REPLIES') }}</span>
 					</span>
 				</li>
 			</ul>
 
 			<p class="author">
-				{{ url({'href': news.link, 'title': lang('POST')}, icon('font', 'file-o', 'fa-fw icon-md')) }}
+				{{ url({'href': news.link, 'title': lang('POST')}, icon('icon', 'file-o fa-fw icon-md')) }}
 				{{ lang('POST_BY_AUTHOR') }} {{ news.author }} &raquo; {{ news.date }}
 			</p>
 
@@ -37,7 +37,7 @@
 		</section>
 
 		<div class="back2top">
-			{{ url({'class': 'top', 'href': '#top', 'title': lang('BACK_TO_TOP')}, icon('font', 'chevron-circle-up', 'fa-fw icon-gray')) }}
+			{{ url({'class': 'top', 'href': '#top', 'title': lang('BACK_TO_TOP')}, icon('icon', 'chevron-circle-up fa-fw icon-gray')) }}
 			<span class="sr-only">{{ lang('BACK_TO_TOP') }}</span>
 		</div>
 	</div>

@@ -1,17 +1,11 @@
-{% macro icon(type, icon, class, attributes = null, extra) %}
-	{% if type === 'font' %}
-		<i class="icon fa-{{ icon }} {{ class }}"{% for attr, value in attributes %} {{ attr }}="{{ value }}"{% endfor %} aria-hidden="true"></i>{{ extra ? extra }}
-	{% elseif type === 'fonts' %}
-		<i class="fa fa-{{ icon }} {{ class }}"{% for attr, value in attributes %} {{ attr }}="{{ value }}"{% endfor %} aria-hidden="true"></i>{{ extra ? extra }}
-	{% elseif type === 'svg' %}
-
-	{% elseif type === 'png' %}
-
-	{% else %}
-		testing
-	{% endif %}
+{% macro icon(type, icon, attributes = null, extra) %}
+	{% spaceless %}
+		<i class="{{ type }} fa-{{ icon }}"{% for attr, value in attributes %} {{ attr }}="{{ value }}"{% endfor %} aria-hidden="true"></i>{{ extra ? extra }}
+	{% endspaceless %}
 {% endmacro %}
 
 {% macro url(attributes, text) %}
-	<a{% for attr, value in attributes %} {{ attr }}="{{ value }}"{% endfor %}>{{ text }}</a>
+	{% spaceless %}
+	    <a{% for attr, value in attributes %} {{ attr }}="{{ value }}"{% endfor %}>{{ text }}</a>
+	{% endspaceless %}
 {% endmacro %}

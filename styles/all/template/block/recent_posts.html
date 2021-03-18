@@ -1,11 +1,14 @@
-{% from '@dls_web/macros/tags.html' import icon, url %}
-<div class="block">
-	<h2>{{ lang('RECENT_POSTS') }}</h2>
-	<div class="inner-block">
+{% embed '@dls_web/includes/block-item.html' %}
+	{% from '@dls_web/macros/tags.html' import icon, url %}
+
+	{% block block_heading %}{{ lang('RECENT_POSTS') }}{% endblock %}
+
+	{% block block_content %}
 		<ul class="no_style">
 		{% for recent in recent_posts %}
-			<li>{{ icon('font', 'file-o', 'fa-fw icon-red', null, lang('IN_TOPIC')) ~ url({'href': recent.link}, recent.title) }}</li>
+			<li>{{ icon('fa', 'file-o fa-fw icon-red', null, lang('IN_TOPIC')) ~ url({'href': recent.link}, recent.title) }}</li>
 		{% endfor %}
 		</ul>
-	</div>
-</div>
+	{% endblock %}
+
+{% endembed %}

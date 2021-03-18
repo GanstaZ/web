@@ -1,4 +1,4 @@
-{% extends 'layout/news-base.html' %}
+{% extends 'layout/app-base.html' %}
 
 {% block mid_content %}
 	{% if news %}
@@ -8,7 +8,9 @@
 
 		{% if pagination %}
 			<div class="dls_pagination">
-				<div class="pagination">{{ lang('TOTAL_POSTS_COUNT', total_news) }} &bull; {{ PAGE_NUMBER }} &bull;{{ include('pagination.html') }}</div>
+				<div class="pagination">
+					{{ lang('TOTAL_POSTS_COUNT', total_news) }} &bull; {{ PAGE_NUMBER }} {{ include('includes/pagination.html') }}
+				</div>
 			</div>
 		{% endif %}
 

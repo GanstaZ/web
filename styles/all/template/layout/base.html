@@ -2,10 +2,18 @@
 
 {% block top_content %}{% endblock %}
 
-<div class="inner dls_wrap">
-	{% block content %}{% endblock %}
+<div class="inner dls_wrap dls_wrap_content">
 
-	{% block side_section %}{% endblock %}
+	{% block section_left %}{% endblock %}
+
+	<div class="section_main">
+		{% block content %}{% endblock %}
+	</div>
+
+	{% block section_right %}{% endblock %}
+
 </div>
+
+{% block bottom_content %}{% endblock %}
 
 {{ include('overall_footer.html') }}

@@ -2,15 +2,15 @@
 <div class="panel bg1{% if S_ONLINE %} online{% endif %}">
 	<div class="inner">
 
-	<dl class="left-box tabs">
+	<dl class="left-box tabs tabs-profile">
 		<dt class="profile-avatar">{% if AVATAR_IMG %}{{ AVATAR_IMG }}{% endif %}</dt>
 		{% EVENT memberlist_view_rank_avatar_before %}
 		{% if RANK_TITLE %}<dd>{{ RANK_TITLE }}</dd>{% endif %}
 		{% if RANK_IMG %}<dd>{{ RANK_IMG }}</dd>{% endif %}
 		{% EVENT memberlist_view_rank_avatar_after %}
-		<dd class="ztab current" data-tab="tab-1"><span class="zicon"><i class="icon fa-user-circle fa-fw" aria-hidden="true"></i></span>{{ lang('INFORMATION') }}</dd>
-		<dd class="ztab" data-tab="tab-2"><span class="zicon"><i class="icon fa-commenting-o fa-fw" aria-hidden="true"></i></span>{{ lang('CONTACT') }}</dd>
-		<dd class="ztab" data-tab="tab-3"><span class="zicon"><i class="icon fa-bar-chart fa-fw" aria-hidden="true"></i></span>{{ lang('STATISTICS') }}</dd>
+		<dd class="button ztab current" data-tab="tab-1"><span class="zicon"><i class="icon fa-user-circle fa-fw" aria-hidden="true"></i></span>{{ lang('INFORMATION') }}</dd>
+		<dd class="button ztab" data-tab="tab-2"><span class="zicon"><i class="icon fa-commenting-o fa-fw" aria-hidden="true"></i></span>{{ lang('CONTACT') }}</dd>
+		<dd class="button ztab" data-tab="tab-3"><span class="zicon"><i class="icon fa-bar-chart fa-fw" aria-hidden="true"></i></span>{{ lang('STATISTICS') }}</dd>
 		{% EVENT dls_web_tablist_after %}
 	</dl>
 

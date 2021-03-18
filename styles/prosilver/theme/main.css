@@ -1,12 +1,16 @@
 /* DLS Web Default Configurations
 ----------------------------------*/
 .dls_wrap {
-	margin: 15px 0 9px;
-	font-size: 1.1em;
-	position: relative;
+	display: -webkit-flex;
+	display: flex;
 }
 
-.dls_wrap h2 {
+.dls_wrap_content {
+	font-size: 1.1em;
+	margin: 15px 0 9px;
+}
+
+.dls_wrap_content h2 {
 	font-size: 1.3em;
 	color: #115098;
 	border-bottom: 1px solid #dbdee3;
@@ -14,25 +18,21 @@
 	margin: 2px 5px 7px;
 }
 
-.main_section, .right_section {
-	display: inline-block;
+.dls_row {
+	flex: 1;
 }
 
 .block {
 	margin-bottom: 10px;
-	padding: 8px;
-	border-radius: 8px;
-	background: rgb(236,241,243);
 }
 
 /* Post Middle Content
 ----------------------------------*/
-.main_section {
-	width: 72%;
-	float: left;
+.section_main {
+	flex: 3;
 }
 
-.main_section h3 {
+.section_main h3 {
 	margin-bottom: 2px;
 	font-size: 1.3em;
 	font-weight: bold;
@@ -41,35 +41,18 @@
 	margin-top: 0;
 }
 
-.news {
-	margin-bottom: 10px;
-}
-
 .dls_content {
-	color: rgb(83, 100, 130);
-	min-height: 3em;
-	overflow: hidden;
-	overflow-x: auto;
-	line-height: 1.4em;
-	padding-bottom: 1px;
-	clear: both;
+	font-size: 1.3em;
 }
 
-.dls_content ul, .dls_content ol {
-	margin: 0.8em 0 0.9em 3em;
-}
-
-.main_section .avatar-container img {
+.section_main .avatar-container img {
 	max-width: 75px;
 	max-height: 75px;
 }
 
-.whos_inner {
-	margin-bottom: 1.4em;
-}
-
 .whos_p {
 	font-size: inherit;
+	margin-bottom: 0;
 }
 
 .dls_pagination {
@@ -77,15 +60,21 @@
 	padding-right: 8px;
 }
 
-/* Right Section
+/* Side Section
 ----------------------------------------*/
-.right_section { 
-	width: 26%;
-	float: right;
+.section_side {
+	flex: 1;
+}
+
+.sec_left {
+	margin-right: 10px;
+}
+.sec_right {
+	margin-left: 10px;
 }
 
 .inner-block {
-	padding: 0 2px 0;
+	padding: 0 2px 3px;
 }
 
 .login_avatar {
@@ -165,64 +154,38 @@ li.drow strong {
 }
 
 @media (max-width: 700px) {
-	.main_section {
+	.section_main {
 		border: none;
 		margin: 0;
 		width: auto;
 		padding: 0 5px;
 	}
 
-	.main_section, .block {
+	.section_main, .block {
 		border-radius: 0;
 		margin-left: -5px;
 		margin-right: -5px;
 	}
 
-	.right_section {
+	.section_side {
 		display: none;
 	}
 }
 
-dl.tabs {
+.tabs {
 	margin: 0;
+}
+
+.tabs-profile {
 	padding-right: 5px;
 	border-right: 1.5px solid #FFF;
 }
 
-dl.tabs dd.ztab {
+.tabs .ztab {
+	display: inherit;
 	padding: 2px 5px;
-	margin: 5px 0;
-	font-size: 13px;
-	line-height: 1.4;
-	white-space: nowrap;
-	vertical-align: middle;
-	-ms-touch-action: manipulation;
-		touch-action: manipulation;
-	cursor: pointer;
-	-webkit-user-select: none;
-	   -moz-user-select: none;
-		-ms-user-select: none;
-			user-select: none;
-	border: 1px solid transparent;
-	border-radius: 4px;
-	border-color: #C7C3BF;
-	background-color: #E9E9E9; /* Old browsers */ /* FF3.6+ */
-	background-image: -webkit-linear-gradient(top, #FFFFFF 0%, #E9E9E9 100%);
-	background-image: linear-gradient(to bottom, #FFFFFF 0%,#E9E9E9 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFFFFF', endColorstr='#E9E9E9',GradientType=0 ); /* IE6-9 */
-	box-shadow: 0 0 0 1px #FFFFFF inset;
-	-webkit-box-shadow: 0 0 0 1px #FFFFFF inset;
-	color: #8f8f8f;
-}
-
-dl.tabs dd.ztab:hover {
-	color: #0A8ED0;
-	border-color: #0A8ED0;
-	background-color: #FFFFFF; /* Old browsers */ /* FF3.6+ */
-	background-image: -webkit-linear-gradient(top, #E9E9E9 0%, #FFFFFF 100%);
-	background-image: linear-gradient(to bottom, #E9E9E9 0%,#FFFFFF 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#E9E9E9', endColorstr='#FFFFFF',GradientType=0 ); /* IE6-9 */
-	text-shadow: 1px 1px 0 #FFFFFF, -1px -1px 0 #FFFFFF, -1px -1px 0 rgba(188, 42, 77, 0.2);
+	margin-top: 5px;
+	text-align: left;
 }
 
 .zicon {
@@ -238,7 +201,6 @@ dl.tabs dd.ztab:hover {
 
 .current {
 	display: inherit;
-	color: #115098 !important;
 }
 
 .dls_hide {
@@ -268,16 +230,4 @@ dl.details dd.dls_dd {
 li.zrow strong {
 	font-weight: normal;
 	color: #000033;
-}
-
-.accordion-toggle {
-	cursor: pointer;
-}
-
-.accordion-content {
-	display: none;
-}
-
-.accordion-content.default {
-	display: block;
 }

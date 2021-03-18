@@ -62,11 +62,22 @@ class manager
 	* Get block service
 	*
 	* @param string $service Service name
-	* @return ?object
+	* @return object
 	*/
 	public function get(string $service): object
 	{
 		return self::$blocks[$service] ?? (object) [];
+	}
+
+	/**
+	* Has (Does event have section data)
+	*
+	* @param string $section Section name
+	* @return bool
+	*/
+	public function has($section): bool
+	{
+		return count($this->event->get($section));
 	}
 
 	/**
